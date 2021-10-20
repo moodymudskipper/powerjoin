@@ -1,0 +1,109 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# powerjoin
+
+WIP 
+
+{powerjoin} extends {dplyr}'s join functions.
+
+It replaces my {safejoin} package which has un unfortunate homonym on CRAN and
+has a suboptimal interface and implementation.
+
+The {dplyr} team is credited since a lot of code is taken from {dplyr} directly.
+
+## Installation
+
+``` r
+remotes::install_github("moodymudskipper/powerjoin")
+```
+
+## Example
+
+The `check` argument  receives a list provided by `pj_check()`, whose argument
+can be :
+
+* NA : stay silent (default except for `implicit_by`)
+* "inform"
+* "warn"
+* "abort"
+
+```{r, error = TRUE}
+library(powerjoin)
+library(dplyr, warn.conflicts = FALSE)
+
+#-------------------------------------------------------------------------------
+# works like {dplyr} by default 
+power_left_join(
+  band_members, 
+  band_instruments)
+#-------------------------------------------------------------------------------
+# silence the implicit join
+power_left_join(
+  band_members, 
+  band_instruments, 
+  check = pj_check(implicit_by = NA))
+#-------------------------------------------------------------------------------
+# fail unless explicit `by`
+power_left_join(
+  band_members, 
+  band_instruments, 
+  check = pj_check(implicit_by = "abort"))
+#-------------------------------------------------------------------------------
+# fail if column conflict
+power_left_join(
+  band_members, 
+  band_members,
+  by = "name",
+  check = pj_check(column_conflict = "abort")
+)
+#-------------------------------------------------------------------------------
+# fail if duplicate keys in the left table
+power_left_join(
+  bind_rows(band_members, band_members[1:2,]), 
+  band_instruments,
+  by = "name",
+  check = pj_check(duplicate_keys_left = "abort")
+)
+#-------------------------------------------------------------------------------
+# fail if unmatched keys in the left table
+power_left_join(
+  band_members, 
+  band_instruments,
+  by = "name",
+  check = pj_check(unmatched_keys_left = "abort")
+)
+#-------------------------------------------------------------------------------
+# fail if missing keys combination in the left table
+power_left_join(
+  band_members, 
+  band_members,
+  check = pj_check(missing_key_combination_left = "abort")
+)
+#-------------------------------------------------------------------------------
+# fail if inconsistent factor levels
+power_left_join(
+  band_members %>% mutate(name = factor(name)), 
+  band_instruments %>% mutate(name = factor(name)), 
+  check = pj_check(inconsistent_factor_levels = "abort")
+)
+#-------------------------------------------------------------------------------
+# fail if inconsistent type
+power_left_join(
+  band_members %>% mutate(name = factor(name)), 
+  band_instruments, 
+  check = pj_check(inconsistent_type = "abort")
+)
+```

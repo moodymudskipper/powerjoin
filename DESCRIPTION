@@ -1,0 +1,50 @@
+Package: powerjoin
+Title: Extensions of *dplyr* and *fuzzyjoin* Join Functions
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Antoine",
+             family = "Fabri",
+             role = c("aut", "cre"),
+             email = "antoine.fabri@gmail.com"),
+      person(given = "Hadley",
+             family = "Wickham",
+             role = c("ctb"),
+             email = "hadley@rstudio.com",
+             comment = c(
+             "aut/cre of dplyr",
+             ORCID = "0000-0003-4757-117X")),
+      person(given = "Romain",
+             family = "François",
+             role = "ctb",
+             comment = c(
+             "aut of dplyr",
+             ORCID = "0000-0002-2444-4226")),
+      person(given = "Lionel",
+             family = "Henry",
+             role = "ctb",
+             comment = "aut of dplyr"),
+      person(given = "Kirill",
+             family = "Müller",
+             role = "ctb",
+             comment = c(
+             "aut of dplyr",
+             ORCID = "0000-0002-1416-3412")),
+      person(given = "RStudio",
+             role = c("cph", "fnd"),
+             comment = "cph/fnd dplyr"))
+Description: Extensions of *dplyr* and *fuzzyjoin* join functions. Packed with
+    features to preprocess the data, apply various data checks, and deal with
+    conflicting columns.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports: 
+    dplyr,
+    generics,
+    glue,
+    rlang,
+    tidyselect,
+    vctrs,
+    glue
