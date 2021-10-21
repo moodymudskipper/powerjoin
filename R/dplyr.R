@@ -141,3 +141,19 @@
 `index_flatten` <- function(x) {
   unlist(x, recursive = FALSE, use.names = FALSE)
 }
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# err_vars (copied from dplyr:::index_flatten)
+# from dplyr 1.0.7
+err_vars <- function (x)
+{
+  if (is.logical(x)) {
+    x <- which(x)
+  }
+  if (is.character(x)) {
+    x <- encodeString(x, quote = "`")
+  }
+  glue_collapse(x, sep = ", ", last = if (length(x) <= 2)
+    " and "
+    else ", and ")
+}

@@ -1,0 +1,132 @@
+#' Preprocess powerjoin inputs
+#'
+#' These functions are named after the tidyverse functions `select`, `summarize`,
+#' `nest`, `pack`, `pivot_wider` and `pivot_longer` and are designed to avoid
+#' repetition of key columns when preprocessing the data for a join. They should
+#' only be used in the `x` and `y` arguments of {powerjoin} join functions. No
+#' further transformation should be applied on top of them.
+#'
+#' Unlike their tidyverse counterparts these just add an attribute to the input and
+#' don't reshape it. The join function then preprocesses the inputs using these
+#' attributes and the keys.
+#'
+#' @inheritParams tidyr::pivot_wider
+#' @inheritParams tidyr::pivot_longer
+#' @name preprocess_inputs
+NULL
+
+#' @export
+#' @rdname preprocess_inputs
+select_keys_and <- function(.data, ...) {
+  attr(.data, "pj_preprocess") <- list(type = "select_keys_and", args = enquos(...))
+  .data
+}
+
+#' @export
+#' @rdname preprocess_inputs
+summarize_by_keys <- function(.data, ...) {
+  attr(.data, "pj_preprocess") <- list(type = "summarize_by_keys", args = enquos(...))
+  .data
+}
+
+#' @export
+#' @rdname preprocess_inputs
+nest_by_keys <- function(.data, ..., name = NULL) {
+  attr(.data, "pj_preprocess") <- list(type = "nest_by_keys", args = enquos(name = name,...))
+  .data
+}
+
+#' @export
+#' @rdname preprocess_inputs
+pack_along_keys <- function(.data, ..., name) {
+  browser()
+  attr(.data, "pj_preprocess") <- list(type = "pack_along_keys", args = enquos(name = name, ...))
+  .data
+}
+
+#' @export
+#' @rdname preprocess_inputs
+pivot_wider_by_keys <- function(data, names_from = name, names_prefix = "",
+                                names_sep = "_", names_glue = NULL, names_sort = FALSE, names_repair = "check_unique",
+                                values_from = value, values_fill = NULL, values_fn = NULL,
+                                ...) {
+  attr(data, "pj_preprocess") <- list(type = "pivot_wider_by_keys", args = enquos(
+    names_from = names_from,
+    names_prefix = names_prefix,
+    names_sep = names_sep,
+    names_glue = names_glue,
+    names_sort = names_sort,
+    names_repair = names_repair,
+    values_from = values_from,
+    values_fill = values_fill,
+    values_fn = values_fn,
+    ...))
+  data
+}
+
+#' @export
+#' @rdname preprocess_inputs
+pivot_longer_by_keys <- function(data, cols, names_to = "name", names_prefix = NULL,
+                                 names_sep = NULL, names_pattern = NULL, names_ptypes = list(),
+                                 names_transform = list(), names_repair = "check_unique",
+                                 values_to = "value", values_drop_na = FALSE, values_ptypes = list(),
+                                 values_transform = list(), ...)  {
+  attr(data, "pj_preprocess") <- list(type = "pivot_longer_by_keys", args = enquos(...))
+  data
+}
+
+preprocess <- function(.data, by) {
+  attr_ <- attr(.data, "pj_preprocess")
+  if(is.null(attr_)) return(.data)
+
+  if(attr_$type == "select_keys_and") {
+    .data <- select(.data, !!by, !!!attr_$args)
+    return(.data)
+  }
+
+  if(attr_$type == "summarize_by_keys") {
+    .data <- .data %>%
+      group_by_at(by) %>%
+      summarize(!!!attr_$args, .groups = "drop")
+    return(.data)
+  }
+
+  if(attr_$type == "nest_by_keys") {
+    name <- eval_tidy(attr_$args$name)
+    if(is.null(name)) {
+      .data <- .data %>%
+        group_by_at(by) %>%
+        summarize(across(c(!!!attr_$args[-1]), list), .groups = "drop")
+    } else {
+      if(length(attr_$args[-1])) {
+        .data <- select(.data, !!by, !!!attr_$args[-1])
+      }
+      .data <- .data %>%
+        nest((!!attr_$args$name) := -!!by)
+    }
+    return(.data)
+  }
+
+  if(attr_$type == "pivot_wider_by_keys") {
+    # pivot_wider takes default columns name and value, we must not have them so we can give only one
+    .data <- eval_tidy(expr(pivot_wider(.data, id_cols = !!by, !!!attr_$args)))
+    return(.data)
+  }
+
+  if(attr_$type == "pivot_longer_by_keys") {
+    #
+    .data <- eval_tidy(expr(pivot_longer(.data, cols = -!!by, !!!attr_$args)))
+    return(.data)
+  }
+
+  if(attr_$type == "pack_along_keys") {
+    #
+    pack <- select(.data, -!!by)
+    if(length(attr_$args[-1])) {
+      pack <- select(pack, !!!attr_$args[-1])
+    }
+    .data <- transmute(.data, !!!syms(by), (!!attr_$args$name) := pack)
+    return(.data)
+  }
+}
+

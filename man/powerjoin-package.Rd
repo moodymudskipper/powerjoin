@@ -8,6 +8,14 @@
 \description{
 Extensions of *dplyr* and *fuzzyjoin* join functions. Packed with features to preprocess the data, apply various data checks, and deal with conflicting columns.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/moodymudskipper/powerjoin}
+  \item Report bugs at \url{https://github.com/moodymudskipper/powerjoin/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Antoine Fabri \email{antoine.fabri@gmail.com}
 

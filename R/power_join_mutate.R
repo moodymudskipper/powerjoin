@@ -1,36 +1,36 @@
-join_mutate <- function(x, y, by, copy, type, suffix = c(".x", ".y"), na_matches = c("na", "never"),
-                        keep = FALSE,
-                        # powerjoin args
-                        check = pj_check(),
-                        conflict = NULL,
-                        fuzzy = NULL) {
-  na_matches <- arg_match(na_matches)
-
-  if(is_bare_list(x) || is_bare_list(y)) {
-    if(!is_bare_list(x)) {
-      x <- list(x)
-    } else if(!is.null(y) &&!is_bare_list(y)) {
-      y <- list(y)
-    }
-    Reduce(function(x,y) join_mutate_impl(
-      x, y, by, copy, type, suffix, na_matches,
-      keep,
-      # powerjoin args
-      check,
-      conflict,
-      fuzzy
-    ), c(x,y))
-  } else {
-    join_mutate_impl(
-      x, y, by, copy, type, suffix, na_matches,
-      keep,
-      # powerjoin args
-      check,
-      conflict,
-      fuzzy
-    )
-  }
-}
+# join_mutate <- function(x, y, by, copy, type, suffix = c(".x", ".y"), na_matches = c("na", "never"),
+#                         keep = FALSE,
+#                         # powerjoin args
+#                         check = pj_check(),
+#                         conflict = NULL,
+#                         fuzzy = NULL) {
+#   na_matches <- arg_match(na_matches)
+#
+#   if(is_bare_list(x) || is_bare_list(y)) {
+#     if(!is_bare_list(x)) {
+#       x <- list(x)
+#     } else if(!is.null(y) &&!is_bare_list(y)) {
+#       y <- list(y)
+#     }
+#     Reduce(function(x,y) join_mutate_impl(
+#       x, y, by, copy, type, suffix, na_matches,
+#       keep,
+#       # powerjoin args
+#       check,
+#       conflict,
+#       fuzzy
+#     ), c(x,y))
+#   } else {
+#     join_mutate_impl(
+#       x, y, by, copy, type, suffix, na_matches,
+#       keep,
+#       # powerjoin args
+#       check,
+#       conflict,
+#       fuzzy
+#     )
+#   }
+# }
 
 # Adapted from join_mutate in dplyr 1.0.7
 join_mutate <- function(
@@ -54,6 +54,22 @@ join_mutate <- function(
   if(check[["implicit_by"]] %in% "abort") {
     abort("`by`is `NULL`, join columns should be explicit")
   }
+  #-----------------------------------------------------------------------------
+  # modified dplyr code
+  by <- join_cols1(tbl_vars(x), tbl_vars(y), by = by, check = check)
+  #-----------------------------------------------------------------------------
+  # powerjoin preprocess
+  x <- preprocess(x, by$x)
+  y <- preprocess(y, by$y)
+
+  #-----------------------------------------------------------------------------
+  # modified dplyr code
+  vars <- join_cols2(tbl_vars(x), tbl_vars(y),
+                    by = by, suffix = suffix,
+                    keep = keep,
+                    # powerjoin args
+                    check = check
+  )
 
   #-----------------------------------------------------------------------------
   # here we should check if ye have conflicts handled by the conflict arg
@@ -76,13 +92,8 @@ join_mutate <- function(
   } else {
     conflicted_data <- NULL
   }
-
-  vars <- join_cols(tbl_vars(x), tbl_vars(y),
-                    by = by, suffix = suffix,
-                    keep = keep,
-                    # powerjoin args
-                    check = check
-  )
+  #-----------------------------------------------------------------------------
+  # dplyr original code
 
   na_equal <- check_na_matches(na_matches)
   x_in <- as_tibble(x, .name_repair = "minimal")
@@ -142,17 +153,23 @@ join_mutate <- function(
 
 
 # Adapted from join_mutate in dplyr 1.0.7
-join_cols <- function(
-  x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = FALSE,
-  # arg from powerjoin
-  check) {
+
+join_cols1 <- function(x_names, y_names, by = NULL, check) {
   # original dplyr code
   check_duplicate_vars(x_names, "x")
   check_duplicate_vars(y_names, "y")
   by <- standardise_join_by(by, x_names = x_names, y_names = y_names,
                             # arg from powerjoin
                             check = check)
+  by
+}
+
+join_cols2 <- function(
+  x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = FALSE,
+  # arg from powerjoin
+  check) {
   intersect_ <- intersect(x_names, setdiff(y_names, by$y))
+  # original dplyr code
   #-----------------------------------------------------------------------------
   #   column_conflict
   if(!is.na(check[["column_conflict"]]) && length(intersect_)) {
