@@ -61,16 +61,6 @@ join_mutate <- function(
   # powerjoin preprocess
   x <- preprocess(x, by$x)
   y <- preprocess(y, by$y)
-
-  #-----------------------------------------------------------------------------
-  # modified dplyr code
-  vars <- join_cols2(tbl_vars(x), tbl_vars(y),
-                    by = by, suffix = suffix,
-                    keep = keep,
-                    # powerjoin args
-                    check = check
-  )
-
   #-----------------------------------------------------------------------------
   # here we should check if ye have conflicts handled by the conflict arg
   # if so we take out the conflicted variable(s) before this step
@@ -92,6 +82,14 @@ join_mutate <- function(
   } else {
     conflicted_data <- NULL
   }
+  #-----------------------------------------------------------------------------
+  # modified dplyr code
+  vars <- join_cols2(tbl_vars(x), tbl_vars(y),
+                    by = by, suffix = suffix,
+                    keep = keep,
+                    # powerjoin args
+                    check = check
+  )
   #-----------------------------------------------------------------------------
   # dplyr original code
 
@@ -132,7 +130,19 @@ join_mutate <- function(
   #-----------------------------------------------------------------------------
   # here we can slice our conflicted vars and add them to out
   if(!is.null(conflicted_data)) {
-    res <- Map(as_function(conflict), conflicted_data$x, conflicted_data$x)
+    if(is_formula(conflict) && identical(conflict[[2]], quote(rw))) {
+      conflict <- conflict[-2]
+      res <- Map(
+        function(x,y) mapply(as_function(conflict), x, y),
+        conflicted_data$x[x_slicer,],
+        conflicted_data$y[y_slicer,])
+    } else {
+      res <- Map(
+        as_function(conflict),
+        conflicted_data$x[x_slicer,],
+        conflicted_data$y[y_slicer,])
+    }
+
     out[names(res)] <- res
   }
   #-----------------------------------------------------------------------------
