@@ -1,37 +1,3 @@
-# join_mutate <- function(x, y, by, copy, type, suffix = c(".x", ".y"), na_matches = c("na", "never"),
-#                         keep = FALSE,
-#                         # powerjoin args
-#                         check = pj_check(),
-#                         conflict = NULL,
-#                         fuzzy = NULL) {
-#   na_matches <- arg_match(na_matches)
-#
-#   if(is_bare_list(x) || is_bare_list(y)) {
-#     if(!is_bare_list(x)) {
-#       x <- list(x)
-#     } else if(!is.null(y) &&!is_bare_list(y)) {
-#       y <- list(y)
-#     }
-#     Reduce(function(x,y) join_mutate_impl(
-#       x, y, by, copy, type, suffix, na_matches,
-#       keep,
-#       # powerjoin args
-#       check,
-#       conflict,
-#       fuzzy
-#     ), c(x,y))
-#   } else {
-#     join_mutate_impl(
-#       x, y, by, copy, type, suffix, na_matches,
-#       keep,
-#       # powerjoin args
-#       check,
-#       conflict,
-#       fuzzy
-#     )
-#   }
-# }
-
 # Adapted from join_mutate in dplyr 1.0.7
 join_mutate <- function(
   # dplyr args
@@ -41,14 +7,6 @@ join_mutate <- function(
   check = pj_check(),
   conflict = NULL,
   fuzzy = NULL) {
-  # if(is_formula(x)) {
-  #   x_bkp <- x
-  #   x <- eval(x[[2]], environment(x))
-  # }
-  # if(is_formula(y)) {
-  #   y_bkp <- y
-  #   y <- eval(y[[2]], environment(y))
-  # }
   #-----------------------------------------------------------------------------
   # implicit_by
   if(check[["implicit_by"]] %in% "abort") {
@@ -74,7 +32,7 @@ join_mutate <- function(
       if(any(!nms %in% conflicted_cols)) {
         warn("Some conflict conditions are not used: ...")
       }
-      conflicted_cols <- intersect(conflicted_colsm, nms)
+      conflicted_cols <- intersect(conflicted_cols, nms)
     }
     conflicted_data <- list(x = x[conflicted_cols], y = y[conflicted_cols])
     x <- x[!names(x) %in% conflicted_cols]
@@ -92,7 +50,6 @@ join_mutate <- function(
   )
   #-----------------------------------------------------------------------------
   # dplyr original code
-
   na_equal <- check_na_matches(na_matches)
   x_in <- as_tibble(x, .name_repair = "minimal")
   y_in <- as_tibble(y, .name_repair = "minimal")
@@ -128,23 +85,8 @@ join_mutate <- function(
   out <- vec_slice(x_out, x_slicer)
   out[names(y_out)] <- vec_slice(y_out, y_slicer)
   #-----------------------------------------------------------------------------
-  # here we can slice our conflicted vars and add them to out
-  if(!is.null(conflicted_data)) {
-    if(is_formula(conflict) && identical(conflict[[2]], quote(rw))) {
-      conflict <- conflict[-2]
-      res <- Map(
-        function(x,y) mapply(as_function(conflict), x, y),
-        conflicted_data$x[x_slicer,],
-        conflicted_data$y[y_slicer,])
-    } else {
-      res <- Map(
-        as_function(conflict),
-        conflicted_data$x[x_slicer,],
-        conflicted_data$y[y_slicer,])
-    }
-
-    out[names(res)] <- res
-  }
+  # handle conflicts
+  out <- handle_conflicts(out, x_slicer, y_slicer, conflicted_data, conflict)
   #-----------------------------------------------------------------------------
   # original dplyr code
   if (!keep) {
