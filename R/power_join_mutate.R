@@ -6,6 +6,7 @@ join_mutate <- function(
   # powerjoin args
   check = pj_check(),
   conflict = NULL,
+  fill = NULL,
   fuzzy = NULL) {
   #-----------------------------------------------------------------------------
   # implicit_by
@@ -84,6 +85,15 @@ join_mutate <- function(
   }
   out <- vec_slice(x_out, x_slicer)
   out[names(y_out)] <- vec_slice(y_out, y_slicer)
+  if(!is.null(fill)) {
+    if(is.list(fill)) {
+      for (nm in intersect(names(fill), names(y_out))) {
+          out[is.na(y_slicer), nm] <- fill[[nm]]
+      }
+    } else {
+      out[is.na(y_slicer), names(y_out)] <- fill
+    }
+  }
   #-----------------------------------------------------------------------------
   # handle conflicts
   out <- handle_conflicts(out, x_slicer, y_slicer, conflicted_data, conflict)
@@ -98,6 +108,18 @@ join_mutate <- function(
         y_key,
         rows$y_extra
       ), key_type)
+
+      if(!is.null(fill)) {
+        x_nms <- setdiff(names(out), c(names(y_out), names(y_key)))
+        if(is.list(fill)) {
+          for (nm in intersect(names(fill), x_nms)) {
+            out[is.na(y_slicer), nm] <- fill[[nm]]
+          }
+        } else {
+        out[new_rows, x_nms] <- fill
+        }
+      }
+
     }
   }
   dplyr_reconstruct(out, x)
