@@ -21,7 +21,15 @@ join_mutate <- function(
   x <- preprocess(x, by$x)
   y <- preprocess(y, by$y)
   #-----------------------------------------------------------------------------
-  # here we should check if ye have conflicts handled by the conflict arg
+  # powerjoin checks
+  check_duplicate_keys_left(x, by$x, check)
+  check_duplicate_keys_right(y, by$y, check)
+  check_missing_key_combination_left(x, by$x, check)
+  check_missing_key_combination_right(y, by$y, check)
+  check_inconsistent_factor_levels(x, y, by, check)
+  check_inconsistent_type(x, y, by, check)
+  #-----------------------------------------------------------------------------
+  # here we should check if we have conflicts handled by the conflict arg
   # if so we take out the conflicted variable(s) before this step
   if(!is.null(conflict)) {
     x_in_vars <- setdiff(names(x), names(by) %||% by)
@@ -54,24 +62,13 @@ join_mutate <- function(
   na_equal <- check_na_matches(na_matches)
   x_in <- as_tibble(x, .name_repair = "minimal")
   y_in <- as_tibble(y, .name_repair = "minimal")
-
-  #-----------------------------------------------------------------------------
-  # powerjoin checks
-  check_duplicate_keys_left(x, vars, check)
-  check_duplicate_keys_right(y, vars, check)
-  check_missing_key_combination_left(x, vars, check)
-  check_missing_key_combination_right(x, vars, check)
-  check_inconsistent_factor_levels(x_in, y_in, vars, check)
-  check_inconsistent_type(x_in, y_in, vars, check)
-  #-----------------------------------------------------------------------------
-  # original dplyr code
   x_key <- set_names(x_in[vars$x$key], names(vars$x$key))
   y_key <- set_names(y_in[vars$y$key], names(vars$y$key))
   rows <- join_rows(x_key, y_key, type = type, na_equal = na_equal)
   #-----------------------------------------------------------------------------
   # powerjoin checks
-  check_unmatched_keys_left(x_in, y_in, vars, rows, check)
-  check_unmatched_keys_right(x_in, y_in, vars, rows, check)
+  check_unmatched_keys_left(x, y, by$x, rows, check)
+  check_unmatched_keys_right(x, y, by$y, rows, check)
   #-----------------------------------------------------------------------------
   # original dplyr code
   x_out <- set_names(x_in[vars$x$out], names(vars$x$out))
