@@ -1,6 +1,6 @@
 #' Build a checklist for power joins
 #'
-#' @param implicit_by WIP
+#' @param implicit_keys WIP
 #' @param column_conflict WIP
 #' @param duplicate_keys_left WIP
 #' @param duplicate_keys_right WIP
@@ -13,7 +13,7 @@
 #'
 #' @export
 check_specs <- function(
-  implicit_by = c("inform", NA, "warn", "abort"), #
+  implicit_keys = c("inform", NA, "warn", "abort"), #
   column_conflict = c(NA, "inform", "warn", "abort"),
   duplicate_keys_left = c(NA, "inform", "warn", "abort"),
   duplicate_keys_right = c(NA, "inform", "warn", "abort"),
@@ -24,7 +24,7 @@ check_specs <- function(
   inconsistent_factor_levels = c(NA, "inform", "warn", "abort"),
   inconsistent_type = c(NA, "inform", "warn", "abort")
 ) {
-  implicit_by <- match.arg(as.character(implicit_by), implicit_by)
+  implicit_keys <- match.arg(as.character(implicit_keys), implicit_keys)
   column_conflict <- match.arg(as.character(column_conflict), column_conflict)
   duplicate_keys_left <- match.arg(as.character(duplicate_keys_left), duplicate_keys_left)
   duplicate_keys_right <- match.arg(as.character(duplicate_keys_right), duplicate_keys_right)
@@ -35,7 +35,7 @@ check_specs <- function(
   inconsistent_factor_levels <- match.arg(as.character(inconsistent_factor_levels), inconsistent_factor_levels)
   inconsistent_type <- match.arg(as.character(inconsistent_type), inconsistent_type)
   res <- c(
-    implicit_by = implicit_by,
+    implicit_keys = implicit_keys,
     column_conflict = column_conflict,
     duplicate_keys_left = duplicate_keys_left,
     duplicate_keys_right = duplicate_keys_right,
@@ -51,7 +51,7 @@ check_specs <- function(
 
 #' @export
 always_inform <- check_specs(
-  implicit_by = "inform",
+  implicit_keys = "inform",
   column_conflict = "inform",
   duplicate_keys_left = "inform",
   duplicate_keys_right = "inform",
@@ -69,7 +69,7 @@ print.powerjoin_check <- function(x, ...) {
   icons[is.na(icons)] <- ">"
   conflicts <- names(x)
   conflicts[icons == ">"] <- cli::col_grey(cli::style_italic(conflicts[icons == ">"]))
-  conflicts[icons == "i"] <- cli::col_blue(conflicts[icons == "x"])
+  conflicts[icons == "i"] <- cli::col_blue(conflicts[icons == "i"])
   conflicts[icons == "x"] <- cli::col_red(conflicts[icons == "x"])
   conflicts[icons == "!"] <- cli::col_yellow(conflicts[icons == "!"])
   writeLines(cli::col_grey("# powerjoin check specifications"))

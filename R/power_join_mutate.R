@@ -8,8 +8,8 @@ join_mutate <- function(
   conflict = NULL,
   fill = NULL) {
   #-----------------------------------------------------------------------------
-  # implicit_by
-  if(check[["implicit_by"]] %in% "abort") {
+  # implicit_keys
+  if(check[["implicit_keys"]] %in% "abort") {
     abort("`by`is `NULL`, join columns should be explicit")
   }
   #-----------------------------------------------------------------------------
@@ -45,7 +45,7 @@ join_mutate <- function(
     fuzzy <- FALSE
     #---------------------------------------------------------------------------
     # modified dplyr code
-    by <- join_cols1(tbl_vars(x), tbl_vars(y), by = by, check = check)
+    by <- preprocess_by(tbl_vars(x), tbl_vars(y), by = by, check = check)
   }
   #-----------------------------------------------------------------------------
   # powerjoin preprocess
@@ -84,7 +84,7 @@ join_mutate <- function(
   # this doesnt work for fuzzy as it tried to make 1 on 1 matches of by
   # modified dplyr code
   if(fuzzy) {
-    vars <- join_cols2_fuzzy(tbl_vars(x), tbl_vars(y),
+    vars <- join_cols_fuzzy(tbl_vars(x), tbl_vars(y),
                        by = by, suffix = suffix,
                        keep = keep,
                        # powerjoin args
@@ -92,7 +92,7 @@ join_mutate <- function(
                        equi_keys = equi_keys
     )
   } else {
-    vars <- join_cols2(tbl_vars(x), tbl_vars(y),
+    vars <- join_cols(tbl_vars(x), tbl_vars(y),
                        by = by, suffix = suffix,
                        keep = keep,
                        # powerjoin args
@@ -182,7 +182,7 @@ join_mutate <- function(
 
 # Adapted from join_mutate in dplyr 1.0.7
 
-join_cols1 <- function(x_names, y_names, by = NULL, check) {
+preprocess_by <- function(x_names, y_names, by = NULL, check) {
   # original dplyr code
   check_duplicate_vars(x_names, "x")
   check_duplicate_vars(y_names, "y")
@@ -192,7 +192,7 @@ join_cols1 <- function(x_names, y_names, by = NULL, check) {
   by
 }
 
-join_cols2 <- function(
+join_cols <- function(
   x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = FALSE,
   # arg from powerjoin
   check) {
@@ -201,7 +201,7 @@ join_cols2 <- function(
   #-----------------------------------------------------------------------------
   #   column_conflict
   if(!is.na(check[["column_conflict"]]) && length(intersect_)) {
-    fun <- getFromNamespace(check[["implicit_by"]], "rlang")
+    fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
     if(check[["column_conflict"]] == "abort") {
       msg <- paste("The following columns are ambiguous: ", toString(intersect_))
       abort(msg)
@@ -240,7 +240,7 @@ join_cols2 <- function(
   ))
 }
 
-join_cols2_fuzzy <- function(
+join_cols_fuzzy <- function(
   x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = FALSE,
   # arg from powerjoin
   check, equi_keys) {
@@ -249,7 +249,7 @@ join_cols2_fuzzy <- function(
   #-----------------------------------------------------------------------------
   #   column_conflict
   if(!is.na(check[["column_conflict"]]) && length(intersect_)) {
-    fun <- getFromNamespace(check[["implicit_by"]], "rlang")
+    fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
     if(check[["column_conflict"]] == "abort") {
       msg <- paste("The following columns are ambiguous: ", toString(intersect_))
       abort(msg)
@@ -305,9 +305,9 @@ standardise_join_by <- function(
       )
     }
     #---------------------------------------------------------------------------
-    # implicit_by
-    if(!is.na(check[["implicit_by"]])) {
-      fun <- getFromNamespace(check[["implicit_by"]], "rlang")
+    # implicit_keys
+    if(!is.na(check[["implicit_keys"]])) {
+      fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
       fun(paste0("Joining, by = ", by_code))
     }
     # original dplyr code
