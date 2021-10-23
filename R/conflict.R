@@ -22,6 +22,14 @@ handle_conflicts <- function(out, x_slicer, y_slicer, conflicted_data, conflict)
           res[[nm]]  <- conflicted_data$x[[nm]][x_slicer]
           res[[nm]][!is.na(y_slicer)] <-
             conflicted_data$y[[nm]][y_slicer][!is.na(y_slicer)]
+        } else if(identical(conflict_i, "coalesce_xy")) {
+          res[[nm]] <- dplyr::coalesce(
+            conflicted_data$x[[nm]][x_slicer],
+            conflicted_data$y[[nm]][y_slicer])
+         }else if(identical(conflict_i, "coalesce_yx")) {
+          res[[nm]] <- dplyr::coalesce(
+            conflicted_data$y[[nm]][y_slicer],
+            conflicted_data$x[[nm]][x_slicer])
         } else {
           conflict_i <- as_conflict_function(conflict_i)
           res[[nm]] <- conflict_i(
@@ -38,6 +46,25 @@ handle_conflicts <- function(out, x_slicer, y_slicer, conflicted_data, conflict)
     res <- conflicted_data$x[x_slicer,]
     res[!is.na(y_slicer),] <-
       conflicted_data$y[y_slicer,][!is.na(y_slicer),]
+    out[names(res)] <- res
+    return(out)
+  }
+
+  # special case for coalesce
+  if(identical(conflict, "coalesce_xy")) {
+    res <- Map(
+      dplyr::coalesce,
+      conflicted_data$x[x_slicer,],
+      conflicted_data$y[y_slicer,])
+    out[names(res)] <- res
+    return(out)
+  }
+
+  if(identical(conflict, "coalesce_yx")) {
+    res <- Map(
+      dplyr::coalesce,
+      conflicted_data$y[y_slicer,],
+      conflicted_data$x[x_slicer,])
     out[names(res)] <- res
     return(out)
   }
