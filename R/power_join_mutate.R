@@ -6,16 +6,47 @@ join_mutate <- function(
   # powerjoin args
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
   #-----------------------------------------------------------------------------
   # implicit_by
   if(check[["implicit_by"]] %in% "abort") {
     abort("`by`is `NULL`, join columns should be explicit")
   }
   #-----------------------------------------------------------------------------
-  # modified dplyr code
-  by <- join_cols1(tbl_vars(x), tbl_vars(y), by = by, check = check)
+  # deal with fuzzy joins
+  fml_lgl <- sapply(by, is_formula)
+  if(is_formula(by)) {
+    fuzzy <- TRUE
+    equi_keys <- NULL
+    specs <- fuzzy_specs(by)
+    by <- specs$multi_by
+    multi_match_fun <- specs$multi_match_fun
+  } else if(is.list(by) && any(fml_lgl)) {
+    fuzzy <- TRUE
+    # harmonize unnamed
+    names(by) <- allNames(by)
+    names(by)[!fml_lgl] <- ifelse(names(by[!fml_lgl]) == "", unlist(by[!fml_lgl]), names(by[!fml_lgl]))
+    equi_keys <- by[!fml_lgl]
+    # extract lhs
+    by[fml_lgl]  <- lapply(by[fml_lgl], `[[`, 2)
+    by[!fml_lgl] <- Map(function(x, y) call(
+      "==",
+      call("$", sym(".x"), sym(x)),
+      call("$", sym(".y"), sym(y))),
+      names(by[!fml_lgl]), by[!fml_lgl])
+    # concat
+    by <- Reduce(function(x,y) call("&", x, y), by)
+    # rebuild formula
+    by <- call("~", by)
+    specs <- fuzzy_specs(by)
+    by <- specs$multi_by
+    multi_match_fun <- specs$multi_match_fun
+  } else {
+    fuzzy <- FALSE
+    #---------------------------------------------------------------------------
+    # modified dplyr code
+    by <- join_cols1(tbl_vars(x), tbl_vars(y), by = by, check = check)
+  }
   #-----------------------------------------------------------------------------
   # powerjoin preprocess
   x <- preprocess(x, by$x)
@@ -50,27 +81,46 @@ join_mutate <- function(
     conflicted_data <- NULL
   }
   #-----------------------------------------------------------------------------
+  # this doesnt work for fuzzy as it tried to make 1 on 1 matches of by
   # modified dplyr code
-  vars <- join_cols2(tbl_vars(x), tbl_vars(y),
-                    by = by, suffix = suffix,
-                    keep = keep,
-                    # powerjoin args
-                    check = check
-  )
+  if(fuzzy) {
+    vars <- join_cols2_fuzzy(tbl_vars(x), tbl_vars(y),
+                       by = by, suffix = suffix,
+                       keep = keep,
+                       # powerjoin args
+                       check = check,
+                       equi_keys = equi_keys
+    )
+  } else {
+    vars <- join_cols2(tbl_vars(x), tbl_vars(y),
+                       by = by, suffix = suffix,
+                       keep = keep,
+                       # powerjoin args
+                       check = check
+    )
+  }
+
   #-----------------------------------------------------------------------------
   # dplyr original code
   na_equal <- check_na_matches(na_matches)
   x_in <- as_tibble(x, .name_repair = "minimal")
   y_in <- as_tibble(y, .name_repair = "minimal")
-  x_key <- set_names(x_in[vars$x$key], names(vars$x$key))
-  y_key <- set_names(y_in[vars$y$key], names(vars$y$key))
-  rows <- join_rows(x_key, y_key, type = type, na_equal = na_equal)
+
+  if(fuzzy) {
+    x_key <- x_in[by$x]
+    y_key <- y_in[by$y]
+    rows <- join_rows_fuzzy(x, y, by, multi_match_fun, mode = type)
+  } else {
+    x_key <- set_names(x_in[vars$x$key], names(vars$x$key))
+    y_key <- set_names(y_in[vars$y$key], names(vars$y$key))
+    rows <- join_rows(x_key, y_key, type = type, na_equal = na_equal)
+  }
   #-----------------------------------------------------------------------------
   # powerjoin checks
   check_unmatched_keys_left(x, y, by$x, rows, check)
   check_unmatched_keys_right(x, y, by$y, rows, check)
   #-----------------------------------------------------------------------------
-  # original dplyr code
+  # original dplyr code : rename conflicted and slice
   x_out <- set_names(x_in[vars$x$out], names(vars$x$out))
   y_out <- set_names(y_in[vars$y$out], names(vars$y$out))
   if (length(rows$y_extra) > 0L) {
@@ -82,6 +132,8 @@ join_mutate <- function(
   }
   out <- vec_slice(x_out, x_slicer)
   out[names(y_out)] <- vec_slice(y_out, y_slicer)
+  #-----------------------------------------------------------------------------
+  # fill
   if(!is.null(fill)) {
     if(is.list(fill)) {
       for (nm in intersect(names(fill), names(y_out))) {
@@ -95,8 +147,13 @@ join_mutate <- function(
   # handle conflicts
   out <- handle_conflicts(out, x_slicer, y_slicer, conflicted_data, conflict)
   #-----------------------------------------------------------------------------
+  # add extra columns, this might create a conflict
+  if(fuzzy) {
+    out <- bind_cols(out, rows$extra_cols)
+  }
+  #-----------------------------------------------------------------------------
   # original dplyr code
-  if (!keep) {
+  if (!fuzzy && !keep) {
     key_type <- vec_ptype_common(x_key, y_key)
     out[names(x_key)] <- vec_cast(out[names(x_key)], key_type)
     if (length(rows$y_extra) > 0L) {
@@ -177,6 +234,49 @@ join_cols2 <- function(
   if (!keep) {
     y_loc <- y_loc[!y_names %in% by$y]
   }
+  list(x = list(key = x_by, out = x_loc), y = list(
+    key = y_by,
+    out = y_loc
+  ))
+}
+
+join_cols2_fuzzy <- function(
+  x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = FALSE,
+  # arg from powerjoin
+  check, equi_keys) {
+  intersect_ <- intersect(x_names, y_names)
+  # original dplyr code
+  #-----------------------------------------------------------------------------
+  #   column_conflict
+  if(!is.na(check[["column_conflict"]]) && length(intersect_)) {
+    fun <- getFromNamespace(check[["implicit_by"]], "rlang")
+    if(check[["column_conflict"]] == "abort") {
+      msg <- paste("The following columns are ambiguous: ", toString(intersect_))
+      abort(msg)
+    } else {
+      msg <- paste(
+        "The following columns are ambiguous and will be prefixed: ",
+        toString(intersect_))
+      fun(msg)
+    }
+  }
+  #-----------------------------------------------------------------------------
+  # original dplyr code
+  suffix <- standardise_join_suffix(suffix)
+  x_by <- set_names(match(by$x, x_names), by$x)
+  y_by <- set_names(match(by$y, y_names), by$y)
+  x_loc <- seq_along(x_names)
+  names(x_loc) <- x_names
+  y_loc <- seq_along(y_names)
+  # remove equi keys
+  ind <- ! y_names %in% equi_keys
+  y_loc <- y_loc[ind]
+  y_names <- y_names[ind]
+
+
+  names(x_loc) <- add_suffixes(x_names, y_names, suffix$x)
+  names(y_loc) <- add_suffixes(y_names, x_names, suffix$y)
+
   list(x = list(key = x_by, out = x_loc), y = list(
     key = y_by,
     out = y_loc

@@ -17,7 +17,7 @@ power_left_join(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fuzzy = NULL
+  fill = NULL
 )
 
 power_right_join(
@@ -30,7 +30,7 @@ power_right_join(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fuzzy = NULL
+  fill = NULL
 )
 
 power_inner_join(
@@ -43,7 +43,7 @@ power_inner_join(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fuzzy = NULL
+  fill = NULL
 )
 
 power_full_join(
@@ -56,7 +56,7 @@ power_full_join(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fuzzy = NULL
+  fill = NULL
 )
 }
 \arguments{
@@ -109,8 +109,6 @@ joins for database sources, similarly to \code{merge(incomparables = FALSE)}.}
 \item{check}{A list created with \code{pj_check()}}
 
 \item{conflict}{WIP}
-
-\item{fuzzy}{WIP}
 }
 \description{
 Power joins

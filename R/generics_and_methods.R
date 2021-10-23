@@ -7,15 +7,13 @@
 #' @inheritParams dplyr::left_join
 #' @param check A list created with `pj_check()`
 #' @param conflict WIP
-#' @param fuzzy WIP
 #' @export
 power_left_join <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
   UseMethod("power_left_join")
 }
 
@@ -26,15 +24,14 @@ power_left_join.data.frame <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
 
   if(is_bare_list(y)) {
     x <- list(x)
     res <- power_left_join.list(
       x, y, by, copy, type, suffix, keep, na_matches,
       # powerjoin args
-      check, conflict, fill, fuzzy
+      check, conflict, fill
     )
     return(res)
   }
@@ -43,7 +40,7 @@ power_left_join.data.frame <- function(
               by = by, copy = copy, type = "left", suffix = suffix,
               na_matches = na_matches, keep = keep,
               # powerjoin args
-              check = check, conflict = conflict, fill = fill, fuzzy = fuzzy
+              check = check, conflict = conflict, fill = fill
   )
 }
 
@@ -53,8 +50,7 @@ power_left_join.list <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
 
   if(!is.null(y) &&!is_bare_list(y)) {
     y <- list(y)
@@ -64,7 +60,7 @@ power_left_join.list <- function(
   Reduce(function(x,y) power_left_join(
     x, y, by, copy, type, suffix, keep, na_matches,
     # powerjoin args
-    check, conflict, fill, fuzzy
+    check, conflict, fill
   ), c(x,y))
 }
 
@@ -79,8 +75,7 @@ power_right_join <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
   UseMethod("power_right_join")
 }
 
@@ -91,15 +86,14 @@ power_right_join.data.frame <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
 
   if(is_bare_list(y)) {
     x <- list(x)
     res <- power_right_join.list(
       x, y, by, copy, type, suffix, keep, na_matches,
       # powerjoin args
-      check, conflict, fill, fuzzy
+      check, conflict, fill
     )
     return(res)
   }
@@ -108,7 +102,7 @@ power_right_join.data.frame <- function(
               by = by, copy = copy, type = "right", suffix = suffix,
               na_matches = na_matches, keep = keep,
               # powerjoin args
-              check = check, conflict = conflict, fill = fill, fuzzy = fuzzy
+              check = check, conflict = conflict, fill = fill
   )
 }
 
@@ -118,8 +112,7 @@ power_right_join.list <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
 
   if(!is.null(y) &&!is_bare_list(y)) {
     y <- list(y)
@@ -129,7 +122,7 @@ power_right_join.list <- function(
   Reduce(function(x,y) power_right_join(
     x, y, by, copy, type, suffix, keep, na_matches,
     # powerjoin args
-    check, conflict, fill, fuzzy
+    check, conflict, fill
   ), c(x,y))
 }
 
@@ -144,8 +137,7 @@ power_inner_join <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
   UseMethod("power_inner_join")
 }
 
@@ -156,15 +148,14 @@ power_inner_join.data.frame <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill =  NULL,
-  fuzzy = NULL) {
+  fill =  NULL) {
 
   if(is_bare_list(y)) {
     x <- list(x)
     res <- power_inner_join.list(
       x, y, by, copy, type, suffix, keep, na_matches,
       # powerjoin args
-      check, conflict, fill, fuzzy
+      check, conflict, fill
     )
     return(res)
   }
@@ -173,7 +164,7 @@ power_inner_join.data.frame <- function(
               by = by, copy = copy, type = "inner", suffix = suffix,
               na_matches = na_matches, keep = keep,
               # powerjoin args
-              check = check, conflict =conflict, fuzzy = fuzzy
+              check = check, conflict =conflict
   )
 }
 
@@ -183,8 +174,7 @@ power_inner_join.list <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
 
   if(!is.null(y) &&!is_bare_list(y)) {
     y <- list(y)
@@ -194,7 +184,7 @@ power_inner_join.list <- function(
   Reduce(function(x,y) power_inner_join(
     x, y, by, copy, type, suffix, keep, na_matches,
     # powerjoin args
-    check, conflict, fill, fuzzy
+    check, conflict, fill
   ), c(x,y))
 }
 
@@ -209,8 +199,7 @@ power_full_join <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
   UseMethod("power_full_join")
 }
 
@@ -221,15 +210,14 @@ power_full_join.data.frame <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
 
   if(is_bare_list(y)) {
     x <- list(x)
     res <- power_full_join.list(
       x, y, by, copy, type, suffix, keep, na_matches,
       # powerjoin args
-      check, conflict, fill, fuzzy
+      check, conflict, fill
     )
     return(res)
   }
@@ -238,7 +226,7 @@ power_full_join.data.frame <- function(
               by = by, copy = copy, type = "full", suffix = suffix,
               na_matches = na_matches, keep = keep,
               # powerjoin args
-              check = check, conflict = conflict, fill = fill, fuzzy = fuzzy
+              check = check, conflict = conflict, fill = fill
   )
 }
 
@@ -248,8 +236,7 @@ power_full_join.list <- function(
   na_matches = c("na", "never"),
   check = pj_check(),
   conflict = NULL,
-  fill = NULL,
-  fuzzy = NULL) {
+  fill = NULL) {
 
   if(!is.null(y) &&!is_bare_list(y)) {
     y <- list(y)
@@ -259,6 +246,6 @@ power_full_join.list <- function(
   Reduce(function(x,y) power_full_join(
     x, y, by, copy, type, suffix, keep, na_matches,
     # powerjoin args
-    check, conflict, fill, fuzzy
+    check, conflict, fill
   ), c(x,y))
 }
