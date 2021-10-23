@@ -25,171 +25,230 @@ has a suboptimal interface and implementation.
 
 The {dplyr} team is credited since a lot of code is taken from {dplyr} directly.
 
+We'll see below how to :
+
+* Make your joins safer with the `check` argument and the `check_specs()`function
+* Preprocess input, for instance to select columns to join without having to repeat
+join columns in the selection
+* Deal with conflicting column names by combining, coalescing them etc using the `conflict` argument
+* Do painless unequi-joins thanks to a generalized `by` argument accepting formulas
+* fill unmatched values using the `fill` argument
+* operate recursive joins by providing lists of data frames to `x` and `y`
+
 ## Installation
 
+Install with:
 ``` r
 remotes::install_github("moodymudskipper/powerjoin")
 ```
 
-## Safe joins
+## Now let's match penguins
 
-The `check` argument  receives a list provided by `pj_check()`, whose argument
+```{r}
+library(powerjoin)
+library(tidyverse)
+
+male_penguins <- tribble(
+     ~name,    ~species,     ~island, ~flipper_length_mm, ~body_mass_g,
+ "Giordan",    "Gentoo",    "Biscoe",               222L,        5250L,
+  "Lynden",    "Adelie", "Torgersen",               190L,        3900L,
+#  "Tyrence",    "Gentoo",    "Biscoe",               218L,        5700L,
+# "Sigfredo", "Chinstrap",     "Dream",               203L,        4050L,
+  "Reiner",    "Adelie",     "Dream",               185L,        3650L
+)
+
+female_penguins <- tribble(
+     ~name,    ~species,  ~island, ~flipper_length_mm, ~body_mass_g,
+  "Alonda",    "Gentoo", "Biscoe",               211,        4500L,
+     "Ola",    "Adelie",  "Dream",               190,        3600L,
+"Mishayla",    "Gentoo", "Biscoe",               215,        4750L,
+# "Casimira", "Chinstrap",  "Dream",               187,        3350L,
+#  "Damesha", "Chinstrap",  "Dream",               198,        3675L
+)
+```
+
+# Make your joins safer
+
+The `check` argument receives a list provided by `check_specs()`, whose arguments
 can be :
 
-* NA : stay silent (default except for `implicit_by`)
+* NA : stay silent (default except for `implicit_keys`)
 * "inform"
 * "warn"
 * "abort"
 
-```{r, error = TRUE}
-library(powerjoin)
-library(dplyr, warn.conflicts = FALSE)
+```{r}
+check_specs(column_conflict = "abort", duplicate_keys_right = "warn")
+```
 
-#-------------------------------------------------------------------------------
-# works like {dplyr} by default 
+By default it works like {dplyr}, informing in case of implicit keys, and no
+further checks :
+
+```{r, error = TRUE}
+power_inner_join(
+  male_penguins[2:3], 
+  female_penguins[2:3])
+```
+
+We can silence the implicit key detection and check that we have unique keys in
+the right table
+
+```{r, error = TRUE}
+power_inner_join(
+  male_penguins[2:3], 
+  female_penguins[2:3],
+  check = check_specs(implicit_keys = NA, duplicate_keys_right = "abort"))
+```
+
+The `column_conflict` guarantees that you won't have columns renamed without you
+knowing, you might need it most of the time, we could setup some development and
+production specs for our most common joins:
+
+```{r}
+dev_specs <- check_specs(
+  column_conflict = "abort", 
+  inconsistent_factor_levels = "inform",
+  inconsistent_type = "inform")
+
+prod_specs <- check_specs(
+  column_conflict = "abort", 
+  implicit_keys = "abort")
+```
+
+This will save some typing :
+
+```{r, error = TRUE}
 power_left_join(
-  band_members, 
-  band_instruments)
-#-------------------------------------------------------------------------------
-# silence the implicit join
-power_left_join(
-  band_members, 
-  band_instruments, 
-  check = pj_check(implicit_by = NA))
-#-------------------------------------------------------------------------------
-# fail unless explicit `by`
-power_left_join(
-  band_members, 
-  band_instruments, 
-  check = pj_check(implicit_by = "abort"))
-#-------------------------------------------------------------------------------
-# fail if column conflict
-power_left_join(
-  band_members, 
-  band_members,
-  by = "name",
-  check = pj_check(column_conflict = "abort")
-)
-#-------------------------------------------------------------------------------
-# fail if duplicate keys in the left table
-power_left_join(
-  bind_rows(band_members, band_members[1:2,]), 
-  band_instruments,
-  by = "name",
-  check = pj_check(duplicate_keys_left = "abort")
-)
-#-------------------------------------------------------------------------------
-# fail if unmatched keys in the left table
-power_left_join(
-  band_members, 
-  band_instruments,
-  by = "name",
-  check = pj_check(unmatched_keys_left = "abort")
-)
-#-------------------------------------------------------------------------------
-# fail if missing keys combination in the left table
-power_left_join(
-  band_members, 
-  band_members,
-  check = pj_check(missing_key_combination_left = "abort")
-)
-#-------------------------------------------------------------------------------
-# fail if inconsistent factor levels
-power_left_join(
-  band_members %>% mutate(name = factor(name)), 
-  band_instruments %>% mutate(name = factor(name)), 
-  check = pj_check(inconsistent_factor_levels = "abort")
-)
-#-------------------------------------------------------------------------------
-# fail if inconsistent type
-power_left_join(
-  band_members %>% mutate(name = factor(name)), 
-  band_instruments, 
-  check = pj_check(inconsistent_type = "abort")
-)
+  male_penguins, 
+  female_penguins,
+  by = c("species", "island"),
+  check = dev_specs)
 ```
 
 ## Preprocessing inputs
 
 Traditionally key columns need to be repeated when preprocessing inputs 
-before a join, we offer a way around this.
-
-compare the following versions of {dplyr} joins vs {powerjoin}
+before a join, which is an annoyance and an opportunity for mistakes.
 
 ```{r}
-library(dplyr, warn.conflicts = FALSE)
-
-#-------------------------------------------------------------------------------
-x <- tibble(Species = "setosa", Sepal.Length = 5.1)
-
-# with {dplyr}, select key columns + columns to join
 left_join(
-  x,
-  iris %>% select(Species, Sepal.Length, Petal.Length)
+  male_penguins %>% select(species, island, name),
+  female_penguins %>% select(species, island, female_name = name),
+  by = c("species", "island")
 )
+```
 
+We offer a way around this :
 
-#-------------------------------------------------------------------------------
-# with {powerjoin}, only select columns to join
+```{r}
 power_left_join(
-  x,
-  iris %>% select_keys_and(Petal.Length)
+  male_penguins %>% select_keys_and(name),
+  female_penguins %>% select_keys_and(female_name = name),
+  by = c("species", "island")
 )
+```
 
-#-------------------------------------------------------------------------------
-x <- tibble(Species = c("setosa", "virginica"))
+We could also aggregate on keys before the join, without the need for any
+`group_by()`/`ungroup()` gymnastics :
 
-# with {dplyr}, group by key columns first then summarize
-left_join(
-  x,
-  iris %>% group_by(Species) %>% summarize(Sepal.Length = mean(Sepal.Length), .groups = "drop")
-)
-
-
-#-------------------------------------------------------------------------------
-# with {powerjoin}, summrize by key columns right away 
+```{r}
 power_left_join(
-  x,
-  iris %>% summarize_by_keys(Sepal.Length = mean(Sepal.Length))
+  male_penguins %>% summarize_by_keys(male_weight = mean(body_mass_g)),
+  female_penguins %>% summarize_by_keys(female_weight = mean(body_mass_g)),
+  by = c("species", "island")
+)
+```
+
+`pack_along_keys()` packs given columns, or all non key columns by default, into
+a data frame column named by the `name` argument, it's useful to namespace the
+data and avoid conflicts
+
+```{r}
+power_left_join(
+  male_penguins %>% pack_along_keys(),
+  female_penguins %>% pack_along_keys(),
+  by = c("species", "island")
 )
 ```
 
 We have more of these, all variants of tidyverse functions :
 
 * `nest_by_keys()` nests given columns, or all by default, if `name` is given
-a sinle list column of data frames is created. 
-* `pack_along_keys()` packs given columns, or all non key columns by default, into
-a a data frame column named by the `name` argument, it's useful to namespace the
-data and avoid conflicts
+a single list column of data frames is created. 
 * `pivot_wider_by_keys()` and `pivot_longer_by_keys()` assume the "id" columns are the keys
+
+These functions do not modify the data but add an attribute that will be processed
+by the function later on, so no function should be used on top of them.
 
 ## Handle column conflict
 
 To resolve conflicts between identically named join columns, set the `conflict`
-argument to a 2 argument function that will take as arguments the 2 conflicting 
+argument to a 2 argument function (or formula) that will take as arguments the 2 conflicting 
 joined columns after the join.
-
-coalescing is the most common use case but the feature is flexible
 
 ```{r}
 df1 <- tibble(id = 1:3, value = c(10, NA, 30))
 df2 <- tibble(id = 2:4, value = c(22, 32, 42))
 
-#-------------------------------------------------------------------------------
-# no conflict handling
-power_left_join(df1, df2, by = "id")
+power_left_join(df1, df2, by = "id", conflict = `+`)
+```
+ 
+coalescing is the most common use case and we have some special values for it:
 
-#-------------------------------------------------------------------------------
-# coalescing conflicting cols
-power_left_join(df1, df2, by = "id", conflict = dplyr::coalesce)
+```{r}
+power_left_join(df1, df2, by = "id", conflict = "coalesce_xy")
 
+power_left_join(df1, df2, by = "id", conflict = "coalesce_yx")
+```
 
-#-------------------------------------------------------------------------------
-# we are operating on vectors by default, not row wise!
+Note that the function is operating on vectors by default, not row wise, however
+we can make it work rowwise by using `rw` in the lhs of the formula.
+
+```{r}
 power_left_join(df1, df2, by = "id", conflict = ~ sum(.x, .y, na.rm = TRUE))
 
-
-#-------------------------------------------------------------------------------
-# for row wise operations, type `rw` on the left side of the formula
 power_left_join(df1, df2, by = "id", conflict = rw ~ sum(.x, .y, na.rm = TRUE))
 ```
+
+If you need finer control, `conflict` can also be a named list of such functions,
+formulas or special values, each to be applied on the relevant pair of conflicted
+columns.
+
+# fuzzy joins
+
+{powerjoin} builds on David Robinson's {fuzzyjoin} package's
+main features with the dual goal to simplify the syntax and add to these operations
+the other benefits of {powerjoin}.
+
+```{r}
+power_inner_join(
+    male_penguins %>% select_keys_and(name),
+    female_penguins %>% select_keys_and(name),
+    by = c(~.x$flipper_length_mm < .y$flipper_length_mm & .x$body_mass_g > .y$body_mass_g)
+)
+```
+We might provide different conditions and they'll be joined with `&`, we might also
+mix fuzzy joins with regular equi joins :
+
+```{r}
+power_inner_join(
+    male_penguins %>% select_keys_and(name),
+    female_penguins %>% select_keys_and(name),
+    by = c("island", ~.x$flipper_length_mm > .y$flipper_length_mm)
+)
+```
+
+Finally we might want to create a column with a value used in the comparison,
+in that case we will use `<-` in the formula (several times if needed):
+
+```{r}
+power_inner_join(
+    male_penguins %>% select_keys_and(name),
+    female_penguins %>% select_keys_and(name),
+    by = ~ (mass_ratio <- .y$body_mass_g / .x$body_mass_g) > 1.2
+)
+```
+
+
+
+
