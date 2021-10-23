@@ -5,13 +5,13 @@
 #' Power joins
 #'
 #' @inheritParams dplyr::left_join
-#' @param check A list created with `pj_check()`
+#' @param check A list created with `check_specs()`
 #' @param conflict WIP
 #' @export
 power_left_join <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
   UseMethod("power_left_join")
@@ -22,7 +22,7 @@ power_left_join <- function(
 power_left_join.data.frame <- function(
   x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
 
@@ -48,7 +48,7 @@ power_left_join.data.frame <- function(
 power_left_join.list <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
 
@@ -73,7 +73,7 @@ power_left_join.list <- function(
 power_right_join <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
   UseMethod("power_right_join")
@@ -84,7 +84,7 @@ power_right_join <- function(
 power_right_join.data.frame <- function(
   x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
 
@@ -110,7 +110,7 @@ power_right_join.data.frame <- function(
 power_right_join.list <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
 
@@ -135,7 +135,7 @@ power_right_join.list <- function(
 power_inner_join <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
   UseMethod("power_inner_join")
@@ -146,7 +146,7 @@ power_inner_join <- function(
 power_inner_join.data.frame <- function(
   x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill =  NULL) {
 
@@ -172,7 +172,7 @@ power_inner_join.data.frame <- function(
 power_inner_join.list <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
 
@@ -197,7 +197,7 @@ power_inner_join.list <- function(
 power_full_join <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
   UseMethod("power_full_join")
@@ -208,7 +208,7 @@ power_full_join <- function(
 power_full_join.data.frame <- function(
   x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
 
@@ -234,7 +234,7 @@ power_full_join.data.frame <- function(
 power_full_join.list <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
 

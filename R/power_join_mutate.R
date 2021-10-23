@@ -4,7 +4,7 @@ join_mutate <- function(
   x, y, by, copy, type, suffix = c(".x", ".y"), na_matches = c("na", "never"),
   keep = FALSE,
   # powerjoin args
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL) {
   #-----------------------------------------------------------------------------

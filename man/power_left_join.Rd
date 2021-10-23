@@ -15,7 +15,7 @@ power_left_join(
   suffix = c(".x", ".y"),
   keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL
 )
@@ -28,7 +28,7 @@ power_right_join(
   suffix = c(".x", ".y"),
   keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL
 )
@@ -41,7 +41,7 @@ power_inner_join(
   suffix = c(".x", ".y"),
   keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL
 )
@@ -54,7 +54,7 @@ power_full_join(
   suffix = c(".x", ".y"),
   keep = FALSE,
   na_matches = c("na", "never"),
-  check = pj_check(),
+  check = check_specs(),
   conflict = NULL,
   fill = NULL
 )
@@ -106,7 +106,7 @@ The default, \code{"na"}, treats two \code{NA} or \code{NaN} values as equal, li
 Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as different, like
 joins for database sources, similarly to \code{merge(incomparables = FALSE)}.}
 
-\item{check}{A list created with \code{pj_check()}}
+\item{check}{A list created with \code{check_specs()}}
 
 \item{conflict}{WIP}
 }

@@ -52,6 +52,7 @@ Imports:
     magrittr,
     lifecycle,
     tibble,
-    tidyr
+    tidyr,
+    cli
 URL: https://github.com/moodymudskipper/powerjoin
 BugReports: https://github.com/moodymudskipper/powerjoin/issues

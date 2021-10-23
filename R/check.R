@@ -12,7 +12,7 @@
 #' @param inconsistent_type WIP
 #'
 #' @export
-pj_check <- function(
+check_specs <- function(
   implicit_by = c("inform", NA, "warn", "abort"), #
   column_conflict = c(NA, "inform", "warn", "abort"),
   duplicate_keys_left = c(NA, "inform", "warn", "abort"),
@@ -34,13 +34,55 @@ pj_check <- function(
   missing_key_combination_right <- match.arg(as.character(missing_key_combination_right), missing_key_combination_right)
   inconsistent_factor_levels <- match.arg(as.character(inconsistent_factor_levels), inconsistent_factor_levels)
   inconsistent_type <- match.arg(as.character(inconsistent_type), inconsistent_type)
-  dplyr::lst(
-    implicit_by, column_conflict,
-    duplicate_keys_left, duplicate_keys_right,
-    unmatched_keys_left, unmatched_keys_right,
-    missing_key_combination_left, missing_key_combination_right,
-    inconsistent_factor_levels, inconsistent_type)
+  res <- c(
+    implicit_by = implicit_by,
+    column_conflict = column_conflict,
+    duplicate_keys_left = duplicate_keys_left,
+    duplicate_keys_right = duplicate_keys_right,
+    unmatched_keys_left = unmatched_keys_left,
+    unmatched_keys_right = unmatched_keys_right,
+    missing_key_combination_left = missing_key_combination_left,
+    missing_key_combination_right = missing_key_combination_right,
+    inconsistent_factor_levels = inconsistent_factor_levels,
+    inconsistent_type = inconsistent_type)
+  class(res) <- "powerjoin_check"
+  res
 }
+
+#' @export
+always_inform <- check_specs(
+  implicit_by = "inform",
+  column_conflict = "inform",
+  duplicate_keys_left = "inform",
+  duplicate_keys_right = "inform",
+  unmatched_keys_left =  "inform",
+  unmatched_keys_right = "inform",
+  missing_key_combination_left = "inform",
+  missing_key_combination_right = "inform",
+  inconsistent_factor_levels = "inform",
+  inconsistent_type = "inform")
+
+#' @export
+print.powerjoin_check <- function(x, ...) {
+  mapper <- c(inform = "i", warn = "!", abort = "x")
+  icons <- mapper[x]
+  icons[is.na(icons)] <- ">"
+  conflicts <- names(x)
+  conflicts[icons == ">"] <- cli::col_grey(cli::style_italic(conflicts[icons == ">"]))
+  conflicts[icons == "i"] <- cli::col_blue(conflicts[icons == "x"])
+  conflicts[icons == "x"] <- cli::col_red(conflicts[icons == "x"])
+  conflicts[icons == "!"] <- cli::col_yellow(conflicts[icons == "!"])
+  writeLines(cli::col_grey("# powerjoin check specifications"))
+  writeLines(rlang::format_error_bullets(setNames(conflicts, icons)))
+  invisible(x)
+}
+
+#' @export
+c.powerjoin_check <- function(...) {
+  dplyr::coalesce(!!!rev(list(...)))
+}
+
+
 
 check_duplicate_keys_left <- function(x, by, check) {
   if(!is.na(check[["duplicate_keys_left"]]) &&
