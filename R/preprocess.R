@@ -79,7 +79,17 @@ preprocess <- function(.data, by) {
   if(is.null(attr_)) return(.data)
 
   if(attr_$type == "select_keys_and") {
-    .data <- select(.data, !!by, !!!attr_$args)
+    # ugly but not sure there's much better
+    # if first arg is negative we should start with negative in select too
+    # we select `by` as well to be sure they're not removed
+    if(length(attr_$args) &&
+       is.call(rlang::quo_squash(attr_$args[[1]])) &&
+       identical(quo_squash(attr_$args[[1]])[[1]], quote(`-`))) {
+      .data <- select(.data, !!!attr_$args, !!by)
+    } else {
+      .data <- select(.data, !!by, !!!attr_$args)
+    }
+
     return(.data)
   }
 
