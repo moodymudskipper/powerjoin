@@ -157,3 +157,24 @@ err_vars <- function (x)
     " and "
     else ", and ")
 }
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# err_vars (copied from dplyr:::friendly_type_of)
+# from dplyr 1.0.7
+friendly_type_of <- function (x)
+{
+  if (is.object(x)) {
+    sprintf("a `%s` object", fmt_classes(x))
+  }
+  else {
+    as_friendly_type(typeof(x))
+  }
+}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# err_vars (copied from dplyr:::fmt_classes)
+# from dplyr 1.0.7
+fmt_classes <- function (x)
+{
+  paste(class(x), collapse = "/")
+}
