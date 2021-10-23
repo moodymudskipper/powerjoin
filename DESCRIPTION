@@ -47,6 +47,11 @@ Imports:
     rlang,
     tidyselect,
     vctrs,
-    glue
+    glue,
+    purrr,
+    magrittr,
+    lifecycle,
+    tibble,
+    tidyr
 URL: https://github.com/moodymudskipper/powerjoin
 BugReports: https://github.com/moodymudskipper/powerjoin/issues
