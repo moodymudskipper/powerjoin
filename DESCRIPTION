@@ -56,3 +56,6 @@ Imports:
     cli
 URL: https://github.com/moodymudskipper/powerjoin
 BugReports: https://github.com/moodymudskipper/powerjoin/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
