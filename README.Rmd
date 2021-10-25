@@ -12,6 +12,7 @@ knitr::opts_chunk$set(
   out.width = "100%",
   tidy.opts = list(blank = FALSE)
 )
+options(tidyverse.quiet = TRUE)
 ```
 
 # powerjoin
@@ -48,12 +49,13 @@ remotes::install_github("moodymudskipper/powerjoin")
 library(powerjoin)
 library(tidyverse)
 
+# toy dataset built from Allison Horst's {palmerpenguins} package and 
+# Hadlew Wickham's {babynames}
+
 male_penguins <- tribble(
      ~name,    ~species,     ~island, ~flipper_length_mm, ~body_mass_g,
  "Giordan",    "Gentoo",    "Biscoe",               222L,        5250L,
   "Lynden",    "Adelie", "Torgersen",               190L,        3900L,
-#  "Tyrence",    "Gentoo",    "Biscoe",               218L,        5700L,
-# "Sigfredo", "Chinstrap",     "Dream",               203L,        4050L,
   "Reiner",    "Adelie",     "Dream",               185L,        3650L
 )
 
@@ -62,8 +64,6 @@ female_penguins <- tribble(
   "Alonda",    "Gentoo", "Biscoe",               211,        4500L,
      "Ola",    "Adelie",  "Dream",               190,        3600L,
 "Mishayla",    "Gentoo", "Biscoe",               215,        4750L,
-# "Casimira", "Chinstrap",  "Dream",               187,        3350L,
-#  "Damesha", "Chinstrap",  "Dream",               198,        3675L
 )
 ```
 
@@ -72,10 +72,10 @@ female_penguins <- tribble(
 The `check` argument receives a list provided by `check_specs()`, whose arguments
 can be :
 
-* NA : stay silent (default except for `implicit_keys`)
-* "inform"
-* "warn"
-* "abort"
+* `NA` : stay silent (default except for `implicit_keys`)
+* `"inform"`
+* `"warn"`
+* `"abort"`
 
 ```{r}
 check_specs(column_conflict = "abort", duplicate_keys_right = "warn")
@@ -100,7 +100,7 @@ power_inner_join(
   check = check_specs(implicit_keys = NA, duplicate_keys_right = "abort"))
 ```
 
-The `column_conflict` guarantees that you won't have columns renamed without you
+The `column_conflict` argument guarantees that you won't have columns renamed without you
 knowing, you might need it most of the time, we could setup some development and
 production specs for our most common joins:
 
@@ -117,12 +117,17 @@ prod_specs <- check_specs(
 
 This will save some typing :
 
-```{r, error = TRUE}
-power_left_join(
+<!-- For some reason this chunk makes markdown bug, so dirty fix -->
+
+```{r, error = TRUE, eval = FALSE}
+power_inner_join(
   male_penguins, 
   female_penguins,
   by = c("species", "island"),
   check = dev_specs)
+#> Error in `join_cols()` at powerjoin/R/power_join_mutate.R:95:4: 
+#> The following columns are ambiguous:  name, flipper_length_mm, body_mass_g
+#> Run `rlang::last_error()` to see where the error occurred.
 ```
 
 ## Preprocessing inputs
@@ -131,7 +136,7 @@ Traditionally key columns need to be repeated when preprocessing inputs
 before a join, which is an annoyance and an opportunity for mistakes.
 
 ```{r}
-left_join(
+inner_join(
   male_penguins %>% select(species, island, name),
   female_penguins %>% select(species, island, female_name = name),
   by = c("species", "island")
@@ -141,9 +146,19 @@ left_join(
 We offer a way around this :
 
 ```{r}
-power_left_join(
+power_inner_join(
   male_penguins %>% select_keys_and(name),
   female_penguins %>% select_keys_and(female_name = name),
+  by = c("species", "island")
+)
+```
+
+For semi joins, just omit arguments : 
+
+```{r}
+power_inner_join(
+  male_penguins,
+  female_penguins %>% select_keys_and(),
   by = c("species", "island")
 )
 ```

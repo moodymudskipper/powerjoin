@@ -5,7 +5,7 @@
 \title{Build a checklist for power joins}
 \usage{
 check_specs(
-  implicit_by = c("inform", NA, "warn", "abort"),
+  implicit_keys = c("inform", NA, "warn", "abort"),
   column_conflict = c(NA, "inform", "warn", "abort"),
   duplicate_keys_left = c(NA, "inform", "warn", "abort"),
   duplicate_keys_right = c(NA, "inform", "warn", "abort"),
@@ -18,7 +18,7 @@ check_specs(
 )
 }
 \arguments{
-\item{implicit_by}{WIP}
+\item{implicit_keys}{WIP}
 
 \item{column_conflict}{WIP}
 

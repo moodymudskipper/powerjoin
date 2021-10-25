@@ -40,20 +40,14 @@ remotes::install_github("moodymudskipper/powerjoin")
 ``` r
 library(powerjoin)
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
-#> ✓ ggplot2 3.3.5     ✓ purrr   0.3.4
-#> ✓ tibble  3.1.5     ✓ dplyr   1.0.7
-#> ✓ tidyr   1.1.3     ✓ stringr 1.4.0
-#> ✓ readr   2.0.1     ✓ forcats 0.5.1
-#> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-#> x dplyr::filter() masks stats::filter()
-#> x dplyr::lag()    masks stats::lag()
+
+# toy dataset built from Allison Horst's {palmerpenguins} package and 
+# Hadlew Wickham's {babynames}
+
 male_penguins <- tribble(
      ~name,    ~species,     ~island, ~flipper_length_mm, ~body_mass_g,
  "Giordan",    "Gentoo",    "Biscoe",               222L,        5250L,
   "Lynden",    "Adelie", "Torgersen",               190L,        3900L,
-#  "Tyrence",    "Gentoo",    "Biscoe",               218L,        5700L,
-# "Sigfredo", "Chinstrap",     "Dream",               203L,        4050L,
   "Reiner",    "Adelie",     "Dream",               185L,        3650L
 )
 
@@ -62,8 +56,6 @@ female_penguins <- tribble(
   "Alonda",    "Gentoo", "Biscoe",               211,        4500L,
      "Ola",    "Adelie",  "Dream",               190,        3600L,
 "Mishayla",    "Gentoo", "Biscoe",               215,        4750L,
-# "Casimira", "Chinstrap",  "Dream",               187,        3350L,
-#  "Damesha", "Chinstrap",  "Dream",               198,        3675L
 )
 ```
 
@@ -72,10 +64,10 @@ female_penguins <- tribble(
 The `check` argument receives a list provided by `check_specs()`, whose
 arguments can be :
 
--   NA : stay silent (default except for `implicit_keys`)
--   “inform”
--   “warn”
--   “abort”
+-   `NA` : stay silent (default except for `implicit_keys`)
+-   `"inform"`
+-   `"warn"`
+-   `"abort"`
 
 ``` r
 check_specs(column_conflict = "abort", duplicate_keys_right = "warn")
@@ -123,9 +115,10 @@ power_inner_join(
 #> 1 Gentoo  Biscoe
 ```
 
-The `column_conflict` guarantees that you won’t have columns renamed
-without you knowing, you might need it most of the time, we could setup
-some development and production specs for our most common joins:
+The `column_conflict` argument guarantees that you won’t have columns
+renamed without you knowing, you might need it most of the time, we
+could setup some development and production specs for our most common
+joins:
 
 ``` r
 dev_specs <- check_specs(
@@ -140,54 +133,68 @@ prod_specs <- check_specs(
 
 This will save some typing :
 
+<!-- For some reason this chunk makes markdown bug, so dirty fix -->
+
 ``` r
-power_left_join(
+power_inner_join(
   male_penguins, 
   female_penguins,
   by = c("species", "island"),
   check = dev_specs)
-#> ```
+#> Error in `join_cols()` at powerjoin/R/power_join_mutate.R:95:4: 
+#> The following columns are ambiguous:  name, flipper_length_mm, body_mass_g
+#> Run `rlang::last_error()` to see where the error occurred.
 ```
 
-\#&gt; Error: The following columns are ambiguous: name,
-flipper\_length\_mm, body\_mass\_g
+## Preprocessing inputs
 
+Traditionally key columns need to be repeated when preprocessing inputs
+before a join, which is an annoyance and an opportunity for mistakes.
 
-    ## Preprocessing inputs
-
-    Traditionally key columns need to be repeated when preprocessing inputs 
-    before a join, which is an annoyance and an opportunity for mistakes.
-
-
-    ```r
-    left_join(
-      male_penguins %>% select(species, island, name),
-      female_penguins %>% select(species, island, female_name = name),
-      by = c("species", "island")
-    )
-    #> # A tibble: 4 × 4
-    #>   species island    name    female_name
-    #>   <chr>   <chr>     <chr>   <chr>      
-    #> 1 Gentoo  Biscoe    Giordan Alonda     
-    #> 2 Gentoo  Biscoe    Giordan Mishayla   
-    #> 3 Adelie  Torgersen Lynden  <NA>       
-    #> 4 Adelie  Dream     Reiner  Ola
+``` r
+inner_join(
+  male_penguins %>% select(species, island, name),
+  female_penguins %>% select(species, island, female_name = name),
+  by = c("species", "island")
+)
+#> # A tibble: 3 × 4
+#>   species island name    female_name
+#>   <chr>   <chr>  <chr>   <chr>      
+#> 1 Gentoo  Biscoe Giordan Alonda     
+#> 2 Gentoo  Biscoe Giordan Mishayla   
+#> 3 Adelie  Dream  Reiner  Ola
+```
 
 We offer a way around this :
 
 ``` r
-power_left_join(
+power_inner_join(
   male_penguins %>% select_keys_and(name),
   female_penguins %>% select_keys_and(female_name = name),
   by = c("species", "island")
 )
-#> # A tibble: 4 × 4
-#>   species island    name    female_name
-#>   <chr>   <chr>     <chr>   <chr>      
-#> 1 Gentoo  Biscoe    Giordan Alonda     
-#> 2 Gentoo  Biscoe    Giordan Mishayla   
-#> 3 Adelie  Torgersen Lynden  <NA>       
-#> 4 Adelie  Dream     Reiner  Ola
+#> # A tibble: 3 × 4
+#>   species island name    female_name
+#>   <chr>   <chr>  <chr>   <chr>      
+#> 1 Gentoo  Biscoe Giordan Alonda     
+#> 2 Gentoo  Biscoe Giordan Mishayla   
+#> 3 Adelie  Dream  Reiner  Ola
+```
+
+For semi joins, just omit arguments :
+
+``` r
+power_inner_join(
+  male_penguins,
+  female_penguins %>% select_keys_and(),
+  by = c("species", "island")
+)
+#> # A tibble: 3 × 5
+#>   name    species island flipper_length_mm body_mass_g
+#>   <chr>   <chr>   <chr>              <int>       <int>
+#> 1 Giordan Gentoo  Biscoe               222        5250
+#> 2 Giordan Gentoo  Biscoe               222        5250
+#> 3 Reiner  Adelie  Dream                185        3650
 ```
 
 We could also aggregate on keys before the join, without the need for
