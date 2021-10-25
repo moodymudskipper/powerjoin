@@ -51,20 +51,20 @@ join_rows_fuzzy <- function(x, y, by, multi_match_fun, mode = "left") {
   number_y_rows <- nrow(y)
 
   indices_x <- x %>%
-    dplyr::select_at(by$x) %>%
-    dplyr::mutate(indices = seq_len(number_x_rows)) %>%
-    dplyr::group_by_at(dplyr::vars(-dplyr::one_of("indices"))) %>%
+    select_at(by$x) %>%
+    mutate(indices = seq_len(number_x_rows)) %>%
+    group_by_at(vars(-one_of("indices"))) %>%
     tidyr::nest() %>%
-    dplyr::mutate(indices = purrr::map(data, "indices")) %>%
+    mutate(indices = purrr::map(data, "indices")) %>%
     ungroup()
 
   indices_y <- y %>%
-    dplyr::select_at(by$y) %>%
-    dplyr::mutate(indices = seq_len(number_y_rows)) %>%
-    dplyr::group_by_at(dplyr::vars(-dplyr::one_of("indices"))) %>%
+    select_at(by$y) %>%
+    mutate(indices = seq_len(number_y_rows)) %>%
+    group_by_at(vars(-one_of("indices"))) %>%
     tidyr::nest() %>%
-    dplyr::mutate(indices = purrr::map(data, "indices")) %>%
-    dplyr::ungroup()
+    mutate(indices = purrr::map(data, "indices")) %>%
+    ungroup()
 
   ux <- indices_x[by$x]
   uy <- indices_y[by$y]
@@ -88,38 +88,40 @@ join_rows_fuzzy <- function(x, y, by, multi_match_fun, mode = "left") {
   if (sum(m) == 0) {
     # there are no matches
     matches <- tibble::tibble(x = numeric(0), y = numeric(0))
-    return(matches)
-  }
+    matches <- bind_cols(matches, extra_cols[0,, drop = FALSE])
+  } else {
 
-  x_indices_l <- indices_x$indices[ix[m]]
-  y_indices_l <- indices_y$indices[iy[m]]
-  xls <- lengths(x_indices_l)
-  yls <- lengths(y_indices_l)
-  x_rep <- unlist(purrr::map2(x_indices_l, yls, function(x, y) rep(x, each = y)))
-  y_rep <- unlist(purrr::map2(y_indices_l, xls, function(y, x) rep(y, x)))
+    x_indices_l <- indices_x$indices[ix[m]]
+    y_indices_l <- indices_y$indices[iy[m]]
+    xls <- lengths(x_indices_l)
+    yls <- lengths(y_indices_l)
+    x_rep <- unlist(purrr::map2(x_indices_l, yls, function(x, y) rep(x, each = y)))
+    y_rep <- unlist(purrr::map2(y_indices_l, xls, function(y, x) rep(y, x)))
 
-  matches <- tibble::tibble(x = x_rep, y = y_rep)
-  if (!is.null(extra_cols)) {
-    extra_indices <- rep(which(m), xls * yls)
-    extra_cols_rep <- extra_cols[extra_indices, , drop = FALSE]
-    matches <- dplyr::bind_cols(matches, extra_cols_rep)
+    matches <- tibble::tibble(x = x_rep, y = y_rep)
+
+    if (!is.null(extra_cols)) {
+      extra_indices <- rep(which(m), xls * yls)
+      extra_cols_rep <- extra_cols[extra_indices, , drop = FALSE]
+      matches <- bind_cols(matches, extra_cols_rep)
+    }
   }
 
   #-----------------------------------------------------------------------------
-  matches <- dplyr::arrange(matches, x, y)
+  matches <- arrange(matches, x, y)
 
   # fill in indices of the x, y, or both
   # curious if there's a higher performance approach
   if (mode == "left") {
     matches <- tibble::tibble(x = seq_len(number_x_rows)) %>%
-      dplyr::left_join(matches, by = "x")
+      left_join(matches, by = "x")
   } else if (mode == "right") {
     matches <- tibble::tibble(y = seq_len(number_y_rows)) %>%
-      dplyr::left_join(matches, by = "y")
+      left_join(matches, by = "y")
   } else if (mode == "full") {
     matches <- matches %>%
-      dplyr::full_join(tibble::tibble(x = seq_len(number_x_rows)), by = "x") %>%
-      dplyr::full_join(tibble::tibble(y = seq_len(number_y_rows)), by = "y")
+      full_join(tibble::tibble(x = seq_len(number_x_rows)), by = "x") %>%
+      full_join(tibble::tibble(y = seq_len(number_y_rows)), by = "y")
   }
 
   #-----------------------------------------------------------------------------
