@@ -60,21 +60,29 @@ join_mutate <- function(
   check_inconsistent_factor_levels(x, y, by, check)
   check_inconsistent_type(x, y, by, check)
   #-----------------------------------------------------------------------------
+  # dplyr original code
+  na_equal <- check_na_matches(na_matches)
+  x_in <- as_tibble(x, .name_repair = "minimal")
+  y_in <- as_tibble(y, .name_repair = "minimal")
+  #-----------------------------------------------------------------------------
   # here we should check if we have conflicts handled by the conflict arg
   # if so we take out the conflicted variable(s) before this step
   if(!is.null(conflict)) {
-    x_in_vars <- setdiff(names(x), names(by) %||% by)
-    y_in_vars <- setdiff(names(y), by)
+    x_in_vars <- setdiff(names(x), by$x)
+    y_in_vars <- setdiff(names(y), by$y)
     # conflicts with by columns can't be fixed, they'll be handled by `column_conflict` check
     conflicted_cols <- intersect(x_in_vars, y_in_vars)
     if(is.list(conflict)) {
       nms <- names(conflict)
-      if(any(!nms %in% conflicted_cols)) {
-        warn("Some conflict conditions are not used: ...")
+      extra_conflicts <- setdiff(nms, conflicted_cols)
+      if(length(extra_conflicts)) {
+        warn(paste("Some conflict conditions are not used, these columns are not conflicted:",
+                   toString(paste0("'", extra_conflicts, "'"))))
+        conflicted_cols <- intersect(conflicted_cols, nms)
+        conflict = conflict[conflicted_cols]
       }
-      conflicted_cols <- intersect(conflicted_cols, nms)
     }
-    conflicted_data <- list(x = x[conflicted_cols], y = y[conflicted_cols])
+    conflicted_data <- list(x = x_in[conflicted_cols], y = y_in[conflicted_cols])
     x <- x[!names(x) %in% conflicted_cols]
     y <- y[!names(y) %in% conflicted_cols]
   } else {
@@ -99,12 +107,6 @@ join_mutate <- function(
                        check = check
     )
   }
-
-  #-----------------------------------------------------------------------------
-  # dplyr original code
-  na_equal <- check_na_matches(na_matches)
-  x_in <- as_tibble(x, .name_repair = "minimal")
-  y_in <- as_tibble(y, .name_repair = "minimal")
 
   if(fuzzy) {
     x_key <- x_in[by$x]
@@ -167,7 +169,7 @@ join_mutate <- function(
         x_nms <- setdiff(names(out), c(names(y_out), names(y_key)))
         if(is.list(fill)) {
           for (nm in intersect(names(fill), x_nms)) {
-            out[is.na(y_slicer), nm] <- fill[[nm]]
+            out[is.na(x_slicer), nm] <- fill[[nm]]
           }
         } else {
         out[new_rows, x_nms] <- fill
@@ -203,12 +205,13 @@ join_cols <- function(
   if(!is.na(check[["column_conflict"]]) && length(intersect_)) {
     fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
     if(check[["column_conflict"]] == "abort") {
-      msg <- paste("The following columns are ambiguous: ", toString(intersect_))
+      msg <- paste("The following columns are conflicted: ",
+                   toString(paste0("'", intersect_, "'")))
       abort(msg)
     } else {
       msg <- paste(
-        "The following columns are ambiguous and will be prefixed: ",
-        toString(intersect_))
+        "The following columns are conflicted and will be prefixed: ",
+        toString(paste0("'", intersect_, "'")))
       fun(msg)
     }
   }
@@ -251,12 +254,13 @@ join_cols_fuzzy <- function(
   if(!is.na(check[["column_conflict"]]) && length(intersect_)) {
     fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
     if(check[["column_conflict"]] == "abort") {
-      msg <- paste("The following columns are ambiguous: ", toString(intersect_))
+      msg <- paste("The following columns are conflicted: ",
+                   toString(paste0("'", intersect_, "'")))
       abort(msg)
     } else {
       msg <- paste(
-        "The following columns are ambiguous and will be prefixed: ",
-        toString(intersect_))
+        "The following columns are conflicted and will be prefixed: ",
+        toString(paste0("'", intersect_, "'")))
       fun(msg)
     }
   }
@@ -377,21 +381,4 @@ join_rows <- function(x_key, y_key, type = c("inner", "left", "right", "full"),
   }
   list(x = x_loc, y = y_loc, y_extra = y_extra,
        x_unmatched = x_unmatched, y_unmatched = y_unmatched)
-}
-
-
-# Adapted from add_suffixes in dplyr 1.0.7
-add_suffixes <- function(x, y, suffix) {
-  if (identical(suffix, "")) {
-    return(x)
-  }
-  out <- rep_along(x, na_chr)
-  for (i in seq_along(x)) {
-    nm <- x[[i]]
-    while (nm %in% y || nm %in% out[seq_len(i - 1)]) {
-      nm <- paste0(nm, suffix)
-    }
-    out[[i]] <- nm
-  }
-  out
 }

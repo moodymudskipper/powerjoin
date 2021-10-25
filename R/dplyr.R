@@ -1,4 +1,6 @@
 
+#nocov start
+
 # from dplyr 1.0.7
 `glubort` <- function(header, ..., .envir = parent.frame(), .abort = abort) {
   text <- glue(..., .envir = .envir)
@@ -122,7 +124,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # check_na_matches (copied from dplyr:::check_na_matches)
 # from dplyr 1.0.7
-`check_na_matches` <- function(na_matches = c("na", "never")) {
+check_na_matches <- function(na_matches = c("na", "never")) {
   if (isNamespaceLoaded("pkgconfig")) {
     conf <- asNamespace("pkgconfig")$get_config("dplyr::na_matches")
     if (!is.null(conf)) {
@@ -138,7 +140,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # index_flatten (copied from dplyr:::index_flatten)
 # from dplyr 1.0.7
-`index_flatten` <- function(x) {
+index_flatten <- function(x) {
   unlist(x, recursive = FALSE, use.names = FALSE)
 }
 
@@ -159,7 +161,7 @@ err_vars <- function (x)
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# err_vars (copied from dplyr:::friendly_type_of)
+# friendly_type_of (copied from dplyr:::friendly_type_of)
 # from dplyr 1.0.7
 friendly_type_of <- function (x)
 {
@@ -172,9 +174,31 @@ friendly_type_of <- function (x)
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# err_vars (copied from dplyr:::fmt_classes)
+# fmt_classes (copied from dplyr:::fmt_classes)
 # from dplyr 1.0.7
 fmt_classes <- function (x)
 {
   paste(class(x), collapse = "/")
 }
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# add_suffixes (copied from dplyr:::add_suffixes)
+# from dplyr 1.0.7
+add_suffixes <- function (x, y, suffix)
+{
+  if (identical(suffix, "")) {
+    return(x)
+  }
+  out <- rep_along(x, na_chr)
+  for (i in seq_along(x)) {
+    nm <- x[[i]]
+    while (nm %in% y || nm %in% out[seq_len(i - 1)]) {
+      nm <- paste0(nm, suffix)
+    }
+    out[[i]] <- nm
+  }
+  out
+}
+
+#nocov end
+

@@ -1,4 +1,4 @@
-#' @importFrom dplyr group_vars as_tibble dplyr_reconstruct auto_copy same_src n_distinct bind_rows distinct
+#' @import dplyr
 #' @importFrom tidyselect peek_vars matches
 #' @importFrom utils capture.output getFromNamespace
 #' @importFrom glue glue glue_collapse
