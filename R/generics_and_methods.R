@@ -4,6 +4,8 @@
 
 #' Power joins
 #'
+#' @param by As in {dplyr}, but extended so user can supply a formula or a list
+#'  of character and formulas. Formulas are used for fuzzy joins and
 #' @inheritParams dplyr::left_join
 #' @param check A list created with `check_specs()`
 #' @param conflict WIP
