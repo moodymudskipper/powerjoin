@@ -34,7 +34,7 @@ power_left_join.data.frame <- function(
   if(is_bare_list(y)) {
     x <- list(x)
     res <- power_left_join.list(
-      x, y, by, copy, type, suffix, keep, na_matches,
+      x, y, by, copy, suffix, keep, na_matches,
       # powerjoin args
       check, conflict, fill
     )
@@ -63,7 +63,7 @@ power_left_join.list <- function(
   na_matches <- arg_match(na_matches)
 
   Reduce(function(x,y) power_left_join(
-    x, y, by, copy, type, suffix, keep, na_matches,
+    x, y, by, copy, suffix, keep, na_matches,
     # powerjoin args
     check, conflict, fill
   ), c(x,y))
@@ -96,7 +96,7 @@ power_right_join.data.frame <- function(
   if(is_bare_list(y)) {
     x <- list(x)
     res <- power_right_join.list(
-      x, y, by, copy, type, suffix, keep, na_matches,
+      x, y, by, copy, suffix, keep, na_matches,
       # powerjoin args
       check, conflict, fill
     )
@@ -125,7 +125,7 @@ power_right_join.list <- function(
   na_matches <- arg_match(na_matches)
 
   Reduce(function(x,y) power_right_join(
-    x, y, by, copy, type, suffix, keep, na_matches,
+    x, y, by, copy, suffix, keep, na_matches,
     # powerjoin args
     check, conflict, fill
   ), c(x,y))
@@ -158,7 +158,7 @@ power_inner_join.data.frame <- function(
   if(is_bare_list(y)) {
     x <- list(x)
     res <- power_inner_join.list(
-      x, y, by, copy, type, suffix, keep, na_matches,
+      x, y, by, copy, suffix, keep, na_matches,
       # powerjoin args
       check, conflict, fill
     )
@@ -187,7 +187,7 @@ power_inner_join.list <- function(
   na_matches <- arg_match(na_matches)
 
   Reduce(function(x,y) power_inner_join(
-    x, y, by, copy, type, suffix, keep, na_matches,
+    x, y, by, copy, suffix, keep, na_matches,
     # powerjoin args
     check, conflict, fill
   ), c(x,y))
@@ -220,7 +220,7 @@ power_full_join.data.frame <- function(
   if(is_bare_list(y)) {
     x <- list(x)
     res <- power_full_join.list(
-      x, y, by, copy, type, suffix, keep, na_matches,
+      x, y, by, copy, suffix, keep, na_matches,
       # powerjoin args
       check, conflict, fill
     )
@@ -249,7 +249,7 @@ power_full_join.list <- function(
   na_matches <- arg_match(na_matches)
 
   Reduce(function(x,y) power_full_join(
-    x, y, by, copy, type, suffix, keep, na_matches,
+    x, y, by, copy, suffix, keep, na_matches,
     # powerjoin args
     check, conflict, fill
   ), c(x,y))
