@@ -49,8 +49,13 @@ check_specs <- function(
   res
 }
 
+
+#' Inform on all potential issues
+#'
+#' This is the output of `check_specs()` with all arguments set to `"inform"`,
+#'   it's useful for a complete join diagnostic.
 #' @export
-always_inform <- check_specs(
+full_diagnostic <- check_specs(
   implicit_keys = "inform",
   column_conflict = "inform",
   duplicate_keys_left = "inform",
