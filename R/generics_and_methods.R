@@ -8,7 +8,10 @@
 #'  of character and formulas. Formulas are used for fuzzy joins and
 #' @inheritParams dplyr::left_join
 #' @param check A list created with `check_specs()`
-#' @param conflict WIP
+#' @param conflict A function, formula, special value amongst `"patch"`,
+#'   `"coalesce_xy"` and `"coalesce_yx"`, or a named list of such items.
+#' @param fill values used to replace missing values originating in unmatched keys,
+#'   or a named list of such items.
 #' @export
 power_left_join <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
