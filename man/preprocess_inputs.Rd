@@ -54,6 +54,8 @@ pivot_longer_by_keys(
 
 \item{...}{Additional arguments passed on to methods.}
 
+\item{name}{of created column}
+
 \item{data}{A data frame to pivot.}
 
 \item{names_from}{<\code{\link[tidyr:tidyr_tidy_select]{tidy-select}}> A pair of
