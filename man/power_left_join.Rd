@@ -93,7 +93,11 @@ joins for database sources, similarly to \code{merge(incomparables = FALSE)}.}
 
 \item{check}{A list created with \code{check_specs()}}
 
-\item{conflict}{WIP}
+\item{conflict}{A function, formula, special value amongst \code{"patch"},
+\code{"coalesce_xy"} and \code{"coalesce_yx"}, or a named list of such items.}
+
+\item{fill}{values used to replace missing values originating in unmatched keys,
+or a named list of such items.}
 }
 \description{
 Power joins
