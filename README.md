@@ -10,8 +10,9 @@ WIP
 It replaces my {safejoin} package which has un unfortunate homonym on
 CRAN and has a suboptimal interface and implementation.
 
-The {dplyr} team is credited since a lot of code is taken from {dplyr}
-directly.
+The {dplyr} team and David Robinson are credited since this package
+contains a fair amount of code copied from the {dplyr} and {fuzzyjoin}
+packages.
 
 We’ll see below how to :
 

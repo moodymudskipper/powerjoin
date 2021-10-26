@@ -29,6 +29,11 @@ Authors@R:
              comment = c(
              "aut of dplyr",
              ORCID = "0000-0002-1416-3412")),
+      person(given = "David",
+             family = "Robinson",
+             role = "ctb",
+             email = "admiral.david@gmail.com",
+             comment = "aut of fuzzyjoin"),
       person(given = "RStudio",
              role = c("cph", "fnd"),
              comment = "cph/fnd dplyr"))
@@ -47,13 +52,13 @@ Imports:
     rlang,
     tidyselect,
     vctrs,
-    glue,
     purrr,
     magrittr,
     lifecycle,
     tibble,
     tidyr,
-    cli
+    cli,
+    methods
 URL: https://github.com/moodymudskipper/powerjoin
 BugReports: https://github.com/moodymudskipper/powerjoin/issues
 Suggests: 
