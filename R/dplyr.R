@@ -200,5 +200,25 @@ add_suffixes <- function (x, y, suffix)
   out
 }
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# as_friendly_type (copied from dplyr:::as_friendly_type)
+# from dplyr 1.0.7
+as_friendly_type <- function (type)
+{
+  switch(type, logical = "a logical vector", integer = "an integer vector",
+         numeric = , double = "a double vector", complex = "a complex vector",
+         character = "a character vector", raw = "a raw vector",
+         string = "a string", list = "a list", `NULL` = "NULL",
+         environment = "an environment", externalptr = "a pointer",
+         weakref = "a weak reference", S4 = "an S4 object", name = ,
+         symbol = "a symbol", language = "a call", pairlist = "a pairlist node",
+         expression = "an expression vector", quosure = "a quosure",
+         formula = "a formula", char = "an internal string", promise = "an internal promise",
+         ... = "an internal dots object", any = "an internal `any` object",
+         bytecode = "an internal bytecode object", primitive = ,
+         builtin = , special = "a primitive function", closure = "a function",
+         type)
+}
+
 #nocov end
 
