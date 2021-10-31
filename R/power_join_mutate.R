@@ -90,7 +90,6 @@ join_mutate <- function(
     conflicted_data <- NULL
   }
   #-----------------------------------------------------------------------------
-  # this doesnt work for fuzzy as it tried to make 1 on 1 matches of by
   # modified dplyr code
   if(fuzzy) {
     vars <- join_cols_fuzzy(tbl_vars(x), tbl_vars(y),
@@ -100,6 +99,9 @@ join_mutate <- function(
                        check = check,
                        equi_keys = equi_keys
     )
+    x_key <- x_in[by$x]
+    y_key <- y_in[by$y]
+    rows <- join_rows_fuzzy(x, y, by, multi_match_fun, mode = type)
   } else {
     vars <- join_cols(tbl_vars(x), tbl_vars(y),
                        by = by, suffix = suffix,
@@ -107,17 +109,11 @@ join_mutate <- function(
                        # powerjoin args
                        check = check
     )
-  }
-
-  if(fuzzy) {
-    x_key <- x_in[by$x]
-    y_key <- y_in[by$y]
-    rows <- join_rows_fuzzy(x, y, by, multi_match_fun, mode = type)
-  } else {
     x_key <- set_names(x_in[vars$x$key], names(vars$x$key))
     y_key <- set_names(y_in[vars$y$key], names(vars$y$key))
     rows <- join_rows(x_key, y_key, type = type, na_equal = na_equal)
   }
+
   #-----------------------------------------------------------------------------
   # powerjoin checks
   check_unmatched_keys_left(x, y, by$x, rows, check)
