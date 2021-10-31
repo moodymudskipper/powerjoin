@@ -7,6 +7,7 @@ join_mutate <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  check <- complete_specs(check)
   #-----------------------------------------------------------------------------
   # implicit_keys
   if(check[["implicit_keys"]] %in% "abort") {
