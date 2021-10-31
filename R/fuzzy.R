@@ -64,22 +64,35 @@ join_cols_fuzzy <- function(
     }
   }
   #-----------------------------------------------------------------------------
-  # original dplyr code
+  # dplyr code
+
   suffix <- standardise_join_suffix(suffix)
   x_by <- set_names(match(by$x, x_names), by$x)
   y_by <- set_names(match(by$y, y_names), by$y)
   x_loc <- seq_along(x_names)
   names(x_loc) <- x_names
+
+  if (!keep) {
+    y_aux <- setdiff(y_names, c(by$x, if (!keep) by$y))
+    x_is_aux <- !x_names %in% by$x
+    names(x_loc)[x_is_aux] <- add_suffixes(
+      x_names[x_is_aux],
+      c(by$x, y_aux), suffix$x
+    )
+  } else {
+    names(x_loc) <- add_suffixes(x_names, y_names, suffix$x)
+  }
+
   y_loc <- seq_along(y_names)
   # remove equi keys
   ind <- ! y_names %in% equi_keys
   y_loc <- y_loc[ind]
   y_names <- y_names[ind]
-
-
-  names(x_loc) <- add_suffixes(x_names, y_names, suffix$x)
   names(y_loc) <- add_suffixes(y_names, x_names, suffix$y)
 
+  if (!keep) {
+    y_loc <- y_loc[!y_names %in% by$y]
+  }
   list(x = list(key = x_by, out = x_loc), y = list(
     key = y_by,
     out = y_loc
