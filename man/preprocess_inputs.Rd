@@ -34,7 +34,6 @@ pivot_wider_by_keys(
 
 pivot_longer_by_keys(
   data,
-  cols,
   names_to = "name",
   names_prefix = NULL,
   names_sep = NULL,
@@ -107,9 +106,6 @@ in the output. You will typically use this when the combination of
 
 This can be a named list if you want to apply different aggregations
 to different value columns.}
-
-\item{cols}{<\code{\link[tidyr:tidyr_tidy_select]{tidy-select}}> Columns to pivot into
-longer format.}
 
 \item{names_to}{A string specifying the name of the column to create
 from the data stored in the column names of \code{data}.

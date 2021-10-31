@@ -25,6 +25,7 @@ Other contributors:
   \item Romain François (\href{https://orcid.org/0000-0002-2444-4226}{ORCID}) (aut of dplyr) [contributor]
   \item Lionel Henry (aut of dplyr) [contributor]
   \item Kirill Müller (\href{https://orcid.org/0000-0002-1416-3412}{ORCID}) (aut of dplyr) [contributor]
+  \item David Robinson \email{admiral.david@gmail.com} (aut of fuzzyjoin) [contributor]
   \item RStudio (cph/fnd dplyr) [copyright holder, funder]
 }
 

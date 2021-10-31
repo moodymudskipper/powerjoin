@@ -5,16 +5,16 @@
 \title{Build a checklist for power joins}
 \usage{
 check_specs(
-  implicit_keys = c("inform", NA, "warn", "abort"),
-  column_conflict = c(NA, "inform", "warn", "abort"),
-  duplicate_keys_left = c(NA, "inform", "warn", "abort"),
-  duplicate_keys_right = c(NA, "inform", "warn", "abort"),
-  unmatched_keys_left = c(NA, "inform", "warn", "abort"),
-  unmatched_keys_right = c(NA, "inform", "warn", "abort"),
-  missing_key_combination_left = c(NA, "inform", "warn", "abort"),
-  missing_key_combination_right = c(NA, "inform", "warn", "abort"),
-  inconsistent_factor_levels = c(NA, "inform", "warn", "abort"),
-  inconsistent_type = c(NA, "inform", "warn", "abort")
+  implicit_keys = c("inform", "ignore", "warn", "abort"),
+  column_conflict = c("ignore", "inform", "warn", "abort"),
+  duplicate_keys_left = c("ignore", "inform", "warn", "abort"),
+  duplicate_keys_right = c("ignore", "inform", "warn", "abort"),
+  unmatched_keys_left = c("ignore", "inform", "warn", "abort"),
+  unmatched_keys_right = c("ignore", "inform", "warn", "abort"),
+  missing_key_combination_left = c("ignore", "inform", "warn", "abort"),
+  missing_key_combination_right = c("ignore", "inform", "warn", "abort"),
+  inconsistent_factor_levels = c("ignore", "inform", "warn", "abort"),
+  inconsistent_type = c("ignore", "inform", "warn", "abort")
 )
 }
 \arguments{
