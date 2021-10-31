@@ -46,10 +46,11 @@ join_cols_fuzzy <- function(
   # arg from powerjoin
   check, equi_keys) {
   intersect_ <- intersect(x_names, y_names)
+
   # original dplyr code
   #-----------------------------------------------------------------------------
   #   column_conflict
-  if(!is.na(check[["column_conflict"]]) && length(intersect_)) {
+  if(check[["column_conflict"]] != "ignore" && length(intersect_)) {
     fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
     if(check[["column_conflict"]] == "abort") {
       msg <- paste("The following columns are conflicted: ",
