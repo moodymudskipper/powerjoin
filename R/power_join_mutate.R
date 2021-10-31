@@ -240,50 +240,6 @@ join_cols <- function(
   ))
 }
 
-join_cols_fuzzy <- function(
-  x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = FALSE,
-  # arg from powerjoin
-  check, equi_keys) {
-  intersect_ <- intersect(x_names, y_names)
-  # original dplyr code
-  #-----------------------------------------------------------------------------
-  #   column_conflict
-  if(!is.na(check[["column_conflict"]]) && length(intersect_)) {
-    fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
-    if(check[["column_conflict"]] == "abort") {
-      msg <- paste("The following columns are conflicted: ",
-                   toString(paste0("'", intersect_, "'")))
-      abort(msg)
-    } else {
-      msg <- paste(
-        "The following columns are conflicted and will be prefixed: ",
-        toString(paste0("'", intersect_, "'")))
-      fun(msg)
-    }
-  }
-  #-----------------------------------------------------------------------------
-  # original dplyr code
-  suffix <- standardise_join_suffix(suffix)
-  x_by <- set_names(match(by$x, x_names), by$x)
-  y_by <- set_names(match(by$y, y_names), by$y)
-  x_loc <- seq_along(x_names)
-  names(x_loc) <- x_names
-  y_loc <- seq_along(y_names)
-  # remove equi keys
-  ind <- ! y_names %in% equi_keys
-  y_loc <- y_loc[ind]
-  y_names <- y_names[ind]
-
-
-  names(x_loc) <- add_suffixes(x_names, y_names, suffix$x)
-  names(y_loc) <- add_suffixes(y_names, x_names, suffix$y)
-
-  list(x = list(key = x_by, out = x_loc), y = list(
-    key = y_by,
-    out = y_loc
-  ))
-}
-
 # Adapted from join_mutate in dplyr 1.0.7
 standardise_join_by <- function(
   by, x_names, y_names,
