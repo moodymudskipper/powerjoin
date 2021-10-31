@@ -66,18 +66,32 @@ pivot_wider_by_keys <- function(data, names_from = name, names_prefix = "",
 
 #' @export
 #' @rdname preprocess_inputs
-pivot_longer_by_keys <- function(data, cols, names_to = "name", names_prefix = NULL,
+pivot_longer_by_keys <- function(data, names_to = "name", names_prefix = NULL,
                                  names_sep = NULL, names_pattern = NULL, names_ptypes = list(),
                                  names_transform = list(), names_repair = "check_unique",
                                  values_to = "value", values_drop_na = FALSE, values_ptypes = list(),
                                  values_transform = list(), ...)  {
-  attr(data, "pj_preprocess") <- list(type = "pivot_longer_by_keys", args = enquos(...))
+  attr(data, "pj_preprocess") <- list(type = "pivot_longer_by_keys", args = enquos(
+    names_to = names_to,
+    names_prefix = names_prefix,
+    names_sep = names_sep,
+    names_pattern = names_pattern,
+    names_ptypes = names_ptypes,
+    names_transform = names_transform,
+    names_repair = names_repair,
+    values_to = values_to,
+    values_drop_na = values_drop_na,
+    values_ptypes = values_ptypes,
+    values_transform = values_transform,
+    ...
+  ))
   data
 }
 
 preprocess <- function(.data, by) {
   attr_ <- attr(.data, "pj_preprocess")
   if(is.null(attr_)) return(.data)
+  attr(.data, 'pj_preprocess') <- NULL
 
   if(attr_$type == "select_keys_and") {
     # ugly but not sure there's much better
@@ -131,6 +145,7 @@ preprocess <- function(.data, by) {
 
   if(attr_$type == "pack_along_keys") {
     #
+    .data <- tibble::as_tibble(.data, .name_repair = "minimal")
     pack <- select(.data, -!!by)
     if(length(attr_$args[-1])) {
       pack <- select(pack, !!!attr_$args[-1])
