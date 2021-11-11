@@ -13,7 +13,7 @@ power_left_join(
   by = NULL,
   copy = FALSE,
   suffix = c(".x", ".y"),
-  keep = FALSE,
+  keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -26,7 +26,7 @@ power_right_join(
   by = NULL,
   copy = FALSE,
   suffix = c(".x", ".y"),
-  keep = FALSE,
+  keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -39,7 +39,7 @@ power_inner_join(
   by = NULL,
   copy = FALSE,
   suffix = c(".x", ".y"),
-  keep = FALSE,
+  keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -52,7 +52,7 @@ power_full_join(
   by = NULL,
   copy = FALSE,
   suffix = c(".x", ".y"),
-  keep = FALSE,
+  keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -93,8 +93,8 @@ joins for database sources, similarly to \code{merge(incomparables = FALSE)}.}
 
 \item{check}{A list created with \code{check_specs()}}
 
-\item{conflict}{A function, formula, special value amongst \code{"patch"},
-\code{"coalesce_xy"} and \code{"coalesce_yx"}, or a named list of such items.}
+\item{conflict}{A function, formula, the special value amongst \code{"patch"},
+or a named list of such items.}
 
 \item{fill}{values used to replace missing values originating in unmatched keys,
 or a named list of such items.}
