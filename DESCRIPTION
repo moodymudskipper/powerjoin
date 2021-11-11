@@ -19,16 +19,6 @@ Authors@R:
              comment = c(
              "aut of dplyr",
              ORCID = "0000-0002-2444-4226")),
-      person(given = "Lionel",
-             family = "Henry",
-             role = "ctb",
-             comment = "aut of dplyr"),
-      person(given = "Kirill",
-             family = "Müller",
-             role = "ctb",
-             comment = c(
-             "aut of dplyr",
-             ORCID = "0000-0002-1416-3412")),
       person(given = "David",
              family = "Robinson",
              role = "ctb",
