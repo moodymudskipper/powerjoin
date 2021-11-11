@@ -46,12 +46,12 @@ test_that("conflict works special values", {
   df2 <- data.frame(id = 1:2, val = c(2, NA))
 
   expect_equal(
-    power_left_join(df1, df2, by = "id", conflict = "coalesce_xy"),
+    power_left_join(df1, df2, by = "id", conflict = coalesce_xy),
     data.frame(id = 1:3, val = 1:3)
   )
 
   expect_equal(
-    power_left_join(df1, df2, by = "id", conflict = "coalesce_yx"),
+    power_left_join(df1, df2, by = "id", conflict = coalesce_yx),
     data.frame(id = 1:3, val = c(2, 2, 3))
   )
 
@@ -67,12 +67,12 @@ test_that("conflict works with lists", {
   df2 <- data.frame(id = 1:2, val = c(2, NA))
 
   expect_equal(
-    power_left_join(df1, df2, by = "id", conflict = list(val = "coalesce_xy")),
+    power_left_join(df1, df2, by = "id", conflict = list(val = coalesce_xy)),
     data.frame(id = 1:3, val = 1:3)
   )
 
   expect_equal(
-    power_left_join(df1, df2, by = "id", conflict = list(val ="coalesce_yx")),
+    power_left_join(df1, df2, by = "id", conflict = list(val =coalesce_yx)),
     data.frame(id = 1:3, val = c(2, 2, 3))
   )
 
