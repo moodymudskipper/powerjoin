@@ -14,7 +14,7 @@
 #'   or a named list of such items.
 #' @export
 power_left_join <- function(
-  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -25,7 +25,7 @@ power_left_join <- function(
 # from dplyr 1.0.7
 #' @export
 power_left_join.data.frame <- function(
-  x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -51,7 +51,7 @@ power_left_join.data.frame <- function(
 
 #' @export
 power_left_join.list <- function(
-  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -76,7 +76,7 @@ power_left_join.list <- function(
 #' @export
 #' @rdname power_left_join
 power_right_join <- function(
-  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -87,7 +87,7 @@ power_right_join <- function(
 # from dplyr 1.0.7
 #' @export
 power_right_join.data.frame <- function(
-  x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -113,7 +113,7 @@ power_right_join.data.frame <- function(
 
 #' @export
 power_right_join.list <- function(
-  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -138,7 +138,7 @@ power_right_join.list <- function(
 #' @export
 #' @rdname power_left_join
 power_inner_join <- function(
-  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -149,7 +149,7 @@ power_inner_join <- function(
 # from dplyr 1.0.7
 #' @export
 power_inner_join.data.frame <- function(
-  x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -175,7 +175,7 @@ power_inner_join.data.frame <- function(
 
 #' @export
 power_inner_join.list <- function(
-  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -200,7 +200,7 @@ power_inner_join.list <- function(
 #' @export
 #' @rdname power_left_join
 power_full_join <- function(
-  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -211,7 +211,7 @@ power_full_join <- function(
 # from dplyr 1.0.7
 #' @export
 power_full_join.data.frame <- function(
-  x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,
@@ -237,7 +237,7 @@ power_full_join.data.frame <- function(
 
 #' @export
 power_full_join.list <- function(
-  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = FALSE,
+  x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
   na_matches = c("na", "never"),
   check = check_specs(),
   conflict = NULL,

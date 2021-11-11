@@ -2,58 +2,28 @@
 join_mutate <- function(
   # dplyr args
   x, y, by, copy, type, suffix = c(".x", ".y"), na_matches = c("na", "never"),
-  keep = FALSE,
+  keep = NULL,
   # powerjoin args
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
   check <- complete_specs(check)
   #-----------------------------------------------------------------------------
-  # implicit_keys
-  if(check[["implicit_keys"]] %in% "abort") {
-    abort("`by`is `NULL`, join columns should be explicit")
-  }
+  # implicit keys
+  check_implicit_keys1(by, check)
   #-----------------------------------------------------------------------------
-  # deal with fuzzy joins
-  fml_lgl <- sapply(by, is_formula)
-  if(is_formula(by)) {
-    fuzzy <- TRUE
-    equi_keys <- NULL
-    specs <- fuzzy_specs(by)
-    by <- specs$multi_by
-    multi_match_fun <- specs$multi_match_fun
-  } else if(is.list(by) && any(fml_lgl)) {
-    fuzzy <- TRUE
-    # harmonize unnamed
-    names(by) <- allNames(by)
-    names(by)[!fml_lgl] <- ifelse(names(by[!fml_lgl]) == "", unlist(by[!fml_lgl]), names(by[!fml_lgl]))
-    equi_keys <- by[!fml_lgl]
-    # extract lhs
-    by[fml_lgl]  <- lapply(by[fml_lgl], `[[`, 2)
-    by[!fml_lgl] <- Map(function(x, y) call(
-      "==",
-      call("$", sym(".x"), sym(x)),
-      call("$", sym(".y"), sym(y))),
-      names(by[!fml_lgl]), by[!fml_lgl])
-    # concat
-    by <- Reduce(function(x,y) call("&", x, y), by)
-    # rebuild formula
-    by <- call("~", by)
-    specs <- fuzzy_specs(by)
-    by <- specs$multi_by
-    multi_match_fun <- specs$multi_match_fun
-  } else {
-    fuzzy <- FALSE
-    #---------------------------------------------------------------------------
-    # modified dplyr code
-    by <- preprocess_by(tbl_vars(x), tbl_vars(y), by = by, check = check)
-  }
+  # transform `by` to list of `x`, `y` and more if fuzzy
+  by <- preprocess_by(tbl_vars(x), tbl_vars(y), by = by, check = check)
   #-----------------------------------------------------------------------------
-  # powerjoin preprocess
+  # check keep's values and assess right default if relevant
+  keep <- match_keep(keep, by$fuzzy)
+  #-----------------------------------------------------------------------------
+  # preprocess the data inputs
   x <- preprocess(x, by$x)
   y <- preprocess(y, by$y)
   #-----------------------------------------------------------------------------
   # powerjoin checks
+  check_column_conflict_extra(tbl_vars(x), tbl_vars(y), by, keep, check)
   check_duplicate_keys_left(x, by$x, check)
   check_duplicate_keys_right(y, by$y, check)
   check_missing_key_combination_left(x, by$x, check)
@@ -66,51 +36,26 @@ join_mutate <- function(
   x_in <- as_tibble(x, .name_repair = "minimal")
   y_in <- as_tibble(y, .name_repair = "minimal")
   #-----------------------------------------------------------------------------
-  # here we should check if we have conflicts handled by the conflict arg
-  # if so we take out the conflicted variable(s) before this step
-  if(!is.null(conflict)) {
-    x_in_vars <- setdiff(names(x), by$x)
-    y_in_vars <- setdiff(names(y), by$y)
-    # conflicts with by columns can't be fixed, they'll be handled by `column_conflict` check
-    conflicted_cols <- intersect(x_in_vars, y_in_vars)
-    if(is.list(conflict)) {
-      nms <- names(conflict)
-      extra_conflicts <- setdiff(nms, conflicted_cols)
-      if(length(extra_conflicts)) {
-        warn(paste("Some conflict conditions are not used, these columns are not conflicted:",
-                   toString(paste0("'", extra_conflicts, "'"))))
-        conflicted_cols <- intersect(conflicted_cols, nms)
-        conflict = conflict[conflicted_cols]
-      }
-    }
-    conflicted_data <- list(x = x_in[conflicted_cols], y = y_in[conflicted_cols])
-    x <- x[!names(x) %in% conflicted_cols]
-    y <- y[!names(y) %in% conflicted_cols]
-  } else {
-    conflicted_data <- NULL
-  }
+  # We need conflicted cols for the conflict arg and the column_conflict check
+  # This should include columns created through fuzzy matches
+  conflicted_cols <- conflicted_columns(tbl_vars(x), tbl_vars(y), by, keep, conflict)
+  if(is.list(conflict)) conflict <- conflict[conflicted_cols$handled]
+  check_column_conflict(conflicted_cols, check)
   #-----------------------------------------------------------------------------
   # modified dplyr code
-  if(fuzzy) {
-    vars <- join_cols_fuzzy(tbl_vars(x), tbl_vars(y),
-                       by = by, suffix = suffix,
-                       keep = keep,
-                       # powerjoin args
-                       check = check,
-                       equi_keys = equi_keys
-    )
-    x_key <- x_in[by$x]
-    y_key <- y_in[by$y]
-    rows <- join_rows_fuzzy(x, y, by, multi_match_fun, mode = type)
+  vars <- join_cols(tbl_vars(x), tbl_vars(y),
+                    by = by, suffix = suffix,
+                    keep = keep,
+                    # powerjoin args
+                    check = check,
+                    conflicted_cols = conflicted_cols
+  )
+  # give potentially suffixed names
+  x_key <- set_names(x_in[vars$x$key], names(vars$x$key))
+  y_key <- set_names(y_in[vars$y$key], names(vars$y$key))
+  if(by$fuzzy) {
+    rows <- join_rows_fuzzy(x, y, by, by$multi_match_fun, type = type)
   } else {
-    vars <- join_cols(tbl_vars(x), tbl_vars(y),
-                       by = by, suffix = suffix,
-                       keep = keep,
-                       # powerjoin args
-                       check = check
-    )
-    x_key <- set_names(x_in[vars$x$key], names(vars$x$key))
-    y_key <- set_names(y_in[vars$y$key], names(vars$y$key))
     rows <- join_rows(x_key, y_key, type = type, na_equal = na_equal)
   }
 
@@ -119,9 +64,10 @@ join_mutate <- function(
   check_unmatched_keys_left(x, y, by$x, rows, check)
   check_unmatched_keys_right(x, y, by$y, rows, check)
   #-----------------------------------------------------------------------------
-  # original dplyr code : rename conflicted and slice
+  # rename unhandled conflicted columns
   x_out <- set_names(x_in[vars$x$out], names(vars$x$out))
   y_out <- set_names(y_in[vars$y$out], names(vars$y$out))
+  # build slicers
   if (length(rows$y_extra) > 0L) {
     x_slicer <- c(rows$x, rep_along(rows$y_extra, NA_integer_))
     y_slicer <- c(rows$y, rows$y_extra)
@@ -129,10 +75,19 @@ join_mutate <- function(
     x_slicer <- rows$x
     y_slicer <- rows$y
   }
-  out <- vec_slice(x_out, x_slicer)
-  out[names(y_out)] <- vec_slice(y_out, y_slicer)
+  # slice left table
+  x_sliced <- vec_slice(x_out[!names(x_out) %in% conflicted_cols$handled], x_slicer)
+  # slice right table
+  y_sliced <- vec_slice(y_out[!names(y_out) %in% conflicted_cols$handled], y_slicer)
+
+  out <- bind_cols(x_sliced, y_sliced) # and conflicted_sliced
   #-----------------------------------------------------------------------------
-  # fill
+  # handle conflicts
+  conflicted_data <- list(x = x_out[conflicted_cols$handled],
+                          y = y_out[conflicted_cols$handled])
+  out <- handle_conflicts(out, x_slicer, y_slicer, conflicted_data, conflict)
+  #-----------------------------------------------------------------------------
+  # fill y side
   if(!is.null(fill)) {
     if(is.list(fill)) {
       for (nm in intersect(names(fill), names(y_out))) {
@@ -143,18 +98,26 @@ join_mutate <- function(
     }
   }
   #-----------------------------------------------------------------------------
-  # handle conflicts
-  out <- handle_conflicts(out, x_slicer, y_slicer, conflicted_data, conflict)
-  #-----------------------------------------------------------------------------
   # add extra columns, this might create a conflict
-  if(fuzzy) {
+  if(by$fuzzy) {
     out <- bind_cols(out, rows$extra_cols)
   }
   #-----------------------------------------------------------------------------
-  # original dplyr code
-  if (!fuzzy && !keep) {
+  # we might want to have different behavior for "default" and "left"
+  # by default in a non fuzzy join by cols are merged, so even though we keep the
+  # left side name, the values might be built from both sides (right or full join)
+  # to be consistent it is coerced to common type in any case.
+
+  if (keep %in% c("default", "default_fuzzy")) {
+    if (keep == "default_fuzzy") {
+      # overwrite x_key and y_key so equi key columns can be combined
+      x_key <- x_key[names(by$equi_keys)]
+      y_key <- y_key[names(by$equi_keys)]
+    }
     key_type <- vec_ptype_common(x_key, y_key)
+    # convert keys to common type
     out[names(x_key)] <- vec_cast(out[names(x_key)], key_type)
+    # if we have a right or full join with unmatched keys in right table
     if (length(rows$y_extra) > 0L) {
       new_rows <- length(rows$x) + seq_along(rows$y_extra)
       out[new_rows, names(y_key)] <- vec_cast(vec_slice(
@@ -162,6 +125,9 @@ join_mutate <- function(
         rows$y_extra
       ), key_type)
 
+      # fill should be treated even if fuzzy, it should work on final names (potentially suffixed)
+      # not sure what we're doing below
+      # fill x side
       if(!is.null(fill)) {
         x_nms <- setdiff(names(out), c(names(y_out), names(y_key)))
         if(is.list(fill)) {
@@ -175,69 +141,117 @@ join_mutate <- function(
 
     }
   }
+
   dplyr_reconstruct(out, x)
 }
 
+conflicted_columns <- function(x_names, y_names, by, keep, conflict) {
+  # key columns that are merged are not candidate for conflict
+  # the default behavior should depend on fuzziness!
+  conflicted <- switch(
+    keep,
+    left =,
+    default = intersect(x_names, setdiff(y_names, by$y)),
+    right = intersect(setdiff(x_names, by$x), y_names),
+    default_fuzzy =,
+    both = intersect(x_names, y_names),
+    none = intersect(setdiff(x_names, by$x), setdiff(y_names, by$y)))
+  if(is.null(conflict)) return(list(unhandled = conflicted))
+  nms <- names(conflict)
+  if(is.null(nms)) return(list(handled = conflicted))
+  unused <- setdiff(nms, conflicted)
+  if(length(unused)) {
+    warn(paste("Some conflict conditions are not used, these are not conflicted columns:",
+               toString(paste0("'", unused, "'"))))
+  }
+  handled <- intersect(nms, conflicted)
+  list(
+    handled = handled,
+    unhandled = setdiff(conflicted, handled)
+  )
+}
 
-# Adapted from join_mutate in dplyr 1.0.7
+match_keep <- function(keep, fuzzy) {
+  # if we're clean vars has by, by_fuzzy, x_aux, x_conflict, for now we can't have robust behavior
+  # when mixing equi and fuzzy
 
-preprocess_by <- function(x_names, y_names, by = NULL, check) {
-  # original dplyr code
-  check_duplicate_vars(x_names, "x")
-  check_duplicate_vars(y_names, "y")
-  by <- standardise_join_by(by, x_names = x_names, y_names = y_names,
-                            # arg from powerjoin
-                            check = check)
-  by
+  # do we need keep = "equi" to keep only "equi" columns" when we mix ?
+
+  # default is to fuse equi joins and keep both sides for fuzzy joins
+  if(is.null(keep)) {
+    if (fuzzy) return("default_fuzzy")
+    return("default")
+  }
+  # FALSE should be "fuse" for equi joins and none for fuzzy joins
+  if(isFALSE(keep)) {
+    if (fuzzy) return("none")
+    return("default")
+  }
+  if(isTRUE(keep)) return("both")
+  keep
 }
 
 join_cols <- function(
-  x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = FALSE,
+  x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = "left",
   # arg from powerjoin
-  check) {
-  intersect_ <- intersect(x_names, setdiff(y_names, by$y))
-  # original dplyr code
-  #-----------------------------------------------------------------------------
-  #   column_conflict
-  if(check[["column_conflict"]] != "ignore" && length(intersect_)) {
-    fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
-    if(check[["column_conflict"]] == "abort") {
-      msg <- paste("The following columns are conflicted: ",
-                   toString(paste0("'", intersect_, "'")))
-      abort(msg)
-    } else {
-      msg <- paste(
-        "The following columns are conflicted and will be prefixed: ",
-        toString(paste0("'", intersect_, "'")))
-      fun(msg)
-    }
-  }
+  check, conflicted_cols) {
+
   #-----------------------------------------------------------------------------
   # original dplyr code
   suffix <- standardise_join_suffix(suffix)
+  # x_by and y_by are named vectors of positions
   x_by <- set_names(match(by$x, x_names), by$x)
   y_by <- set_names(match(by$y, y_names), by$x)
   x_loc <- seq_along(x_names)
-  names(x_loc) <- x_names
-  if (!keep) {
-    y_aux <- setdiff(y_names, c(by$x, if (!keep) by$y))
-    x_is_aux <- !x_names %in% by$x
-    names(x_loc)[x_is_aux] <- add_suffixes(
-      x_names[x_is_aux],
-      c(by$x, y_aux), suffix$x
-    )
-  } else {
-    names(x_loc) <- add_suffixes(x_names, y_names, suffix$x)
-  }
   y_loc <- seq_along(y_names)
-  names(y_loc) <- add_suffixes(y_names, x_names, suffix$y)
-  if (!keep) {
+  names(x_loc) <- x_names
+  names(y_loc) <- y_names
+
+  if (keep %in% c("left", "default")) {
+    # aux cols = not key cols (as named in any table ? not sure why)
+    # we exclude by$x here just because we use c(by$x, y_aux) below
+    y_aux <- setdiff(y_names, c(by$x, by$y))
+    ind <- !x_names %in% c(by$x, conflicted_cols$handled)
+    # add suffixes to aux cols in x when they're found in by$x (why would they ?) or in y_aux
+    # key cols don't get suffixes
+    names(x_loc)[ind] <- add_suffixes(x_names[ind], c(by$x, y_aux), suffix$x)
+  } else if (keep %in% c("both", "default_fuzzy")) {
+    ind <- !x_names %in% c(conflicted_cols$handled, names(by$equi_keys))
+    names(x_loc)[ind] <- add_suffixes(x_names[ind], y_names, suffix$x)
+  } else {
+    # "right" or "none" : key cols should be taken off x_loc
+    ind <- !x_names %in% conflicted_cols$handled
+    names(x_loc)[ind] <- add_suffixes(x_names[ind], y_names, suffix$x)
+    x_loc <- x_loc[!x_names %in% by$x]
+  }
+
+  if(keep == "right") {
+    # copy of above with transposed x/y
+    x_aux <- setdiff(x_names, c(by$x, by$y))
+    ind <- !y_names %in% c(by$y, conflicted_cols$handled)
+    names(y_loc)[ind] <- add_suffixes(y_names[ind], c(by$y, x_aux), suffix$y)
+  } else if (keep == "both") {
+    ind <- !y_names %in% c(conflicted_cols$handled, by$equi_keys)
+    names(y_loc)[ind] <- add_suffixes(y_names[ind], x_names, suffix$y)
+  } else if (keep == "default_fuzzy") {
+    ind <- !y_names %in% c(conflicted_cols$handled, by$equi_keys)
+    names(y_loc)[ind] <- add_suffixes(y_names[ind], x_names, suffix$y)
+    y_loc <- y_loc[!y_names %in% by$equi_keys]
+  } else if (keep == "none") {
+    ind <- !y_names %in% conflicted_cols$handled
+    names(y_loc)[ind] <- add_suffixes(y_names[ind], setdiff(x_names, by$x), suffix$y)
+    y_loc <- y_loc[!y_names %in% by$y]
+  } else {
+    # "left"  or "default"
+    ind <- !y_names %in% conflicted_cols$handled
+    names(y_loc)[ind] <- add_suffixes(y_names[ind], x_names, suffix$y)
     y_loc <- y_loc[!y_names %in% by$y]
   }
-  list(x = list(key = x_by, out = x_loc), y = list(
-    key = y_by,
-    out = y_loc
-  ))
+
+  list(
+    x = list(key = x_by, out = x_loc),
+    y = list(key = y_by, out = y_loc),
+    conflicted = conflicted_cols$handled)
 }
 
 # Adapted from join_mutate in dplyr 1.0.7
@@ -252,23 +266,9 @@ standardise_join_by <- function(
               i = "use by = character()` to perform a cross-join."
       ))
     }
-    by_quoted <- encodeString(by, quote = "\"")
-    if (length(by_quoted) == 1L) {
-      by_code <- by_quoted
-    } else {
-      by_code <- paste0(
-        "c(", paste(by_quoted, collapse = ", "),
-        ")"
-      )
-    }
     #---------------------------------------------------------------------------
     # implicit_keys
-    if(!is.na(check[["implicit_keys"]])) {
-      fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
-      fun(paste0("Joining, by = ", by_code))
-    }
-    # original dplyr code
-    # inform(paste0("Joining, by = ", by_code))
+    check_implicit_keys2(by, check)
     #---------------------------------------------------------------------------
     by <- list(x = by, y = by)
   } else if (is.character(by)) {

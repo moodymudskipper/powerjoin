@@ -129,6 +129,28 @@ c.powerjoin_check <- function(...) {
   res
 }
 
+check_implicit_keys1 <- function(by, check) {
+  if(is.null(by) && check[["implicit_keys"]] %in% "abort") {
+    abort("`by`is `NULL`, key columns should be explicit")
+  }
+}
+
+check_implicit_keys2 <- function(by, check) {
+  if(check[["implicit_keys"]] != "ignore") {
+    by_quoted <- encodeString(by, quote = "\"")
+    if (length(by_quoted) == 1L) {
+      by_code <- by_quoted
+    } else {
+      by_code <- paste0(
+        "c(", paste(by_quoted, collapse = ", "),
+        ")"
+      )
+    }
+    fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
+    fun(paste0("Joining, by = ", by_code))
+  }
+}
+
 check_duplicate_keys_left <- function(x, by, check) {
   if(check[["duplicate_keys_left"]] != "ignore" &&
      n_distinct(x[by]) != nrow(x)) {
@@ -221,21 +243,21 @@ check_inconsistent_factor_levels <- function(x_in, y_in, by, check) {
 }
 
 check_inconsistent_type <- function(x_in, y_in, by, check) {
-if(check[["inconsistent_type"]] != "ignore") {
-  fun <- getFromNamespace(check[["inconsistent_type"]], "rlang")
-  msg <- mapply(function(x, y, x_nm, y_nm) {
-    if(!identical(typeof(x), typeof(y)) || !identical(class(x), class(y))) {
-      if(x_nm == y_nm)
-        sprintf("`%s` has a different type or class in the left and right tables", x_nm)
-      else
-        sprintf("`%s` and `%s` (in resp. left and right table) have different types or classes", x_nm, y_nm)
-    }}, x_in[by$x], y_in[by$y], names(x_in[by$x]), names(y_in[by$y]))
-  msg <- msg[lengths(msg)>0]
-  if(length(msg)) {
-    msg <- paste(msg, collapse = "\n")
-    fun(msg)
+  if(check[["inconsistent_type"]] != "ignore") {
+    fun <- getFromNamespace(check[["inconsistent_type"]], "rlang")
+    msg <- mapply(function(x, y, x_nm, y_nm) {
+      if(!identical(typeof(x), typeof(y)) || !identical(class(x), class(y))) {
+        if(x_nm == y_nm)
+          sprintf("`%s` has a different type or class in the left and right tables", x_nm)
+        else
+          sprintf("`%s` and `%s` (in resp. left and right table) have different types or classes", x_nm, y_nm)
+      }}, x_in[by$x], y_in[by$y], names(x_in[by$x]), names(y_in[by$y]))
+    msg <- msg[lengths(msg)>0]
+    if(length(msg)) {
+      msg <- paste(msg, collapse = "\n")
+      fun(msg)
+    }
   }
-}
 }
 
 check_unmatched_keys_left <- function(x_in, y_in, by, rows, check) {
@@ -261,3 +283,56 @@ check_unmatched_keys_right <- function(x_in, y_in, by, rows, check) {
     fun(msg)
   }
 }
+
+check_column_conflict <- function(conflicted_cols, check) {
+  if(check[["column_conflict"]] != "ignore" && length(conflicted_cols$unhandled)) {
+    fun <- getFromNamespace(check[["column_conflict"]], "rlang")
+    if(check[["column_conflict"]] == "abort") {
+      msg <- paste("The following columns are conflicted and their conflicts are not handled: ",
+                   toString(paste0("'", conflicted_cols$unhandled, "'")))
+    } else {
+      msg <- paste(
+        "The following columns are conflicted and their conflicts are not",
+        "handled, they will be suffixed:",
+        toString(paste0("'", conflicted_cols$unhandled, "'")))
+    }
+    fun(msg)
+  }
+}
+
+check_column_conflict_extra <- function(x_names, y_names, by, keep, check) {
+  if(length(by$extra_cols) && check[["column_conflict"]] != "ignore") {
+    conflicted_extra <- switch(
+      keep,
+      left =,
+      default = c(
+        intersect(x_names, by$extra_cols),
+        intersect(setdiff(y_names, by$y), by$extra_cols)),
+      right = c(
+        intersect(setdiff(x_names, by$x), by$extra_cols),
+        intersect(y_names, by$extra_cols)),
+      default_fuzzy =,
+      both = c(
+        intersect(x_names, by$extra_cols),
+        intersect(y_names, by$extra_cols)),
+      none = c(
+        intersect(setdiff(x_names, by$x), by$extra_cols),
+        intersect(setdiff(y_names, by$y), by$extra_cols)))
+    if(length(conflicted_extra)) {
+      fun <- getFromNamespace(check[["column_conflict"]], "rlang")
+      if(check[["column_conflict"]] == "abort") {
+        msg <- paste(
+          "Conflicting columns were created in the fuzzy join:",
+          toString(paste0("'", conflicted_extra, "'")))
+      } else {
+        msg <- paste(
+          "Conflicting columns were created in the fuzzy join,",
+          "they will be suffixed:",
+          toString(paste0("'", conflicted_extra, "'")))
+      }
+      fun(msg)
+    }
+  }
+}
+
+

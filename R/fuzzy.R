@@ -37,73 +37,13 @@ fuzzy_specs <- function(by) {
   multi_by <- list(x = by_x, y = by_y)
   list(
     multi_match_fun = multi_match_fun,
-    multi_by = multi_by
+    multi_by = multi_by,
+    extra_cols = unlist(new_cols)
   )
 }
 
-join_cols_fuzzy <- function(
-  x_names, y_names, by = NULL, suffix = c(".x", ".y"), keep = FALSE,
-  # arg from powerjoin
-  check, equi_keys) {
-  intersect_ <- intersect(x_names, y_names)
-
-  # original dplyr code
-  #-----------------------------------------------------------------------------
-  #   column_conflict
-  if(check[["column_conflict"]] != "ignore" && length(intersect_)) {
-    fun <- getFromNamespace(check[["implicit_keys"]], "rlang")
-    if(check[["column_conflict"]] == "abort") {
-      msg <- paste("The following columns are conflicted: ",
-                   toString(paste0("'", intersect_, "'")))
-      abort(msg)
-    } else {
-      msg <- paste(
-        "The following columns are conflicted and will be prefixed: ",
-        toString(paste0("'", intersect_, "'")))
-      fun(msg)
-    }
-  }
-  #-----------------------------------------------------------------------------
-  # dplyr code
-
-  suffix <- standardise_join_suffix(suffix)
-  x_by <- set_names(match(by$x, x_names), by$x)
-  y_by <- set_names(match(by$y, y_names), by$y)
-  x_loc <- seq_along(x_names)
-  names(x_loc) <- x_names
-
-  if (!keep) {
-    y_aux <- setdiff(y_names, c(by$x, if (!keep) by$y))
-    x_is_aux <- !x_names %in% by$x
-    names(x_loc)[x_is_aux] <- add_suffixes(
-      x_names[x_is_aux],
-      c(by$x, y_aux), suffix$x
-    )
-  } else {
-    names(x_loc) <- add_suffixes(x_names, y_names, suffix$x)
-  }
-
-  y_loc <- seq_along(y_names)
-  # remove equi keys
-  ind <- ! y_names %in% equi_keys
-  y_loc <- y_loc[ind]
-  y_names <- y_names[ind]
-  names(y_loc) <- add_suffixes(y_names, x_names, suffix$y)
-
-  if (!keep) {
-    y_loc <- y_loc[!y_names %in% by$y]
-  }
-  list(x = list(key = x_by, out = x_loc), y = list(
-    key = y_by,
-    out = y_loc
-  ))
-}
-
-join_rows_fuzzy <- function(x, y, by, multi_match_fun, mode = "left") {
+join_rows_fuzzy <- function(x, y, by, multi_match_fun, type = "left") {
   multi_match_fun <- purrr::as_mapper(multi_match_fun)
-
-  # use multiple matches
-  # by <- common_by(multi_by, x, y)
 
   number_x_rows <- nrow(x)
   number_y_rows <- nrow(y)
@@ -170,13 +110,13 @@ join_rows_fuzzy <- function(x, y, by, multi_match_fun, mode = "left") {
 
   # fill in indices of the x, y, or both
   # curious if there's a higher performance approach
-  if (mode == "left") {
+  if (type == "left") {
     matches <- tibble::tibble(x = seq_len(number_x_rows)) %>%
       left_join(matches, by = "x")
-  } else if (mode == "right") {
+  } else if (type == "right") {
     matches <- tibble::tibble(y = seq_len(number_y_rows)) %>%
       left_join(matches, by = "y")
-  } else if (mode == "full") {
+  } else if (type == "full") {
     matches <- matches %>%
       full_join(tibble::tibble(x = seq_len(number_x_rows)), by = "x") %>%
       full_join(tibble::tibble(y = seq_len(number_y_rows)), by = "y")
