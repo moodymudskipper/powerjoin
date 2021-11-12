@@ -299,11 +299,11 @@ These functions do not modify the data but add an attribute that will be
 processed by the join function later on, so no function should be used
 on top of them.
 
-## fuzzy joins
+## Fuzzy joins
 
-{powerjoin} builds on David Robinson’s {fuzzyjoin} package’s main
-features with the dual goal of simplifying the syntax and benefiting
-from other {powerjoin} features.
+To do fuzzy joins we use formulas in the `by` argument, in this formula
+we use, `.x` and `.y` to describe the left and right tables. This is
+very flexible but can be costly since a cartesian product is computed.
 
 ``` r
 power_inner_join(
@@ -350,7 +350,7 @@ power_inner_join(
 #> 3          3650 Reiner          4750 Mishayla       1.30
 ```
 
-# Fill unmatched values
+## Fill unmatched values
 
 The `fill` argument is used to specify what to fill unmatched values
 with, note that missing values resulting from matches are not replaced.
@@ -375,7 +375,7 @@ power_left_join(df1, df2, by = "id", fill = list(value2 = 0))
 #> 3     3      0     NA
 ```
 
-# Join recursively
+## Join recursively
 
 The `x` and `y` arguments accept lists of data frames so one can do :
 
