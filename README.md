@@ -3,29 +3,18 @@
 
 # powerjoin
 
-WIP
-
 {powerjoin} extends {dplyr}’s join functions.
-
-It replaces my {safejoin} package which has un unfortunate homonym on
-CRAN and has a suboptimal interface and implementation.
-
-The {dplyr} team and David Robinson are credited since this package
-contains a fair amount of code copied from the {dplyr} and {fuzzyjoin}
-packages.
-
-We’ll see below how to :
 
 -   Make your joins safer with the `check` argument and the
     `check_specs()`function
--   Preprocess input, for instance to select columns to join without
-    having to repeat join columns in the selection
 -   Deal with conflicting column names by combining, coalescing them etc
     using the `conflict` argument
--   Do painless unequi-joins thanks to a generalized `by` argument
+-   Preprocess input, for instance to select columns to join without
+    having to repeat join columns in the selection
+-   Do painless fuzzy joins thanks to a generalized `by` argument
     accepting formulas
--   fill unmatched values using the `fill` argument
--   operate recursive joins by providing lists of data frames to `x` and
+-   Fill unmatched values using the `fill` argument
+-   Operate recursive joins by providing lists of data frames to `x` and
     `y`
 
 ## Installation
@@ -43,7 +32,7 @@ library(powerjoin)
 library(tidyverse)
 
 # toy dataset built from Allison Horst's {palmerpenguins} package and 
-# Hadlew Wickham's {babynames}
+# Hadley Wickham's {babynames}
 
 male_penguins <- tribble(
      ~name,    ~species,     ~island, ~flipper_length_mm, ~body_mass_g,
@@ -60,12 +49,12 @@ female_penguins <- tribble(
 )
 ```
 
-# Make your joins safer
+## Safer joins
 
 The `check` argument receives a list provided by `check_specs()`, whose
 arguments can be :
 
--   `NA` : stay silent (default except for `implicit_keys`)
+-   `"ignore"` : stay silent (default except for `implicit_keys`)
 -   `"inform"`
 -   `"warn"`
 -   `"abort"`
@@ -108,7 +97,7 @@ keys in the right table
 power_inner_join(
   male_penguins[2:3], 
   female_penguins[2:3],
-  check = check_specs(implicit_keys = NA, duplicate_keys_right = "abort"))
+  check = check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort"))
 #> Error: Keys in the right table have duplicates:
 #> # A tibble: 1 × 2
 #>   species island
@@ -142,12 +131,76 @@ power_inner_join(
   female_penguins,
   by = c("species", "island"),
   check = dev_specs)
-#> Error in `join_cols()` at powerjoin/R/power_join_mutate.R:95:4: 
-#> The following columns are ambiguous:  name, flipper_length_mm, body_mass_g
-#> Run `rlang::last_error()` to see where the error occurred.
+#> Error: The following columns are conflicted and their conflicts are not handled: 
+#> 'name', 'flipper_length_mm', 'body_mass_g'
 ```
 
-## Preprocessing inputs
+## Handle column conflict
+
+To resolve conflicts between identically named join columns, set the
+`conflict` argument to a 2 argument function (or formula) that will take
+as arguments the 2 conflicting joined columns after the join.
+
+``` r
+df1 <- tibble(id = 1:3, value = c(10, NA, 30))
+df2 <- tibble(id = 2:4, value = c(22, 32, 42))
+
+power_left_join(df1, df2, by = "id", conflict = `+`)
+#> # A tibble: 3 × 2
+#>      id value
+#>   <int> <dbl>
+#> 1     1    NA
+#> 2     2    NA
+#> 3     3    62
+```
+
+Coalescing is the most common use case and we provide the functions
+`coalesce_xy()` and `coalesce_yx()` to ease this task (both wrapped
+around `dplyr::coalesce()`).
+
+``` r
+power_left_join(df1, df2, by = "id", conflict = coalesce_xy)
+#> # A tibble: 3 × 2
+#>      id value
+#>   <int> <dbl>
+#> 1     1    10
+#> 2     2    22
+#> 3     3    30
+power_left_join(df1, df2, by = "id", conflict = coalesce_yx)
+#> # A tibble: 3 × 2
+#>      id value
+#>   <int> <dbl>
+#> 1     1    10
+#> 2     2    22
+#> 3     3    32
+```
+
+Note that the function is operating on vectors by default, not rowwise,
+however we can make it work rowwise by using `rw` in the lhs of the
+formula.
+
+``` r
+power_left_join(df1, df2, by = "id", conflict = ~ sum(.x, .y, na.rm = TRUE))
+#> # A tibble: 3 × 2
+#>      id value
+#>   <int> <dbl>
+#> 1     1    94
+#> 2     2    94
+#> 3     3    94
+power_left_join(df1, df2, by = "id", conflict = rw ~ sum(.x, .y, na.rm = TRUE))
+#> # A tibble: 3 × 2
+#>      id value
+#>   <int> <dbl>
+#> 1     1    10
+#> 2     2    22
+#> 3     3    62
+```
+
+If you need finer control, `conflict` can also be a named list of such
+functions, formulas or special values, each to be applied on the
+relevant pair of conflicted columns.
+
+## Preprocess inputs
 
 Traditionally key columns need to be repeated when preprocessing inputs
 before a join, which is an annoyance and an opportunity for mistakes.
@@ -243,84 +296,20 @@ We have more of these, all variants of tidyverse functions :
     columns are the keys
 
 These functions do not modify the data but add an attribute that will be
-processed by the function later on, so no function should be used on top
-of them.
+processed by the join function later on, so no function should be used
+on top of them.
 
-## Handle column conflict
-
-To resolve conflicts between identically named join columns, set the
-`conflict` argument to a 2 argument function (or formula) that will take
-as arguments the 2 conflicting joined columns after the join.
-
-``` r
-df1 <- tibble(id = 1:3, value = c(10, NA, 30))
-df2 <- tibble(id = 2:4, value = c(22, 32, 42))
-
-power_left_join(df1, df2, by = "id", conflict = `+`)
-#> # A tibble: 3 × 2
-#>      id value
-#>   <int> <dbl>
-#> 1     1    NA
-#> 2     2    NA
-#> 3     3    62
-```
-
-coalescing is the most common use case and we have some special values
-for it:
-
-``` r
-power_left_join(df1, df2, by = "id", conflict = "coalesce_xy")
-#> # A tibble: 3 × 2
-#>      id value
-#>   <int> <dbl>
-#> 1     1    10
-#> 2     2    22
-#> 3     3    30
-power_left_join(df1, df2, by = "id", conflict = "coalesce_yx")
-#> # A tibble: 3 × 2
-#>      id value
-#>   <int> <dbl>
-#> 1     1    10
-#> 2     2    22
-#> 3     3    32
-```
-
-Note that the function is operating on vectors by default, not row wise,
-however we can make it work rowwise by using `rw` in the lhs of the
-formula.
-
-``` r
-power_left_join(df1, df2, by = "id", conflict = ~ sum(.x, .y, na.rm = TRUE))
-#> # A tibble: 3 × 2
-#>      id value
-#>   <int> <dbl>
-#> 1     1    94
-#> 2     2    94
-#> 3     3    94
-power_left_join(df1, df2, by = "id", conflict = rw ~ sum(.x, .y, na.rm = TRUE))
-#> # A tibble: 3 × 2
-#>      id value
-#>   <int> <dbl>
-#> 1     1    10
-#> 2     2    22
-#> 3     3    62
-```
-
-If you need finer control, `conflict` can also be a named list of such
-functions, formulas or special values, each to be applied on the
-relevant pair of conflicted columns.
-
-# fuzzy joins
+## fuzzy joins
 
 {powerjoin} builds on David Robinson’s {fuzzyjoin} package’s main
-features with the dual goal to simplify the syntax and add to these
-operations the other benefits of {powerjoin}.
+features with the dual goal of simplifying the syntax and benefiting
+from other {powerjoin} features.
 
 ``` r
 power_inner_join(
     male_penguins %>% select_keys_and(name),
     female_penguins %>% select_keys_and(name),
-    by = c(~.x$flipper_length_mm < .y$flipper_length_mm & .x$body_mass_g > .y$body_mass_g)
+    by = c(~.x$flipper_length_mm < .y$flipper_length_mm, ~.x$body_mass_g > .y$body_mass_g)
 )
 #> # A tibble: 1 × 6
 #>   flipper_length_mm.x body_mass_g.x name.x flipper_length_… body_mass_g.y name.y
@@ -328,8 +317,7 @@ power_inner_join(
 #> 1                 185          3650 Reiner              190          3600 Ola
 ```
 
-We might provide different conditions and they’ll be joined with `&`, we
-might also mix fuzzy joins with regular equi joins :
+We might also mix fuzzy joins with regular joins :
 
 ``` r
 power_inner_join(
@@ -361,3 +349,58 @@ power_inner_join(
 #> 2          3650 Reiner          4500 Alonda         1.23
 #> 3          3650 Reiner          4750 Mishayla       1.30
 ```
+
+# Fill unmatched values
+
+The `fill` argument is used to specify what to fill unmatched values
+with, note that missing values resulting from matches are not replaced.
+
+``` r
+df1 <- tibble(id = 1:3)
+df2 <- tibble(id = 1:2, value2 = c(2, NA), value3 = c(NA, 3))
+
+power_left_join(df1, df2, by = "id", fill = 0)
+#> # A tibble: 3 × 3
+#>      id value2 value3
+#>   <int>  <dbl>  <dbl>
+#> 1     1      2     NA
+#> 2     2     NA      3
+#> 3     3      0      0
+power_left_join(df1, df2, by = "id", fill = list(value2 = 0))
+#> # A tibble: 3 × 3
+#>      id value2 value3
+#>   <int>  <dbl>  <dbl>
+#> 1     1      2     NA
+#> 2     2     NA      3
+#> 3     3      0     NA
+```
+
+# Join recursively
+
+The `x` and `y` arguments accept lists of data frames so one can do :
+
+``` r
+df1 <- tibble(id = 1, a = "foo")
+df2 <- tibble(id = 1, b = "bar")
+df3 <- tibble(id = 1, c = "baz")
+
+power_left_join(list(df1, df2, df3), by = "id")
+#> # A tibble: 1 × 4
+#>      id a     b     c    
+#>   <dbl> <chr> <chr> <chr>
+#> 1     1 foo   bar   baz
+power_left_join(df1, list(df2, df3), by = "id")
+#> # A tibble: 1 × 4
+#>      id a     b     c    
+#>   <dbl> <chr> <chr> <chr>
+#> 1     1 foo   bar   baz
+```
+
+## Notes
+
+This package supersedes {safejoin} package which had un unfortunate
+homonym on CRAN and had a suboptimal interface and implementation.
+
+Hadley Wickham, Romain François and David Robinson are credited for
+their work in {dplyr} and {fuzzyjoin} since this package contains some
+code copied from these packages.
