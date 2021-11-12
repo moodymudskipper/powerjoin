@@ -70,8 +70,8 @@ join_rows_fuzzy <- function(x, y, by, multi_match_fun, type = "left") {
   ix <- rep(seq(nrow(ux)), nrow(uy))
   iy <- rep(seq(nrow(uy)), each = nrow(ux))
 
-  ux_input <- slice(ux, ix)
-  uy_input <- slice(uy, iy)
+  ux_input <- ux[ix,, drop = FALSE]
+  uy_input <- uy[iy,, drop = FALSE]
 
   m <- multi_match_fun(ux_input, uy_input)
 
