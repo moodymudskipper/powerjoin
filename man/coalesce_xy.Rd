@@ -2,9 +2,12 @@
 % Please edit documentation in R/coalesce.R
 \name{coalesce_xy}
 \alias{coalesce_xy}
+\alias{coalesce_yx}
 \title{Coalesce}
 \usage{
 coalesce_xy(x, y)
+
+coalesce_yx(x, y)
 }
 \arguments{
 \item{x}{A vector}

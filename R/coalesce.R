@@ -16,6 +16,8 @@ coalesce_xy <- function(x, y) {
   dplyr::coalesce(x, y)
 }
 
+#' @rdname coalesce_xy
+#' @export
 coalesce_yx <- function(x, y) {
   dplyr::coalesce(y, x)
 }
