@@ -274,18 +274,17 @@ useful to namespace the data and avoid conflicts
 
 ``` r
 power_left_join(
-  male_penguins %>% pack_along_keys(),
-  female_penguins %>% pack_along_keys(),
+  male_penguins %>% pack_along_keys(name = "m"),
+  female_penguins %>% pack_along_keys(name = "f"),
   by = c("species", "island")
 )
-#> # A tibble: 4 × 8
-#>   species island  name.x  flipper_length_… body_mass_g.x name.y flipper_length_…
-#>   <chr>   <chr>   <chr>              <int>         <int> <chr>             <dbl>
-#> 1 Gentoo  Biscoe  Giordan              222          5250 Alonda              211
-#> 2 Gentoo  Biscoe  Giordan              222          5250 Misha…              215
-#> 3 Adelie  Torger… Lynden               190          3900 <NA>                 NA
-#> 4 Adelie  Dream   Reiner               185          3650 Ola                 190
-#> # … with 1 more variable: body_mass_g.y <int>
+#> # A tibble: 4 × 4
+#>   species island    m$name $flipper_length… $body_mass_g f$name $flipper_length…
+#>   <chr>   <chr>     <chr>             <int>        <int> <chr>             <dbl>
+#> 1 Gentoo  Biscoe    Giord…              222         5250 Alonda              211
+#> 2 Gentoo  Biscoe    Giord…              222         5250 Misha…              215
+#> 3 Adelie  Torgersen Lynden              190         3900 <NA>                 NA
+#> 4 Adelie  Dream     Reiner              185         3650 Ola                 190
 ```
 
 We have more of these, all variants of tidyverse functions :

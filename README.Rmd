@@ -206,8 +206,8 @@ data and avoid conflicts
 
 ```{r}
 power_left_join(
-  male_penguins %>% pack_along_keys(),
-  female_penguins %>% pack_along_keys(),
+  male_penguins %>% pack_along_keys(name = "m"),
+  female_penguins %>% pack_along_keys(name = "f"),
   by = c("species", "island")
 )
 ```

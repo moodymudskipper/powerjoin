@@ -40,6 +40,7 @@ nest_by_keys <- function(.data, ..., name = NULL) {
 #' @export
 #' @rdname preprocess_inputs
 pack_along_keys <- function(.data, ..., name) {
+  if(missing(name)) abort("The `name` argument of `pack_along_keys` cannot be missing")
   attr(.data, "pj_preprocess") <- list(type = "pack_along_keys", args = enquos(name = name, ...))
   .data
 }
