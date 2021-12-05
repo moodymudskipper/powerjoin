@@ -112,7 +112,7 @@ print.powerjoin_check <- function(x, ...) {
   conflicts[missing_nms_lgl] <- cli::style_italic(conflicts[missing_nms_lgl])
   conflicts[!missing_nms_lgl] <- cli::style_bold(conflicts[!missing_nms_lgl])
   writeLines(cli::col_grey("# powerjoin check specifications"))
-  writeLines(rlang::format_error_bullets(setNames(conflicts, icons)))
+  cli::cli_bullets(setNames(conflicts, icons))
   invisible(x)
 }
 
