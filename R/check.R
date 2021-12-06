@@ -222,23 +222,45 @@ check_inconsistent_factor_levels <- function(x_in, y_in, by, check) {
     if(check[["inconsistent_factor_levels"]] == "abort") {
       msg <- mapply(function(x, y, x_nm, y_nm) {
         if(is.factor(x) && is.factor(y) && !setequal(levels(x), levels(y))) {
+          diff1 <- setdiff(levels(x), levels(y))
+          diff2 <- setdiff(levels(y), levels(x))
+          msg_suffix <- paste(c(
+            if (length(diff2)) sprintf("In the left table we don't find %s",
+                                       toString(shQuote(diff2))),
+            if (length(diff1)) sprintf("In the right table we don't find %s",
+                                       toString(shQuote(diff1)))
+          ), collapse = "\n")
           if(x_nm == y_nm)
-            sprintf("`%s` has different factor levels in the left and right tables", x_nm)
+            sprintf("`%s` has different factor levels in the left and right tables:\n%s",
+                    x_nm, msg_suffix)
           else
-            sprintf("`%s` and `%s` (in resp. left and right table) have different factor levels", x_nm, y_nm)
+            sprintf("`%s` and `%s` (in resp. left and right table) have different factor levels:\n%s",
+                    x_nm, y_nm, msg_suffix)
         }}, x_in[by$x], y_in[by$y], names(x_in[by$x]), names(y_in[by$y]))
     } else {
       msg <- mapply(function(x, y, x_nm, y_nm) {
         if(is.factor(x) && is.factor(y) && !setequal(levels(x), levels(y))) {
+          diff1 <- setdiff(levels(x), levels(y))
+          diff2 <- setdiff(levels(y), levels(x))
+          msg_infix <- paste(c(
+            if (length(diff2)) sprintf("In the left table we don't find %s",
+                                       toString(shQuote(diff2))),
+            if (length(diff1)) sprintf("In the right table we don't find %s",
+                                       toString(shQuote(diff1)))
+          ), collapse = "\n")
           if(x_nm == y_nm)
-            sprintf("`%s` has different factor levels in the left and right tables, coercing to character vector", x_nm)
+            sprintf("`%s` has different factor levels in the left and right tables:\n%s\nCoercing to character vector",
+                    x_nm, msg_infix)
           else
-            sprintf("`%s` and `%s` (in resp. the left and right table) have different factor levels, coercing to character vector", x_nm, y_nm)
+            sprintf("`%s` and `%s` (in resp. the left and right table) have different factor levels:\n%s\nCoercing to character vector",
+                    x_nm, y_nm, msg_infix)
         }}, x_in[by$x], y_in[by$y], names(x_in[by$x]), names(y_in[by$y]))
     }
     msg <- msg[lengths(msg)>0]
-    msg <- paste(msg, collapse = "\n")
-    fun(msg)
+    if(length(msg)) {
+      msg <- paste(msg, collapse = "\n")
+      fun(msg)
+    }
   }
 }
 
