@@ -44,9 +44,22 @@ test_that("`pack_along_keys` works", {
   )
 })
 
+
+test_that("`complete_keys` works", {
+  x1 <- data.frame(key = factor("a", levels = c("a", "b")), x = 1:2)
+  y1 <- data.frame(key = c("b", "c"), y = 1:2, stringsAsFactors = FALSE)
+
   expect_equal(
+    power_left_join(x1 %>% complete_keys(), y1, by = "key"),
+    data.frame(key = c("a", "a", "b"), x = c(1, 2, NA), y = c(NA, NA, 1))
   )
+
+  x2 <- data.frame(key1 = 1:2, key2 = 1:2, x = 1:2)
+  y2 <- data.frame(key1 = 1, key2 = 2, y = 3)
+
   expect_equal(
+    power_left_join(x %>% complete_keys(), y, by = "key"),
+    data.frame(key1 = c(1, 1, 2, 2), key2 = c(1:2, 1:2), x = c(1, NA, NA, 2), y = c(NA, 3, NA, NA))
   )
 })
 

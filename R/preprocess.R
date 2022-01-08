@@ -63,6 +63,10 @@ pivot_wider_by_keys <- function(data, names_from = name, names_prefix = "",
     values_fn = values_fn,
     ...))
   data
+complete_keys <- function(.data, ..., expand_unused_levels = TRUE) {
+  attr(.data, "pj_preprocess") <-
+    list(type = "complete_keys", args = enquos(expand_unused_levels = expand_unused_levels, ...))
+  .data
 }
 
 # #' @export
@@ -165,13 +169,19 @@ preprocess <- function(.data, by) {
   # }
 
   if(attr_$type == "pack_along_keys") {
-    #
     .data <- tibble::as_tibble(.data, .name_repair = "minimal")
     pack <- select(.data, -!!by)
     if(length(attr_$args[-1])) {
       pack <- select(pack, !!!attr_$args[-1])
     }
     .data <- transmute(.data, !!!syms(by), (!!attr_$args$name) := pack)
+    return(.data)
+  }
+
+  if(attr_$type == "complete_keys") {
+    cl_bkp <- class(.data)
+    .data <- tidyr::complete(.data, !!!syms(by))
+    class(.data) <- cl_bkp
     return(.data)
   }
 }
