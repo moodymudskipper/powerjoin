@@ -47,9 +47,8 @@ pack_along_keys <- function(.data, ..., name) {
 
 #' @export
 #' @rdname preprocess_inputs
-complete_keys <- function(.data, ..., expand_unused_levels = TRUE) {
-  attr(.data, "pj_preprocess") <-
-    list(type = "complete_keys", args = enquos(expand_unused_levels = expand_unused_levels, ...))
+complete_keys <- function(.data) {
+  attr(.data, "pj_preprocess") <- list(type = "complete_keys")
   .data
 }
 

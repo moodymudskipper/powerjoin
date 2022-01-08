@@ -58,7 +58,7 @@ test_that("`complete_keys` works", {
   y2 <- data.frame(key1 = 1, key2 = 2, y = 3)
 
   expect_equal(
-    power_left_join(x %>% complete_keys(), y, by = "key"),
+    power_left_join(x2 %>% complete_keys(), y2, by = c("key1", "key2")),
     data.frame(key1 = c(1, 1, 2, 2), key2 = c(1:2, 1:2), x = c(1, NA, NA, 2), y = c(NA, 3, NA, NA))
   )
 })
