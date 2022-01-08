@@ -160,16 +160,7 @@ columns.
 
 Traditionally key columns need to be repeated when preprocessing inputs 
 before a join, which is an annoyance and an opportunity for mistakes.
-
-```{r}
-inner_join(
-  male_penguins %>% select(species, island, name),
-  female_penguins %>% select(species, island, female_name = name),
-  by = c("species", "island")
-)
-```
-
-We offer a way around this :
+With {powerjoin} we can do :
 
 ```{r}
 power_inner_join(
@@ -215,8 +206,9 @@ power_left_join(
 We have more of these, all variants of tidyverse functions :
 
 * `nest_by_keys()` nests given columns, or all by default, if `name` is given
-a single list column of data frames is created. 
-* `pivot_wider_by_keys()` and `pivot_longer_by_keys()` assume the "id" columns are the keys
+a single list column of data frames is created
+
+<!-- * `pivot_wider_by_keys()` and `pivot_longer_by_keys()` assume the "id" columns are the keys -->
 
 These functions do not modify the data but add an attribute that will be processed
 by the join function later on, so no function should be used on top of them.

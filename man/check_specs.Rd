@@ -14,7 +14,8 @@ check_specs(
   missing_key_combination_left = c("ignore", "inform", "warn", "abort"),
   missing_key_combination_right = c("ignore", "inform", "warn", "abort"),
   inconsistent_factor_levels = c("ignore", "inform", "warn", "abort"),
-  inconsistent_type = c("ignore", "inform", "warn", "abort")
+  inconsistent_type = c("ignore", "inform", "warn", "abort"),
+  grouped_input = c("ignore", "inform", "warn", "abort")
 )
 }
 \arguments{

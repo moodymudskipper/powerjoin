@@ -166,6 +166,7 @@ power_left_join(df1, df2, by = "id", conflict = coalesce_xy)
 #> 1     1    10
 #> 2     2    22
 #> 3     3    30
+
 power_left_join(df1, df2, by = "id", conflict = coalesce_yx)
 #> # A tibble: 3 × 2
 #>      id value
@@ -187,6 +188,7 @@ power_left_join(df1, df2, by = "id", conflict = ~ sum(.x, .y, na.rm = TRUE))
 #> 1     1    94
 #> 2     2    94
 #> 3     3    94
+
 power_left_join(df1, df2, by = "id", conflict = rw ~ sum(.x, .y, na.rm = TRUE))
 #> # A tibble: 3 × 2
 #>      id value
@@ -204,22 +206,7 @@ relevant pair of conflicted columns.
 
 Traditionally key columns need to be repeated when preprocessing inputs
 before a join, which is an annoyance and an opportunity for mistakes.
-
-``` r
-inner_join(
-  male_penguins %>% select(species, island, name),
-  female_penguins %>% select(species, island, female_name = name),
-  by = c("species", "island")
-)
-#> # A tibble: 3 × 4
-#>   species island name    female_name
-#>   <chr>   <chr>  <chr>   <chr>      
-#> 1 Gentoo  Biscoe Giordan Alonda     
-#> 2 Gentoo  Biscoe Giordan Mishayla   
-#> 3 Adelie  Dream  Reiner  Ola
-```
-
-We offer a way around this :
+With {powerjoin} we can do :
 
 ``` r
 power_inner_join(
@@ -290,9 +277,9 @@ power_left_join(
 We have more of these, all variants of tidyverse functions :
 
 -   `nest_by_keys()` nests given columns, or all by default, if `name`
-    is given a single list column of data frames is created.
--   `pivot_wider_by_keys()` and `pivot_longer_by_keys()` assume the “id”
-    columns are the keys
+    is given a single list column of data frames is created
+
+<!-- * `pivot_wider_by_keys()` and `pivot_longer_by_keys()` assume the "id" columns are the keys -->
 
 These functions do not modify the data but add an attribute that will be
 processed by the join function later on, so no function should be used
@@ -365,6 +352,7 @@ power_left_join(df1, df2, by = "id", fill = 0)
 #> 1     1      2     NA
 #> 2     2     NA      3
 #> 3     3      0      0
+
 power_left_join(df1, df2, by = "id", fill = list(value2 = 0))
 #> # A tibble: 3 × 3
 #>      id value2 value3
@@ -388,6 +376,7 @@ power_left_join(list(df1, df2, df3), by = "id")
 #>      id a     b     c    
 #>   <dbl> <chr> <chr> <chr>
 #> 1     1 foo   bar   baz
+
 power_left_join(df1, list(df2, df3), by = "id")
 #> # A tibble: 1 × 4
 #>      id a     b     c    
