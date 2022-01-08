@@ -22,7 +22,8 @@ check_specs <- function(
   missing_key_combination_left = c("ignore", "inform", "warn", "abort"),
   missing_key_combination_right = c("ignore", "inform", "warn", "abort"),
   inconsistent_factor_levels = c("ignore", "inform", "warn", "abort"),
-  inconsistent_type = c("ignore", "inform", "warn", "abort")
+  inconsistent_type = c("ignore", "inform", "warn", "abort"),
+  grouped_input = c("ignore", "inform", "warn", "abort")
 ) {
   implicit_keys <-
     if(missing(implicit_keys)) NULL else match.arg(implicit_keys)
@@ -44,6 +45,8 @@ check_specs <- function(
     if(missing(inconsistent_factor_levels)) NULL else match.arg(inconsistent_factor_levels)
   inconsistent_type <-
     if(missing(inconsistent_type)) NULL else match.arg(inconsistent_type)
+  grouped_input <-
+    if(missing(grouped_input)) NULL else match.arg(grouped_input)
 
   res <- c(
     implicit_keys = implicit_keys,
@@ -55,7 +58,8 @@ check_specs <- function(
     missing_key_combination_left = missing_key_combination_left,
     missing_key_combination_right = missing_key_combination_right,
     inconsistent_factor_levels = inconsistent_factor_levels,
-    inconsistent_type = inconsistent_type)
+    inconsistent_type = inconsistent_type,
+    grouped_input = grouped_input)
   if(is.null(res)) res <- character()
   class(res) <- "powerjoin_check"
   res
@@ -77,7 +81,8 @@ full_diagnostic <- check_specs(
   missing_key_combination_left = "inform",
   missing_key_combination_right = "inform",
   inconsistent_factor_levels = "inform",
-  inconsistent_type = "inform")
+  inconsistent_type = "inform",
+  grouped_input = "inform")
 
 complete_specs <- function(x) {
   default <- c(
@@ -90,7 +95,8 @@ complete_specs <- function(x) {
     missing_key_combination_left = "ignore",
     missing_key_combination_right = "ignore",
     inconsistent_factor_levels = "ignore",
-    inconsistent_type = "ignore")
+    inconsistent_type = "ignore",
+    grouped_input = "ignore")
   missing_nms <- setdiff(names(default), names(x))
   # add missing elements
   x[missing_nms] <- default[missing_nms]
@@ -121,7 +127,7 @@ c.powerjoin_check <- function(...) {
   default_nms <- c("implicit_keys", "column_conflict", "duplicate_keys_left",
                    "duplicate_keys_right", "unmatched_keys_left", "unmatched_keys_right",
                    "missing_key_combination_left", "missing_key_combination_right",
-                   "inconsistent_factor_levels", "inconsistent_type")
+                   "inconsistent_factor_levels", "inconsistent_type", "grouped_input")
 
   res <- unlist(rev(list(...)))
   res <- res[intersect(default_nms, names(res))]
@@ -353,6 +359,34 @@ check_column_conflict_extra <- function(x_names, y_names, by, keep, check) {
           toString(paste0("'", conflicted_extra, "'")))
       }
       fun(msg)
+    }
+  }
+}
+
+
+check_grouped <- function(x, y, check) {
+  if(check[["grouped_input"]] != "ignore") {
+    fun <- getFromNamespace(check[["grouped_input"]], "rlang")
+    if(check[["grouped_input"]] == "abort") {
+      msg1 <- if(inherits(x, "grouped_df")) {
+        "The left input table is grouped."
+      }
+      msg2 <- if(inherits(y, "grouped_df")) {
+        "The right input table is grouped."
+      }
+      skip <- ""
+    } else {
+      msg1 <- if(inherits(x, "grouped_df")) {
+        "The left input table is grouped, the output will preserve the grouping unless columns were renamed or removed."
+      }
+      msg2 <- if(inherits(y, "grouped_df")) {
+        "The right input table is grouped, the output will ignore those groups."
+      }
+      skip <- NULL
+    }
+    msgs <- c(msg1, msg2)
+    if(length(msgs)) {
+      fun(paste(c(skip, msgs), collapse = "\n"))
     }
   }
 }

@@ -9,8 +9,9 @@ join_mutate <- function(
   fill = NULL) {
   check <- complete_specs(check)
   #-----------------------------------------------------------------------------
-  # implicit keys
+  # checks on raw data
   check_implicit_keys1(by, check)
+  check_grouped(x, y, check)
   #-----------------------------------------------------------------------------
   # transform `by` to list of `x`, `y` and more if fuzzy
   by <- preprocess_by(tbl_vars(x), tbl_vars(y), by = by, check = check)
@@ -22,7 +23,7 @@ join_mutate <- function(
   x <- preprocess(x, by$x)
   y <- preprocess(y, by$y)
   #-----------------------------------------------------------------------------
-  # powerjoin checks
+  # checks on preprocessed data
   check_column_conflict_extra(tbl_vars(x), tbl_vars(y), by, keep, check)
   check_duplicate_keys_left(x, by$x, check)
   check_duplicate_keys_right(y, by$y, check)
@@ -141,7 +142,6 @@ join_mutate <- function(
 
     }
   }
-
   dplyr_reconstruct(out, x)
 }
 
