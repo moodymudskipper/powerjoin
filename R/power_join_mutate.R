@@ -31,6 +31,7 @@ join_mutate <- function(
   check_missing_key_combination_right(y, by$y, check)
   check_inconsistent_factor_levels(x, y, by, check)
   check_inconsistent_type(x, y, by, check)
+  check_na_keys(x, y, by, check)
   #-----------------------------------------------------------------------------
   # dplyr original code
   na_equal <- check_na_matches(na_matches)

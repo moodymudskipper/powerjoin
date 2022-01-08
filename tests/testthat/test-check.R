@@ -59,3 +59,20 @@ test_that("grouped_input", {
     "grouped"
   )
 })
+
+
+test_that("na_keys", {
+  x <- data.frame(key = c(1, NA), x = 1:2)
+  y <- data.frame(key = 1, y = 1)
+
+  expect_error(
+    power_inner_join(x, y, by = "key", check = check_specs(na_keys = "abort")),
+    "left"
+  )
+  expect_error(
+    power_inner_join(y, x, by = "key", check = check_specs(na_keys = "abort")),
+    "right"
+  )
+})
+
+
