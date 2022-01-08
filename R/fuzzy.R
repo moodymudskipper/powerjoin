@@ -49,6 +49,7 @@ join_rows_fuzzy <- function(x, y, by, multi_match_fun, type = "left") {
   number_y_rows <- nrow(y)
 
   indices_x <- x %>%
+    ungroup() %>%
     select_at(by$x) %>%
     mutate(indices = seq_len(number_x_rows)) %>%
     group_by_at(vars(-one_of("indices"))) %>%
@@ -57,6 +58,7 @@ join_rows_fuzzy <- function(x, y, by, multi_match_fun, type = "left") {
     ungroup()
 
   indices_y <- y %>%
+    ungroup() %>%
     select_at(by$y) %>%
     mutate(indices = seq_len(number_y_rows)) %>%
     group_by_at(vars(-one_of("indices"))) %>%
