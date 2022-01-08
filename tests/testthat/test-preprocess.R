@@ -44,18 +44,24 @@ test_that("`pack_along_keys` works", {
   )
 })
 
-test_that("`pivot_*_by_keys` works", {
-  df_long <- tibble(id = c(1, 1, 2, 2), nm = c("a", "b", "a", "b"), val = 1:4)
-  df_wide <- tibble(id = 1:2, a = c(1, 3), b = c(2, 4))
-  df2 <- tibble(id = 1:2)
   expect_equal(
-    power_inner_join(df_long %>% pivot_wider_by_keys(names_from = nm, values_from = val), df2, by = "id"),
-    df_wide
   )
   expect_equal(
-    power_inner_join(df_wide %>% pivot_longer_by_keys(names_to = "nm", values_to = "val"), df2, by = "id"),
-    df_long
   )
 })
+
+# test_that("`pivot_*_by_keys` works", {
+#   df_long <- tibble(id = c(1, 1, 2, 2), nm = c("a", "b", "a", "b"), val = 1:4)
+#   df_wide <- tibble(id = 1:2, a = c(1, 3), b = c(2, 4))
+#   df2 <- tibble(id = 1:2)
+#   expect_equal(
+#     power_inner_join(df_long %>% pivot_wider_by_keys(names_from = nm, values_from = val), df2, by = "id"),
+#     df_wide
+#   )
+#   expect_equal(
+#     power_inner_join(df_wide %>% pivot_longer_by_keys(names_to = "nm", values_to = "val"), df2, by = "id"),
+#     df_long
+#   )
+# })
 
 

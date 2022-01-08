@@ -65,29 +65,49 @@ pivot_wider_by_keys <- function(data, names_from = name, names_prefix = "",
   data
 }
 
-#' @export
-#' @rdname preprocess_inputs
-pivot_longer_by_keys <- function(data, names_to = "name", names_prefix = NULL,
-                                 names_sep = NULL, names_pattern = NULL, names_ptypes = list(),
-                                 names_transform = list(), names_repair = "check_unique",
-                                 values_to = "value", values_drop_na = FALSE, values_ptypes = list(),
-                                 values_transform = list(), ...)  {
-  attr(data, "pj_preprocess") <- list(type = "pivot_longer_by_keys", args = enquos(
-    names_to = names_to,
-    names_prefix = names_prefix,
-    names_sep = names_sep,
-    names_pattern = names_pattern,
-    names_ptypes = names_ptypes,
-    names_transform = names_transform,
-    names_repair = names_repair,
-    values_to = values_to,
-    values_drop_na = values_drop_na,
-    values_ptypes = values_ptypes,
-    values_transform = values_transform,
-    ...
-  ))
-  data
-}
+# #' @export
+# #' @rdname preprocess_inputs
+# pivot_wider_by_keys <- function(data, names_from = name, names_prefix = "",
+#                                 names_sep = "_", names_glue = NULL, names_sort = FALSE, names_repair = "check_unique",
+#                                 values_from = value, values_fill = NULL, values_fn = NULL,
+#                                 ...) {
+#   attr(data, "pj_preprocess") <- list(type = "pivot_wider_by_keys", args = enquos(
+#     names_from = names_from,
+#     names_prefix = names_prefix,
+#     names_sep = names_sep,
+#     names_glue = names_glue,
+#     names_sort = names_sort,
+#     names_repair = names_repair,
+#     values_from = values_from,
+#     values_fill = values_fill,
+#     values_fn = values_fn,
+#     ...))
+#   data
+# }
+#
+# #' @export
+# #' @rdname preprocess_inputs
+# pivot_longer_by_keys <- function(data, names_to = "name", names_prefix = NULL,
+#                                  names_sep = NULL, names_pattern = NULL, names_ptypes = list(),
+#                                  names_transform = list(), names_repair = "check_unique",
+#                                  values_to = "value", values_drop_na = FALSE, values_ptypes = list(),
+#                                  values_transform = list(), ...)  {
+#   attr(data, "pj_preprocess") <- list(type = "pivot_longer_by_keys", args = enquos(
+#     names_to = names_to,
+#     names_prefix = names_prefix,
+#     names_sep = names_sep,
+#     names_pattern = names_pattern,
+#     names_ptypes = names_ptypes,
+#     names_transform = names_transform,
+#     names_repair = names_repair,
+#     values_to = values_to,
+#     values_drop_na = values_drop_na,
+#     values_ptypes = values_ptypes,
+#     values_transform = values_transform,
+#     ...
+#   ))
+#   data
+# }
 
 preprocess <- function(.data, by) {
   attr_ <- attr(.data, "pj_preprocess")
@@ -132,17 +152,17 @@ preprocess <- function(.data, by) {
     return(.data)
   }
 
-  if(attr_$type == "pivot_wider_by_keys") {
-    # pivot_wider takes default columns name and value, we must not have them so we can give only one
-    .data <- eval_tidy(expr(pivot_wider(.data, id_cols = !!by, !!!attr_$args)))
-    return(.data)
-  }
-
-  if(attr_$type == "pivot_longer_by_keys") {
-    #
-    .data <- eval_tidy(expr(pivot_longer(.data, cols = -!!by, !!!attr_$args)))
-    return(.data)
-  }
+  # if(attr_$type == "pivot_wider_by_keys") {
+  #   # pivot_wider takes default columns name and value, we must not have them so we can give only one
+  #   .data <- eval_tidy(expr(pivot_wider(.data, id_cols = !!by, !!!attr_$args)))
+  #   return(.data)
+  # }
+  #
+  # if(attr_$type == "pivot_longer_by_keys") {
+  #   #
+  #   .data <- eval_tidy(expr(pivot_longer(.data, cols = -!!by, !!!attr_$args)))
+  #   return(.data)
+  # }
 
   if(attr_$type == "pack_along_keys") {
     #
