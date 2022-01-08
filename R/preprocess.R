@@ -47,22 +47,6 @@ pack_along_keys <- function(.data, ..., name) {
 
 #' @export
 #' @rdname preprocess_inputs
-pivot_wider_by_keys <- function(data, names_from = name, names_prefix = "",
-                                names_sep = "_", names_glue = NULL, names_sort = FALSE, names_repair = "check_unique",
-                                values_from = value, values_fill = NULL, values_fn = NULL,
-                                ...) {
-  attr(data, "pj_preprocess") <- list(type = "pivot_wider_by_keys", args = enquos(
-    names_from = names_from,
-    names_prefix = names_prefix,
-    names_sep = names_sep,
-    names_glue = names_glue,
-    names_sort = names_sort,
-    names_repair = names_repair,
-    values_from = values_from,
-    values_fill = values_fill,
-    values_fn = values_fn,
-    ...))
-  data
 complete_keys <- function(.data, ..., expand_unused_levels = TRUE) {
   attr(.data, "pj_preprocess") <-
     list(type = "complete_keys", args = enquos(expand_unused_levels = expand_unused_levels, ...))
