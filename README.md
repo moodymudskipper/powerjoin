@@ -10,12 +10,14 @@
 -   Deal with conflicting column names by combining, coalescing them etc
     using the `conflict` argument
 -   Preprocess input, for instance to select columns to join without
-    having to repeat join columns in the selection
+    having to repeat key columns in the selection
 -   Do painless fuzzy joins thanks to a generalized `by` argument
     accepting formulas
 -   Fill unmatched values using the `fill` argument
 -   Operate recursive joins by providing lists of data frames to `x` and
     `y`
+-   Keep or drop key columns with more flexibility thanks to an enhanced
+    `keep`argument
 
 ## Installation
 
@@ -51,7 +53,8 @@ female_penguins <- tribble(
 
 ## Safer joins
 
-The `check` argument receives a list provided by `check_specs()`, whose
+The `check` argument receives an object created by the `check_specs()`
+function, which provides ways to handle specific input properties, its
 arguments can be :
 
 -   `"ignore"` : stay silent (default except for `implicit_keys`)
@@ -59,19 +62,23 @@ arguments can be :
 -   `"warn"`
 -   `"abort"`
 
+We can print these defaults :
+
 ``` r
-check_specs(column_conflict = "abort", duplicate_keys_right = "warn")
+check_specs()
 #> # powerjoin check specifications
 #> ℹ implicit_keys
-#> x column_conflict
+#> → column_conflict
 #> → duplicate_keys_left
-#> ! duplicate_keys_right
+#> → duplicate_keys_right
 #> → unmatched_keys_left
 #> → unmatched_keys_right
 #> → missing_key_combination_left
 #> → missing_key_combination_right
 #> → inconsistent_factor_levels
 #> → inconsistent_type
+#> → grouped_input
+#> → na_keys
 ```
 
 By default it works like {dplyr}, informing in case of implicit keys,
@@ -79,8 +86,9 @@ and no further checks :
 
 ``` r
 power_inner_join(
-  male_penguins[2:3], 
-  female_penguins[2:3])
+  male_penguins[c("species", "island")],
+  female_penguins[c("species", "island")]
+)
 #> Joining, by = c("species", "island")
 #> # A tibble: 3 × 2
 #>   species island
@@ -94,10 +102,28 @@ We can silence the implicit key detection and check that we have unique
 keys in the right table
 
 ``` r
+check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort")
+#> # powerjoin check specifications
+#> → implicit_keys
+#> → column_conflict
+#> → duplicate_keys_left
+#> x duplicate_keys_right
+#> → unmatched_keys_left
+#> → unmatched_keys_right
+#> → missing_key_combination_left
+#> → missing_key_combination_right
+#> → inconsistent_factor_levels
+#> → inconsistent_type
+#> → grouped_input
+#> → na_keys
+```
+
+``` r
 power_inner_join(
-  male_penguins[2:3], 
-  female_penguins[2:3],
-  check = check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort"))
+  male_penguins[c("species", "island")],
+  female_penguins[c("species", "island")],
+  check = check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort")
+)
 #> Error: Keys in the right table have duplicates:
 #> # A tibble: 1 × 2
 #>   species island
@@ -112,13 +138,15 @@ joins:
 
 ``` r
 dev_specs <- check_specs(
-  column_conflict = "abort", 
+  column_conflict = "abort",
   inconsistent_factor_levels = "inform",
-  inconsistent_type = "inform")
+  inconsistent_type = "inform"
+)
 
 prod_specs <- check_specs(
-  column_conflict = "abort", 
-  implicit_keys = "abort")
+  column_conflict = "abort",
+  implicit_keys = "abort"
+)
 ```
 
 This will save some typing :
@@ -127,15 +155,19 @@ This will save some typing :
 
 ``` r
 power_inner_join(
-  male_penguins, 
+  male_penguins,
   female_penguins,
   by = c("species", "island"),
-  check = dev_specs)
+  check = dev_specs
+)
 #> Error: The following columns are conflicted and their conflicts are not handled: 
 #> 'name', 'flipper_length_mm', 'body_mass_g'
 ```
 
 ## Handle column conflict
+
+We saw above how to fail when encountering column conflict, here we show
+how to handle it.
 
 To resolve conflicts between identically named join columns, set the
 `conflict` argument to a 2 argument function (or formula) that will take
@@ -222,7 +254,7 @@ power_inner_join(
 #> 3 Adelie  Dream  Reiner  Ola
 ```
 
-For semi joins, just omit arguments :
+For semi joins, just omit arguments to `select_keys_and()`:
 
 ``` r
 power_inner_join(
@@ -278,6 +310,9 @@ We have more of these, all variants of tidyverse functions :
 
 -   `nest_by_keys()` nests given columns, or all by default, if `name`
     is given a single list column of data frames is created
+-   `complete_keys()` expands the key columns, so all combinations are
+    present, filling the rest of the new rows with `NA`s. Absent factor
+    levels are expanded as well.
 
 <!-- * `pivot_wider_by_keys()` and `pivot_longer_by_keys()` assume the "id" columns are the keys -->
 
@@ -293,47 +328,48 @@ very flexible but can be costly since a cartesian product is computed.
 
 ``` r
 power_inner_join(
-    male_penguins %>% select_keys_and(name),
-    female_penguins %>% select_keys_and(name),
+    male_penguins %>% select_keys_and(male_name = name),
+    female_penguins %>% select_keys_and(female_name = name),
     by = c(~.x$flipper_length_mm < .y$flipper_length_mm, ~.x$body_mass_g > .y$body_mass_g)
 )
 #> # A tibble: 1 × 6
-#>   flipper_length_mm.x body_mass_g.x name.x flipper_length_… body_mass_g.y name.y
-#>                 <int>         <int> <chr>             <dbl>         <int> <chr> 
-#> 1                 185          3650 Reiner              190          3600 Ola
+#>   flipper_length_mm.x body_mass_g.x male_name flipper_length_mm.y body_mass_g.y
+#>                 <int>         <int> <chr>                   <dbl>         <int>
+#> 1                 185          3650 Reiner                    190          3600
+#> # … with 1 more variable: female_name <chr>
 ```
 
 We might also mix fuzzy joins with regular joins :
 
 ``` r
 power_inner_join(
-    male_penguins %>% select_keys_and(name),
-    female_penguins %>% select_keys_and(name),
+    male_penguins %>% select_keys_and(male_name = name),
+    female_penguins %>% select_keys_and(female_name = name),
     by = c("island", ~.x$flipper_length_mm > .y$flipper_length_mm)
 )
 #> # A tibble: 2 × 5
-#>   island flipper_length_mm.x name.x  flipper_length_mm.y name.y  
-#>   <chr>                <int> <chr>                 <dbl> <chr>   
-#> 1 Biscoe                 222 Giordan                 211 Alonda  
-#> 2 Biscoe                 222 Giordan                 215 Mishayla
+#>   island flipper_length_mm.x male_name flipper_length_mm.y female_name
+#>   <chr>                <int> <chr>                   <dbl> <chr>      
+#> 1 Biscoe                 222 Giordan                   211 Alonda     
+#> 2 Biscoe                 222 Giordan                   215 Mishayla
 ```
 
 Finally we might want to create a column with a value used in the
 comparison, in that case we will use `<-` in the formula (several times
-if needed):
+if needed)\`:
 
 ``` r
 power_inner_join(
-    male_penguins %>% select_keys_and(name),
-    female_penguins %>% select_keys_and(name),
+    male_penguins %>% select_keys_and(male_name = name),
+    female_penguins %>% select_keys_and(female_name = name),
     by = ~ (mass_ratio <- .y$body_mass_g / .x$body_mass_g) > 1.2
 )
 #> # A tibble: 3 × 5
-#>   body_mass_g.x name.x body_mass_g.y name.y   mass_ratio
-#>           <int> <chr>          <int> <chr>         <dbl>
-#> 1          3900 Lynden          4750 Mishayla       1.22
-#> 2          3650 Reiner          4500 Alonda         1.23
-#> 3          3650 Reiner          4750 Mishayla       1.30
+#>   body_mass_g.x male_name body_mass_g.y female_name mass_ratio
+#>           <int> <chr>             <int> <chr>            <dbl>
+#> 1          3900 Lynden             4750 Mishayla          1.22
+#> 2          3650 Reiner             4500 Alonda            1.23
+#> 3          3650 Reiner             4750 Mishayla          1.30
 ```
 
 ## Fill unmatched values
@@ -384,9 +420,18 @@ power_left_join(df1, list(df2, df3), by = "id")
 #> 1     1 foo   bar   baz
 ```
 
+## Enhanced `keep` argument
+
+By default, as in *{dplyr}*, key columns are merged and given names from
+the left table. In case of a fuzzy join columns that participate in a
+fuzzy join are kept from both sides.
+
+We provide additional values `"left"`, `"right"`, `"both"` and `"none"`
+to choose which keys to keep or drop.
+
 ## Notes
 
-This package supersedes {safejoin} package which had un unfortunate
+This package supersedes the {safejoin} package which had un unfortunate
 homonym on CRAN and had a suboptimal interface and implementation.
 
 Hadley Wickham, Romain François and David Robinson are credited for
