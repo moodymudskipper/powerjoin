@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# powerjoin
+# powerjoin <img src='man/figures/logo.png' align="right" height="139" />
 
 {powerjoin} extends {dplyr}’s join functions.
 
