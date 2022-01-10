@@ -88,14 +88,17 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Install with:</p>
+<p>Install CRAN version with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"powerjoin"</span><span class="op">)</span></code></pre></div>
+<p>Or development version with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"moodymudskipper/powerjoin"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="now-lets-match-penguins">Now let’s match penguins<a class="anchor" aria-label="anchor" href="#now-lets-match-penguins"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/moodymudskipper/powerjoin" class="external-link">powerjoin</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
 
@@ -128,7 +131,7 @@
 <li><code>"abort"</code></li>
 </ul>
 <p>We can print these defaults :</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/check_specs.html">check_specs</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; # powerjoin check specifications</span>
 <span class="co">#&gt; ℹ implicit_keys</span>
@@ -144,7 +147,7 @@
 <span class="co">#&gt; → grouped_input</span>
 <span class="co">#&gt; → na_keys</span></code></pre></div>
 <p>By default it works like {dplyr}, informing in case of implicit keys, and no further checks :</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_inner_join</a></span><span class="op">(</span>
   <span class="va">male_penguins</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"island"</span><span class="op">)</span><span class="op">]</span>,
   <span class="va">female_penguins</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"island"</span><span class="op">)</span><span class="op">]</span>
@@ -157,7 +160,7 @@
 <span class="co">#&gt; 2 Gentoo  Biscoe</span>
 <span class="co">#&gt; 3 Adelie  Dream</span></code></pre></div>
 <p>We can silence the implicit key detection and check that we have unique keys in the right table</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/check_specs.html">check_specs</a></span><span class="op">(</span>implicit_keys <span class="op">=</span> <span class="st">"ignore"</span>, duplicate_keys_right <span class="op">=</span> <span class="st">"abort"</span><span class="op">)</span>
 <span class="co">#&gt; # powerjoin check specifications</span>
 <span class="co">#&gt; → implicit_keys</span>
@@ -172,7 +175,7 @@
 <span class="co">#&gt; → inconsistent_type</span>
 <span class="co">#&gt; → grouped_input</span>
 <span class="co">#&gt; → na_keys</span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_inner_join</a></span><span class="op">(</span>
   <span class="va">male_penguins</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"island"</span><span class="op">)</span><span class="op">]</span>,
   <span class="va">female_penguins</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"island"</span><span class="op">)</span><span class="op">]</span>,
@@ -184,7 +187,7 @@
 <span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt; </span>
 <span class="co">#&gt; 1 Gentoo  Biscoe</span></code></pre></div>
 <p>The <code>column_conflict</code> argument guarantees that you won’t have columns renamed without you knowing, you might need it most of the time, we could setup some development and production specs for our most common joins:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dev_specs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/check_specs.html">check_specs</a></span><span class="op">(</span>
   column_conflict <span class="op">=</span> <span class="st">"abort"</span>,
   inconsistent_factor_levels <span class="op">=</span> <span class="st">"inform"</span>,
@@ -197,7 +200,7 @@
 <span class="op">)</span></code></pre></div>
 <p>This will save some typing :</p>
 <!-- For some reason this chunk makes markdown bug, so dirty fix -->
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_inner_join</a></span><span class="op">(</span>
   <span class="va">male_penguins</span>,
   <span class="va">female_penguins</span>,
@@ -212,7 +215,7 @@
 </h2>
 <p>We saw above how to fail when encountering column conflict, here we show how to handle it.</p>
 <p>To resolve conflicts between identically named join columns, set the <code>conflict</code> argument to a 2 argument function (or formula) that will take as arguments the 2 conflicting joined columns after the join.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="cn">NA</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span>
 <span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">4</span>, value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">22</span>, <span class="fl">32</span>, <span class="fl">42</span><span class="op">)</span><span class="op">)</span>
 
@@ -224,7 +227,7 @@
 <span class="co">#&gt; 2     2    NA</span>
 <span class="co">#&gt; 3     3    62</span></code></pre></div>
 <p>Coalescing is the most common use case and we provide the functions <code><a href="reference/coalesce_xy.html">coalesce_xy()</a></code> and <code><a href="reference/coalesce_xy.html">coalesce_yx()</a></code> to ease this task (both wrapped around <code><a href="https://dplyr.tidyverse.org/reference/coalesce.html" class="external-link">dplyr::coalesce()</a></code>).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_left_join</a></span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span>, by <span class="op">=</span> <span class="st">"id"</span>, conflict <span class="op">=</span> <span class="va">coalesce_xy</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 3 × 2</span>
 <span class="co">#&gt;      id value</span>
@@ -241,7 +244,7 @@
 <span class="co">#&gt; 2     2    22</span>
 <span class="co">#&gt; 3     3    32</span></code></pre></div>
 <p>Note that the function is operating on vectors by default, not rowwise, however we can make it work rowwise by using <code>rw</code> in the lhs of the formula.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_left_join</a></span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span>, by <span class="op">=</span> <span class="st">"id"</span>, conflict <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">.y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 3 × 2</span>
 <span class="co">#&gt;      id value</span>
@@ -263,7 +266,7 @@
 <h2 id="preprocess-inputs">Preprocess inputs<a class="anchor" aria-label="anchor" href="#preprocess-inputs"></a>
 </h2>
 <p>Traditionally key columns need to be repeated when preprocessing inputs before a join, which is an annoyance and an opportunity for mistakes. With {powerjoin} we can do :</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_inner_join</a></span><span class="op">(</span>
   <span class="va">male_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span>,
   <span class="va">female_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span>female_name <span class="op">=</span> <span class="va">name</span><span class="op">)</span>,
@@ -276,7 +279,7 @@
 <span class="co">#&gt; 2 Gentoo  Biscoe Giordan Mishayla   </span>
 <span class="co">#&gt; 3 Adelie  Dream  Reiner  Ola</span></code></pre></div>
 <p>For semi joins, just omit arguments to <code><a href="reference/preprocess_inputs.html">select_keys_and()</a></code>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_inner_join</a></span><span class="op">(</span>
   <span class="va">male_penguins</span>,
   <span class="va">female_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span><span class="op">)</span>,
@@ -289,7 +292,7 @@
 <span class="co">#&gt; 2 Giordan Gentoo  Biscoe               222        5250</span>
 <span class="co">#&gt; 3 Reiner  Adelie  Dream                185        3650</span></code></pre></div>
 <p>We could also aggregate on keys before the join, without the need for any <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by()</a></code>/<code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup()</a></code> gymnastics :</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_left_join</a></span><span class="op">(</span>
   <span class="va">male_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">summarize_by_keys</a></span><span class="op">(</span>male_weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">body_mass_g</span><span class="op">)</span><span class="op">)</span>,
   <span class="va">female_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">summarize_by_keys</a></span><span class="op">(</span>female_weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">body_mass_g</span><span class="op">)</span><span class="op">)</span>,
@@ -302,7 +305,7 @@
 <span class="co">#&gt; 2 Adelie  Torgersen        3900            NA</span>
 <span class="co">#&gt; 3 Gentoo  Biscoe           5250          4625</span></code></pre></div>
 <p><code><a href="reference/preprocess_inputs.html">pack_along_keys()</a></code> packs given columns, or all non key columns by default, into a data frame column named by the <code>name</code> argument, it’s useful to namespace the data and avoid conflicts</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_left_join</a></span><span class="op">(</span>
   <span class="va">male_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">pack_along_keys</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"m"</span><span class="op">)</span>,
   <span class="va">female_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">pack_along_keys</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"f"</span><span class="op">)</span>,
@@ -328,7 +331,7 @@
 <h2 id="fuzzy-joins">Fuzzy joins<a class="anchor" aria-label="anchor" href="#fuzzy-joins"></a>
 </h2>
 <p>To do fuzzy joins we use formulas in the <code>by</code> argument, in this formula we use, <code>.x</code> and <code>.y</code> to describe the left and right tables. This is very flexible but can be costly since a cartesian product is computed.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_inner_join</a></span><span class="op">(</span>
     <span class="va">male_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span>male_name <span class="op">=</span> <span class="va">name</span><span class="op">)</span>,
     <span class="va">female_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span>female_name <span class="op">=</span> <span class="va">name</span><span class="op">)</span>,
@@ -340,7 +343,7 @@
 <span class="co">#&gt; 1                 185          3650 Reiner                    190          3600</span>
 <span class="co">#&gt; # … with 1 more variable: female_name &lt;chr&gt;</span></code></pre></div>
 <p>We might also mix fuzzy joins with regular joins :</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_inner_join</a></span><span class="op">(</span>
     <span class="va">male_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span>male_name <span class="op">=</span> <span class="va">name</span><span class="op">)</span>,
     <span class="va">female_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span>female_name <span class="op">=</span> <span class="va">name</span><span class="op">)</span>,
@@ -352,7 +355,7 @@
 <span class="co">#&gt; 1 Biscoe                 222 Giordan                   211 Alonda     </span>
 <span class="co">#&gt; 2 Biscoe                 222 Giordan                   215 Mishayla</span></code></pre></div>
 <p>Finally we might want to create a column with a value used in the comparison, in that case we will use <code>&lt;-</code> in the formula (several times if needed)`:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/power_left_join.html">power_inner_join</a></span><span class="op">(</span>
     <span class="va">male_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span>male_name <span class="op">=</span> <span class="va">name</span><span class="op">)</span>,
     <span class="va">female_penguins</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="reference/preprocess_inputs.html">select_keys_and</a></span><span class="op">(</span>female_name <span class="op">=</span> <span class="va">name</span><span class="op">)</span>,
@@ -369,7 +372,7 @@
 <h2 id="fill-unmatched-values">Fill unmatched values<a class="anchor" aria-label="anchor" href="#fill-unmatched-values"></a>
 </h2>
 <p>The <code>fill</code> argument is used to specify what to fill unmatched values with, note that missing values resulting from matches are not replaced.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>
 <span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, value2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="cn">NA</span><span class="op">)</span>, value3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>
 
@@ -393,7 +396,7 @@
 <h2 id="join-recursively">Join recursively<a class="anchor" aria-label="anchor" href="#join-recursively"></a>
 </h2>
 <p>The <code>x</code> and <code>y</code> arguments accept lists of data frames so one can do :</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span>, a <span class="op">=</span> <span class="st">"foo"</span><span class="op">)</span>
 <span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span>, b <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span>
 <span class="va">df3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span>, c <span class="op">=</span> <span class="st">"baz"</span><span class="op">)</span>

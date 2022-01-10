@@ -21,7 +21,13 @@
 
 ## Installation
 
-Install with:
+Install CRAN version with:
+
+``` r
+install.packages("powerjoin")
+```
+
+Or development version with:
 
 ``` r
 remotes::install_github("moodymudskipper/powerjoin")
