@@ -17,7 +17,7 @@ nest_by_keys(.data, ..., name = NULL)
 
 pack_along_keys(.data, ..., name)
 
-complete_keys(.data, ..., expand_unused_levels = TRUE)
+complete_keys(.data)
 }
 \arguments{
 \item{.data}{A data frame to pivot.}

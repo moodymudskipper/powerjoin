@@ -5,7 +5,7 @@
 \alias{full_diagnostic}
 \title{Inform on all potential issues}
 \format{
-An object of class \code{powerjoin_check} of length 11.
+An object of class \code{powerjoin_check} of length 12.
 }
 \usage{
 full_diagnostic

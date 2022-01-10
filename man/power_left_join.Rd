@@ -80,8 +80,19 @@ it is a potentially expensive operation so you must opt into it.}
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
 
-\item{keep}{Should the join keys from both \code{x} and \code{y} be preserved in the
-output?}
+\item{keep}{a boolean for compatibility with {dplyr}, or a value among "left",
+"right", "both", "none" or "default". See details.
+
+The vales of the \code{keep} parameter work as follow :
+\itemize{
+\item \code{NULL} (default) : merge keys and name them as the left table's keys, and
+keep columns used for fuzzy joins from both tables
+\item \code{left} : keep only key columns for left table
+\item \code{right}: keep only key columns for right table
+\item \code{both} or \code{TRUE}: keep key columns from both tables, adding suffix if relevant
+\item \code{none} : drop all key columns from the output
+\item \code{FALSE} : merge keys and name them as the left table's keys, maps to \code{none} for fuzzy joins
+}}
 
 \item{na_matches}{Should \code{NA} and \code{NaN} values match one another?
 
