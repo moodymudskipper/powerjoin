@@ -12,6 +12,19 @@
 #'   or a named list of such items.
 #' @param fill values used to replace missing values originating in unmatched keys,
 #'   or a named list of such items.
+#' @param keep a boolean for compatibility with {dplyr}, or a value among "left",
+#' "right", "both", "none" or "default". See details.
+#'
+#' The vales of the `keep` parameter work as follow :
+#'
+#' - `NULL` (default) : merge keys and name them as the left table's keys, and
+#'   keep columns used for fuzzy joins from both tables
+#' - `left` : keep only key columns for left table
+#' - `right`: keep only key columns for right table
+#' - `both` or `TRUE`: keep key columns from both tables, adding suffix if relevant
+#' - `none` : drop all key columns from the output
+#' - `FALSE` : merge keys and name them as the left table's keys, maps to `none` for fuzzy joins
+#'
 #' @export
 power_left_join <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,
