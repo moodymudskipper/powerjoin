@@ -58,7 +58,7 @@ test_that("The `keep` argument works with equi joins", {
     data.frame(id1 = 1:2, val1 = c("a", NA), val2 = c(NA, "b"))
   )
 
-  # keep = "left" keeps only the unöerged left keys
+  # keep = "left" keeps only the unmerged left keys
   expect_equal(
     power_full_join(
       data.frame(id1=1, val1= "a"),
@@ -68,7 +68,7 @@ test_that("The `keep` argument works with equi joins", {
     data.frame(id1 = c(1, NA), val1 = c("a", NA), val2 = c(NA, "b"))
   )
 
-  # keep = "right" keeps only the unöerged left keys
+  # keep = "right" keeps only the unmerged left keys
   expect_equal(
     power_full_join(
       data.frame(id1=1, val1= "a"),
