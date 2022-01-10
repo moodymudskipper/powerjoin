@@ -431,7 +431,7 @@ to choose which keys to keep or drop.
 
 ## Notes
 
-This package supersedes the {safejoin} package which had un unfortunate
+This package supersedes the {safejoin} package which had an unfortunate
 homonym on CRAN and had a suboptimal interface and implementation.
 
 Hadley Wickham, Romain François and David Robinson are credited for
