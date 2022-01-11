@@ -1,5 +1,5 @@
 Package: powerjoin
-Title: Extensions of *dplyr* and *fuzzyjoin* Join Functions
+Title: Extensions of dplyr and fuzzyjoin Join Functions
 Version: 0.0.1
 Authors@R: 
     c(person(given = "Antoine",
@@ -27,7 +27,7 @@ Authors@R:
       person(given = "RStudio",
              role = c("cph", "fnd"),
              comment = "cph/fnd dplyr"))
-Description: Extensions of *dplyr* and *fuzzyjoin* join functions. Packed with
+Description: Extensions of dplyr and fuzzyjoin join functions. Packed with
     features to preprocess the data, apply various data checks, and deal with
     conflicting columns.
 License: MIT + file LICENSE
