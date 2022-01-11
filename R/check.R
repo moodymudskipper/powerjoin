@@ -18,11 +18,9 @@
 #'   all key combinations
 #' @param inconsistent_factor_levels what to do if the key columns from both sides
 #'   have inconsistent factor levels
-#'
-#'
-#' @param inconsistent_type WIP
-#' @param grouped_input WIP
-#' @param na_keys WIP
+#' @param inconsistent_type what to do if we joined keys have a different type
+#' @param grouped_input what to do if one or both of the tables are grouped
+#' @param na_keys what to do if keys contain missing values
 #'
 #' @export
 check_specs <- function(

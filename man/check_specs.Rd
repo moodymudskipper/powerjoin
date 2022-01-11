@@ -47,11 +47,11 @@ all key combinations}
 \item{inconsistent_factor_levels}{what to do if the key columns from both sides
 have inconsistent factor levels}
 
-\item{inconsistent_type}{WIP}
+\item{inconsistent_type}{what to do if we joined keys have a different type}
 
-\item{grouped_input}{WIP}
+\item{grouped_input}{what to do if one or both of the tables are grouped}
 
-\item{na_keys}{WIP}
+\item{na_keys}{what to do if keys contain missing values}
 }
 \description{
 Build a checklist for power joins
