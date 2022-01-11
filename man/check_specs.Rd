@@ -20,25 +20,38 @@ check_specs(
 )
 }
 \arguments{
-\item{implicit_keys}{WIP}
+\item{implicit_keys}{what to do if keys are not given explicitly through the
+\code{by} argument}
 
-\item{column_conflict}{WIP}
+\item{column_conflict}{what to do if the join creates a column conflict which
+is not handled by the \code{conflict} argument}
 
-\item{duplicate_keys_left}{WIP}
+\item{duplicate_keys_left}{what to do if we find duplicate sets of keys in the
+left table}
 
-\item{duplicate_keys_right}{WIP}
+\item{duplicate_keys_right}{what to do if we find duplicate sets of keys in the
+right table}
 
-\item{unmatched_keys_left}{WIP}
+\item{unmatched_keys_left}{what to do if we find unmatched sets of keys in the
+left table}
 
-\item{unmatched_keys_right}{WIP}
+\item{unmatched_keys_right}{what to do if we find unmatched sets of keys in the
+right table}
 
-\item{missing_key_combination_left}{WIP}
+\item{missing_key_combination_left}{what to do if the left table doesn't contain
+all key combinations}
 
-\item{missing_key_combination_right}{WIP}
+\item{missing_key_combination_right}{what to do if the right table doesn't contain
+all key combinations}
 
-\item{inconsistent_factor_levels}{WIP}
+\item{inconsistent_factor_levels}{what to do if the key columns from both sides
+have inconsistent factor levels}
 
 \item{inconsistent_type}{WIP}
+
+\item{grouped_input}{WIP}
+
+\item{na_keys}{WIP}
 }
 \description{
 Build a checklist for power joins

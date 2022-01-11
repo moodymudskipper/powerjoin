@@ -1,15 +1,28 @@
 #' Build a checklist for power joins
 #'
-#' @param implicit_keys WIP
-#' @param column_conflict WIP
-#' @param duplicate_keys_left WIP
-#' @param duplicate_keys_right WIP
-#' @param unmatched_keys_left WIP
-#' @param unmatched_keys_right WIP
-#' @param missing_key_combination_left WIP
-#' @param missing_key_combination_right WIP
-#' @param inconsistent_factor_levels WIP
+#' @param implicit_keys what to do if keys are not given explicitly through the
+#'   `by` argument
+#' @param column_conflict what to do if the join creates a column conflict which
+#'   is not handled by the `conflict` argument
+#' @param duplicate_keys_left what to do if we find duplicate sets of keys in the
+#'   left table
+#' @param duplicate_keys_right what to do if we find duplicate sets of keys in the
+#'   right table
+#' @param unmatched_keys_left what to do if we find unmatched sets of keys in the
+#'   left table
+#' @param unmatched_keys_right what to do if we find unmatched sets of keys in the
+#'   right table
+#' @param missing_key_combination_left what to do if the left table doesn't contain
+#'   all key combinations
+#' @param missing_key_combination_right what to do if the right table doesn't contain
+#'   all key combinations
+#' @param inconsistent_factor_levels what to do if the key columns from both sides
+#'   have inconsistent factor levels
+#'
+#'
 #' @param inconsistent_type WIP
+#' @param grouped_input WIP
+#' @param na_keys WIP
 #'
 #' @export
 check_specs <- function(
