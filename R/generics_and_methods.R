@@ -24,7 +24,7 @@
 #' - `both` or `TRUE`: keep key columns from both tables, adding suffix if relevant
 #' - `none` : drop all key columns from the output
 #' - `FALSE` : merge keys and name them as the left table's keys, maps to `none` for fuzzy joins
-#'
+#' @return A data frame
 #' @export
 power_left_join <- function(
   x, y = NULL, by = NULL, copy = FALSE, suffix = c(".x", ".y"), keep = NULL,

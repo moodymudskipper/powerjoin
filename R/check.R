@@ -21,6 +21,7 @@
 #' @param inconsistent_type what to do if we joined keys have a different type
 #' @param grouped_input what to do if one or both of the tables are grouped
 #' @param na_keys what to do if keys contain missing values
+#' @return A character vector of class `"powerjoin_check"`
 #'
 #' @export
 check_specs <- function(

@@ -14,6 +14,8 @@
 #' @inheritParams tidyr::pivot_wider
 #' @inheritParams tidyr::pivot_longer
 #' @name preprocess_inputs
+#' @return A data frame identical to the `.data` but with a `"pj_preprocess"`
+#'   attribute to be handled by the join functions
 NULL
 
 #' @export

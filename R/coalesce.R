@@ -9,6 +9,7 @@
 #' @param y A vector
 #'
 #' @export
+#' @return A vector
 #' @examples
 #' coalesce_xy(c(NA, 2, 3), c(11, 12, NA))
 #' coalesce_yx(c(NA, 2, 3), c(11, 12, NA))
