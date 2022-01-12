@@ -10,7 +10,7 @@
 #' don't reshape it. The join function then preprocesses the inputs using these
 #' attributes and the keys.
 #'
-#' @param name of created column
+#' @param name Name of created column
 #' @inheritParams tidyr::pivot_wider
 #' @inheritParams tidyr::pivot_longer
 #' @name preprocess_inputs

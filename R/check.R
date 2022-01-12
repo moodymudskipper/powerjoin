@@ -1,26 +1,26 @@
 #' Build a checklist for power joins
 #'
-#' @param implicit_keys what to do if keys are not given explicitly through the
+#' @param implicit_keys What to do if keys are not given explicitly through the
 #'   `by` argument
-#' @param column_conflict what to do if the join creates a column conflict which
+#' @param column_conflict What to do if the join creates a column conflict which
 #'   is not handled by the `conflict` argument
-#' @param duplicate_keys_left what to do if we find duplicate sets of keys in the
+#' @param duplicate_keys_left What to do if we find duplicate sets of keys in the
 #'   left table
-#' @param duplicate_keys_right what to do if we find duplicate sets of keys in the
+#' @param duplicate_keys_right What to do if we find duplicate sets of keys in the
 #'   right table
-#' @param unmatched_keys_left what to do if we find unmatched sets of keys in the
+#' @param unmatched_keys_left What to do if we find unmatched sets of keys in the
 #'   left table
-#' @param unmatched_keys_right what to do if we find unmatched sets of keys in the
+#' @param unmatched_keys_right What to do if we find unmatched sets of keys in the
 #'   right table
-#' @param missing_key_combination_left what to do if the left table doesn't contain
+#' @param missing_key_combination_left What to do if the left table doesn't contain
 #'   all key combinations
-#' @param missing_key_combination_right what to do if the right table doesn't contain
+#' @param missing_key_combination_right What to do if the right table doesn't contain
 #'   all key combinations
-#' @param inconsistent_factor_levels what to do if the key columns from both sides
+#' @param inconsistent_factor_levels What to do if the key columns from both sides
 #'   have inconsistent factor levels
-#' @param inconsistent_type what to do if we joined keys have a different type
-#' @param grouped_input what to do if one or both of the tables are grouped
-#' @param na_keys what to do if keys contain missing values
+#' @param inconsistent_type What to do if we joined keys have a different type
+#' @param grouped_input What to do if one or both of the tables are grouped
+#' @param na_keys What to do if keys contain missing values
 #' @return A character vector of class `"powerjoin_check"`
 #'
 #' @export

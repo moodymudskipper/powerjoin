@@ -10,9 +10,9 @@
 #' @param check A list created with `check_specs()`
 #' @param conflict A function, formula, the special value amongst `"patch"`,
 #'   or a named list of such items.
-#' @param fill values used to replace missing values originating in unmatched keys,
+#' @param fill Values used to replace missing values originating in unmatched keys,
 #'   or a named list of such items.
-#' @param keep a boolean for compatibility with {dplyr}, or a value among "left",
+#' @param keep A boolean for compatibility with {dplyr}, or a value among "left",
 #' "right", "both", "none" or "default". See details.
 #'
 #' The vales of the `keep` parameter work as follow :
