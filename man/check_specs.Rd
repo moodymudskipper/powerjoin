@@ -53,6 +53,9 @@ have inconsistent factor levels}
 
 \item{na_keys}{what to do if keys contain missing values}
 }
+\value{
+A character vector of class \code{"powerjoin_check"}
+}
 \description{
 Build a checklist for power joins
 }

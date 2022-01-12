@@ -110,6 +110,9 @@ or a named list of such items.}
 \item{fill}{values used to replace missing values originating in unmatched keys,
 or a named list of such items.}
 }
+\value{
+a data frame
+}
 \description{
 Power joins
 }

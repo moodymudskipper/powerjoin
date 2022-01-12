@@ -16,6 +16,12 @@
 #' @name preprocess_inputs
 #' @return A data frame identical to the `.data` but with a `"powerjoin_preprocess"`
 #'   attribute to be handled by the join functions
+#' @examples
+#' # in practice you'll mostly use those in join function calls directly
+#' x <- select_keys_and(head(iris, 2), Sepal.Width)
+#' # all it does is add an attribute that will be processed by the join function
+#' attr(x, "powerjoin_preprocess")
+#' # see `?power_left_join` or README for practical examples
 NULL
 
 #' @export

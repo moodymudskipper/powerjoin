@@ -24,6 +24,12 @@
 #' @return A character vector of class `"powerjoin_check"`
 #'
 #' @export
+#' @examples
+#' check_specs(
+#'   implicit_keys = "ignore",
+#'   grouped_input = "inform",
+#'   column_conflict = "abort",
+#'   na_keys ="warn")
 check_specs <- function(
   implicit_keys = c("inform", "ignore", "warn", "abort"), #
   column_conflict = c("ignore", "inform", "warn", "abort"),

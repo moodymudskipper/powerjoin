@@ -14,6 +14,9 @@ coalesce_yx(x, y)
 
 \item{y}{A vector}
 }
+\value{
+A vector
+}
 \description{
 These are wrappers around \code{dplyr::coalesce}, designed for convenient use in
 the \code{conflict} argument of {powerjoin}'s join functions. \code{coalesce_xy()} is
