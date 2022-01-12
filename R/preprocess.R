@@ -14,28 +14,28 @@
 #' @inheritParams tidyr::pivot_wider
 #' @inheritParams tidyr::pivot_longer
 #' @name preprocess_inputs
-#' @return A data frame identical to the `.data` but with a `"pj_preprocess"`
+#' @return A data frame identical to the `.data` but with a `"powerjoin_preprocess"`
 #'   attribute to be handled by the join functions
 NULL
 
 #' @export
 #' @rdname preprocess_inputs
 select_keys_and <- function(.data, ...) {
-  attr(.data, "pj_preprocess") <- list(type = "select_keys_and", args = enquos(...))
+  attr(.data, "powerjoin_preprocess") <- list(type = "select_keys_and", args = enquos(...))
   .data
 }
 
 #' @export
 #' @rdname preprocess_inputs
 summarize_by_keys <- function(.data, ...) {
-  attr(.data, "pj_preprocess") <- list(type = "summarize_by_keys", args = enquos(...))
+  attr(.data, "powerjoin_preprocess") <- list(type = "summarize_by_keys", args = enquos(...))
   .data
 }
 
 #' @export
 #' @rdname preprocess_inputs
 nest_by_keys <- function(.data, ..., name = NULL) {
-  attr(.data, "pj_preprocess") <- list(type = "nest_by_keys", args = enquos(name = name,...))
+  attr(.data, "powerjoin_preprocess") <- list(type = "nest_by_keys", args = enquos(name = name,...))
   .data
 }
 
@@ -43,14 +43,14 @@ nest_by_keys <- function(.data, ..., name = NULL) {
 #' @rdname preprocess_inputs
 pack_along_keys <- function(.data, ..., name) {
   if(missing(name)) abort("The `name` argument of `pack_along_keys` cannot be missing")
-  attr(.data, "pj_preprocess") <- list(type = "pack_along_keys", args = enquos(name = name, ...))
+  attr(.data, "powerjoin_preprocess") <- list(type = "pack_along_keys", args = enquos(name = name, ...))
   .data
 }
 
 #' @export
 #' @rdname preprocess_inputs
 complete_keys <- function(.data) {
-  attr(.data, "pj_preprocess") <- list(type = "complete_keys")
+  attr(.data, "powerjoin_preprocess") <- list(type = "complete_keys")
   .data
 }
 
@@ -60,7 +60,7 @@ complete_keys <- function(.data) {
 #                                 names_sep = "_", names_glue = NULL, names_sort = FALSE, names_repair = "check_unique",
 #                                 values_from = value, values_fill = NULL, values_fn = NULL,
 #                                 ...) {
-#   attr(data, "pj_preprocess") <- list(type = "pivot_wider_by_keys", args = enquos(
+#   attr(data, "powerjoin_preprocess") <- list(type = "pivot_wider_by_keys", args = enquos(
 #     names_from = names_from,
 #     names_prefix = names_prefix,
 #     names_sep = names_sep,
@@ -81,7 +81,7 @@ complete_keys <- function(.data) {
 #                                  names_transform = list(), names_repair = "check_unique",
 #                                  values_to = "value", values_drop_na = FALSE, values_ptypes = list(),
 #                                  values_transform = list(), ...)  {
-#   attr(data, "pj_preprocess") <- list(type = "pivot_longer_by_keys", args = enquos(
+#   attr(data, "powerjoin_preprocess") <- list(type = "pivot_longer_by_keys", args = enquos(
 #     names_to = names_to,
 #     names_prefix = names_prefix,
 #     names_sep = names_sep,
@@ -99,9 +99,9 @@ complete_keys <- function(.data) {
 # }
 
 preprocess <- function(.data, by) {
-  attr_ <- attr(.data, "pj_preprocess")
+  attr_ <- attr(.data, "powerjoin_preprocess")
   if(is.null(attr_)) return(.data)
-  attr(.data, 'pj_preprocess') <- NULL
+  attr(.data, 'powerjoin_preprocess') <- NULL
 
   if(attr_$type == "select_keys_and") {
     # ugly but not sure there's much better
