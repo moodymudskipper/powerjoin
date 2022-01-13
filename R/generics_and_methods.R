@@ -50,8 +50,8 @@
 #'   check = check_specs(implicit_keys = "ignore", duplicate_keys_right = "inform")
 #' )
 #'
-#' df1 <- tibble(id = 1:3, value = c(10, NA, 30))
-#' df2 <- tibble(id = 2:4, value = c(22, 32, 42))
+#' df1 <- tibble::tibble(id = 1:3, value = c(10, NA, 30))
+#' df2 <- tibble::tibble(id = 2:4, value = c(22, 32, 42))
 #'
 #' # handle conflicted columns when joining
 #' power_left_join(df1, df2, by = "id", conflict = `+`)
@@ -122,15 +122,15 @@
 #' )
 #'
 #' # fill unmatched values
-#' df1 <- tibble(id = 1:3)
-#' df2 <- tibble(id = 1:2, value2 = c(2, NA), value3 = c(NA, 3))
+#' df1 <- tibble::tibble(id = 1:3)
+#' df2 <- tibble::tibble(id = 1:2, value2 = c(2, NA), value3 = c(NA, 3))
 #' power_left_join(df1, df2, by = "id", fill = 0)
 #' power_left_join(df1, df2, by = "id", fill = list(value2 = 0))
 #'
 #' # join recursively
-#' df1 <- tibble(id = 1, a = "foo")
-#' df2 <- tibble(id = 1, b = "bar")
-#' df3 <- tibble(id = 1, c = "baz")
+#' df1 <- tibble::tibble(id = 1, a = "foo")
+#' df2 <- tibble::tibble(id = 1, b = "bar")
+#' df3 <- tibble::tibble(id = 1, c = "baz")
 #' power_left_join(list(df1, df2, df3), by = "id")
 #' power_left_join(df1, list(df2, df3), by = "id")
 #'
