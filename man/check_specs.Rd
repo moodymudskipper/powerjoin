@@ -20,42 +20,49 @@ check_specs(
 )
 }
 \arguments{
-\item{implicit_keys}{what to do if keys are not given explicitly through the
+\item{implicit_keys}{What to do if keys are not given explicitly through the
 \code{by} argument}
 
-\item{column_conflict}{what to do if the join creates a column conflict which
+\item{column_conflict}{What to do if the join creates a column conflict which
 is not handled by the \code{conflict} argument}
 
-\item{duplicate_keys_left}{what to do if we find duplicate sets of keys in the
+\item{duplicate_keys_left}{What to do if we find duplicate sets of keys in the
 left table}
 
-\item{duplicate_keys_right}{what to do if we find duplicate sets of keys in the
+\item{duplicate_keys_right}{What to do if we find duplicate sets of keys in the
 right table}
 
-\item{unmatched_keys_left}{what to do if we find unmatched sets of keys in the
+\item{unmatched_keys_left}{What to do if we find unmatched sets of keys in the
 left table}
 
-\item{unmatched_keys_right}{what to do if we find unmatched sets of keys in the
+\item{unmatched_keys_right}{What to do if we find unmatched sets of keys in the
 right table}
 
-\item{missing_key_combination_left}{what to do if the left table doesn't contain
+\item{missing_key_combination_left}{What to do if the left table doesn't contain
 all key combinations}
 
-\item{missing_key_combination_right}{what to do if the right table doesn't contain
+\item{missing_key_combination_right}{What to do if the right table doesn't contain
 all key combinations}
 
-\item{inconsistent_factor_levels}{what to do if the key columns from both sides
+\item{inconsistent_factor_levels}{What to do if the key columns from both sides
 have inconsistent factor levels}
 
-\item{inconsistent_type}{what to do if we joined keys have a different type}
+\item{inconsistent_type}{What to do if we joined keys have a different type}
 
-\item{grouped_input}{what to do if one or both of the tables are grouped}
+\item{grouped_input}{What to do if one or both of the tables are grouped}
 
-\item{na_keys}{what to do if keys contain missing values}
+\item{na_keys}{What to do if keys contain missing values}
 }
 \value{
 A character vector of class \code{"powerjoin_check"}
 }
 \description{
 Build a checklist for power joins
+}
+\examples{
+check_specs(
+  implicit_keys = "ignore",
+  grouped_input = "inform",
+  column_conflict = "abort",
+  na_keys ="warn")
 }

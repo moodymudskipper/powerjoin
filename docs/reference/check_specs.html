@@ -67,40 +67,66 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>implicit_keys</dt>
-<dd><p>what to do if keys are not given explicitly through the
+<dd><p>What to do if keys are not given explicitly through the
 <code>by</code> argument</p></dd>
 <dt>column_conflict</dt>
-<dd><p>what to do if the join creates a column conflict which
+<dd><p>What to do if the join creates a column conflict which
 is not handled by the <code>conflict</code> argument</p></dd>
 <dt>duplicate_keys_left</dt>
-<dd><p>what to do if we find duplicate sets of keys in the
+<dd><p>What to do if we find duplicate sets of keys in the
 left table</p></dd>
 <dt>duplicate_keys_right</dt>
-<dd><p>what to do if we find duplicate sets of keys in the
+<dd><p>What to do if we find duplicate sets of keys in the
 right table</p></dd>
 <dt>unmatched_keys_left</dt>
-<dd><p>what to do if we find unmatched sets of keys in the
+<dd><p>What to do if we find unmatched sets of keys in the
 left table</p></dd>
 <dt>unmatched_keys_right</dt>
-<dd><p>what to do if we find unmatched sets of keys in the
+<dd><p>What to do if we find unmatched sets of keys in the
 right table</p></dd>
 <dt>missing_key_combination_left</dt>
-<dd><p>what to do if the left table doesn't contain
+<dd><p>What to do if the left table doesn't contain
 all key combinations</p></dd>
 <dt>missing_key_combination_right</dt>
-<dd><p>what to do if the right table doesn't contain
+<dd><p>What to do if the right table doesn't contain
 all key combinations</p></dd>
 <dt>inconsistent_factor_levels</dt>
-<dd><p>what to do if the key columns from both sides
+<dd><p>What to do if the key columns from both sides
 have inconsistent factor levels</p></dd>
 <dt>inconsistent_type</dt>
-<dd><p>what to do if we joined keys have a different type</p></dd>
+<dd><p>What to do if we joined keys have a different type</p></dd>
 <dt>grouped_input</dt>
-<dd><p>what to do if one or both of the tables are grouped</p></dd>
+<dd><p>What to do if one or both of the tables are grouped</p></dd>
 <dt>na_keys</dt>
-<dd><p>what to do if keys contain missing values</p></dd>
+<dd><p>What to do if keys contain missing values</p></dd>
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A character vector of class <code>"powerjoin_check"</code></p>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">check_specs</span><span class="op">(</span></span>
+<span class="r-in">  implicit_keys <span class="op">=</span> <span class="st">"ignore"</span>,</span>
+<span class="r-in">  grouped_input <span class="op">=</span> <span class="st">"inform"</span>,</span>
+<span class="r-in">  column_conflict <span class="op">=</span> <span class="st">"abort"</span>,</span>
+<span class="r-in">  na_keys <span class="op">=</span><span class="st">"warn"</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># powerjoin check specifications</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-weight: bold;">implicit_keys</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> <span style="color: #BB0000; font-weight: bold;">column_conflict</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-style: italic;">duplicate_keys_left</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-style: italic;">duplicate_keys_right</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-style: italic;">unmatched_keys_left</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-style: italic;">unmatched_keys_right</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-style: italic;">missing_key_combination_left</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-style: italic;">missing_key_combination_right</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-style: italic;">inconsistent_factor_levels</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → <span style="color: #555555; font-style: italic;">inconsistent_type</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> <span style="color: #0000BB; font-weight: bold;">grouped_input</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00; font-weight: bold;">na_keys</span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

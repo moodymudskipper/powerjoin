@@ -78,8 +78,12 @@ further transformation should be applied on top of them.</p>
 <dt>...</dt>
 <dd><p>Additional arguments passed on to methods.</p></dd>
 <dt>name</dt>
-<dd><p>of created column</p></dd>
+<dd><p>Name of created column</p></dd>
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A data frame identical to the <code>.data</code> but with a <code>"powerjoin_preprocess"</code>attribute to be handled by the join functions</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Unlike their tidyverse counterparts these just add an attribute to the input and
@@ -87,6 +91,27 @@ don't reshape it. The join function then preprocesses the inputs using these
 attributes and the keys.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># in practice you'll mostly use those in join function calls directly</span></span>
+<span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">select_keys_and</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iris</span>, <span class="fl">2</span><span class="op">)</span>, <span class="va">Sepal.Width</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># all it does is add an attribute that will be processed by the join function</span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"powerjoin_preprocess"</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "select_keys_and"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $args</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;list_of&lt;quosure&gt;&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^Sepal.Width</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x1120a4208</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span class="co"># see `?power_left_join` or README for practical examples</span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

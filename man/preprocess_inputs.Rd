@@ -24,11 +24,11 @@ complete_keys(.data)
 
 \item{...}{Additional arguments passed on to methods.}
 
-\item{name}{of created column}
+\item{name}{Name of created column}
 }
 \value{
-A data frame identical to the \code{.data} but with a \code{"pj_preprocess"}
-attribute to be handled by the join functions.
+A data frame identical to the \code{.data} but with a \code{"powerjoin_preprocess"}
+attribute to be handled by the join functions
 }
 \description{
 These functions are named after the tidyverse functions \code{select}, \code{summarize},
@@ -41,4 +41,11 @@ further transformation should be applied on top of them.
 Unlike their tidyverse counterparts these just add an attribute to the input and
 don't reshape it. The join function then preprocesses the inputs using these
 attributes and the keys.
+}
+\examples{
+# in practice you'll mostly use those in join function calls directly
+x <- select_keys_and(head(iris, 2), Sepal.Width)
+# all it does is add an attribute that will be processed by the join function
+attr(x, "powerjoin_preprocess")
+# see `?power_left_join` or README for practical examples
 }
