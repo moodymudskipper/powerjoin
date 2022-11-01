@@ -37,14 +37,11 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports: 
     dplyr,
-    generics,
     glue,
     rlang,
     tidyselect,
     vctrs,
     purrr,
-    magrittr,
-    lifecycle,
     tibble,
     tidyr,
     cli,
