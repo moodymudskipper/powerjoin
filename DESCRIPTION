@@ -1,6 +1,6 @@
 Package: powerjoin
 Title: Extensions of 'dplyr' and 'fuzzyjoin' Join Functions
-Version: 0.0.1
+Version: 0.0.1.900
 Authors@R: 
     c(person(given = "Antoine",
              family = "Fabri",

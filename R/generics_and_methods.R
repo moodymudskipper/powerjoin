@@ -9,7 +9,10 @@
 #' @inheritParams dplyr::left_join
 #' @param check A list created with `check_specs()`
 #' @param conflict A function, formula, the special value amongst `"patch"`,
-#'   or a named list of such items.
+#'   or a named list of such items. If the LHS of the formula is `rw` the rhs will
+#'   be applied rowwise. Note that the columns will be subsetted with `[` so for
+#'   list columns `.x` or `.y` will refer to length 1 lists and you might sometimes
+#'   need `.x[[1]]` or `.y[[1]]`.
 #' @param fill Values used to replace missing values originating in unmatched keys,
 #'   or a named list of such items.
 #' @param keep A boolean for compatibility with {dplyr}, or a value among "left",
@@ -140,6 +143,7 @@ power_left_join <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  if (!inherits(check, "powerjoin_check")) abort("The `check` argument should be built with `check_specs()`")
   UseMethod("power_left_join")
 }
 
@@ -202,6 +206,7 @@ power_right_join <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  if (!inherits(check, "powerjoin_check")) abort("The `check` argument should be built with `check_specs()`")
   UseMethod("power_right_join")
 }
 
@@ -264,6 +269,7 @@ power_inner_join <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  if (!inherits(check, "powerjoin_check")) abort("The `check` argument should be built with `check_specs()`")
   UseMethod("power_inner_join")
 }
 
@@ -326,6 +332,7 @@ power_full_join <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  if (!inherits(check, "powerjoin_check")) abort("The `check` argument should be built with `check_specs()`")
   UseMethod("power_full_join")
 }
 
