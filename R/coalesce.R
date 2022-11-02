@@ -23,7 +23,6 @@ coalesce_yx <- function(x, y) {
   dplyr::coalesce(y, x)
 }
 
-
 #' Paste helpers
 #'
 #' These are similar to `paste()` but by default ignore `NA` and empty strings
