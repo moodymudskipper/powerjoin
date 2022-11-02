@@ -33,10 +33,11 @@ coalesce_yx <- function(x, y) {
 #'
 #' @param x A vector
 #' @param y A vector
+#' @param separator
 #' @param na How to treat `NAs`, they are ignored by default, if `NA` the result
 #'   will be `NA`, just as with `stringr::str_c`, if `"NA"` NAs will be coerced
 #'   to characterm just as with `paste()`. Any other string can be used
-#' @param empty Whether to ignore empty strings, to avoid trailing and leading separators
+#' @param ignore_empty Whether to ignore empty strings, to avoid trailing and leading separators
 #'
 #' @return A character vector
 #' @export

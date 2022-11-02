@@ -18,7 +18,7 @@ paste_yx(x, y, sep = " ", na = NULL, ignore_empty = TRUE)
 will be \code{NA}, just as with \code{stringr::str_c}, if \code{"NA"} NAs will be coerced
 to characterm just as with \code{paste()}. Any other string can be used}
 
-\item{empty}{Whether to ignore empty strings, to avoid trailing and leading separators}
+\item{ignore_empty}{Whether to ignore empty strings, to avoid trailing and leading separators}
 }
 \value{
 A character vector
