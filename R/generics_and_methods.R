@@ -140,6 +140,7 @@ power_left_join <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  if (!inherits(check, "powerjoin_check")) abort("The `check` argument should be built with `check_specs()`")
   UseMethod("power_left_join")
 }
 
@@ -202,6 +203,7 @@ power_right_join <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  if (!inherits(check, "powerjoin_check")) abort("The `check` argument should be built with `check_specs()`")
   UseMethod("power_right_join")
 }
 
@@ -264,6 +266,7 @@ power_inner_join <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  if (!inherits(check, "powerjoin_check")) abort("The `check` argument should be built with `check_specs()`")
   UseMethod("power_inner_join")
 }
 
@@ -326,6 +329,7 @@ power_full_join <- function(
   check = check_specs(),
   conflict = NULL,
   fill = NULL) {
+  if (!inherits(check, "powerjoin_check")) abort("The `check` argument should be built with `check_specs()`")
   UseMethod("power_full_join")
 }
 
