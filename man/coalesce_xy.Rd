@@ -3,7 +3,7 @@
 \name{coalesce_xy}
 \alias{coalesce_xy}
 \alias{coalesce_yx}
-\title{Coalesce}
+\title{Coalesce helpers}
 \usage{
 coalesce_xy(x, y)
 
