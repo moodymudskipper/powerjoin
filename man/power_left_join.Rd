@@ -60,11 +60,7 @@ power_full_join(
 )
 }
 \arguments{
-\item{x}{A pair of data frames, data frame extensions (e.g. a tibble), or
-lazy data frames (e.g. from dbplyr or dtplyr). See \emph{Methods}, below, for
-more details.}
-
-\item{y}{A pair of data frames, data frame extensions (e.g. a tibble), or
+\item{x, y}{A pair of data frames, data frame extensions (e.g. a tibble), or
 lazy data frames (e.g. from dbplyr or dtplyr). See \emph{Methods}, below, for
 more details.}
 
@@ -105,7 +101,10 @@ joins for database sources, similarly to \code{merge(incomparables = FALSE)}.}
 \item{check}{A list created with \code{check_specs()}}
 
 \item{conflict}{A function, formula, the special value amongst \code{"patch"},
-or a named list of such items.}
+or a named list of such items. If the LHS of the formula is \code{rw} the rhs will
+be applied rowwise. Note that the columns will be subsetted with \code{[} so for
+list columns \code{.x} or \code{.y} will refer to length 1 lists and you might sometimes
+need \code{.x[[1]]} or \code{.y[[1]]}.}
 
 \item{fill}{Values used to replace missing values originating in unmatched keys,
 or a named list of such items.}

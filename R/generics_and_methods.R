@@ -9,7 +9,10 @@
 #' @inheritParams dplyr::left_join
 #' @param check A list created with `check_specs()`
 #' @param conflict A function, formula, the special value amongst `"patch"`,
-#'   or a named list of such items.
+#'   or a named list of such items. If the LHS of the formula is `rw` the rhs will
+#'   be applied rowwise. Note that the columns will be subsetted with `[` so for
+#'   list columns `.x` or `.y` will refer to length 1 lists and you might sometimes
+#'   need `.x[[1]]` or `.y[[1]]`.
 #' @param fill Values used to replace missing values originating in unmatched keys,
 #'   or a named list of such items.
 #' @param keep A boolean for compatibility with {dplyr}, or a value among "left",
