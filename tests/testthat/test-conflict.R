@@ -59,15 +59,7 @@ test_that("conflict works special values", {
     power_left_join(df1, df2, by = "id", conflict = "patch"),
     data.frame(id = 1:3, val = c(2, NA, 3))
   )
-})
 
-test_that("paste_xy", {
-  expect_snapshot({
-    paste_xy(letters[1:3], c("d", NA, ""))
-    paste_yx(letters[1:3], c("d", NA, ""))
-    paste_xy(letters[1:3], c("d", NA, ""), na = NA, ignore_empty = FALSE)
-    paste_xy(letters[1:3], c("d", NA, ""), na = "NA", ignore_empty = FALSE)
-  })
 })
 
 test_that("conflict works with lists", {
@@ -88,4 +80,5 @@ test_that("conflict works with lists", {
     power_left_join(df1, df2, by = "id", conflict = list(val="patch")),
     data.frame(id = 1:3, val = c(2, NA, 3))
   )
+
 })
