@@ -4,4 +4,5 @@
 
 ## comments
 
-The package was archived on CRAN due to new rules on html, hopefully fixed now 
+The package was archived on CRAN due to new rules on html, we fixed it by
+redocumenting the package using an up to date version of 'roxygen2'
