@@ -90,13 +90,14 @@ keep columns used for fuzzy joins from both tables
 \item \code{FALSE} : merge keys and name them as the left table's keys, maps to \code{none} for fuzzy joins
 }}
 
-\item{na_matches}{Should \code{NA} and \code{NaN} values match one another?
-
-The default, \code{"na"}, treats two \code{NA} or \code{NaN} values as equal, like
-\code{\%in\%}, \code{\link[=match]{match()}}, \code{\link[=merge]{merge()}}.
-
-Use \code{"never"} to always treat two \code{NA} or \code{NaN} values as different, like
-joins for database sources, similarly to \code{merge(incomparables = FALSE)}.}
+\item{na_matches}{Should two \code{NA} or two \code{NaN} values match?
+\itemize{
+\item \code{"na"}, the default, treats two \code{NA} or two \code{NaN} values as equal, like
+\code{\%in\%}, \code{\link[=match]{match()}}, and \code{\link[=merge]{merge()}}.
+\item \code{"never"} treats two \code{NA} or two \code{NaN} values as different, and will
+never match them together or to any other values. This is similar to joins
+for database sources and to \code{base::merge(incomparables = NA)}.
+}}
 
 \item{check}{A list created with \code{check_specs()}}
 
