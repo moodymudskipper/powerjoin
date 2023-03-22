@@ -1,4 +1,4 @@
-preprocess_by <- function(x_names, y_names, by = NULL, check) {
+preprocess_by <- function(x_names, y_names, by = NULL, check, na_equal) {
   fml_lgl <- sapply(by, is_formula)
   if(is_formula(by)) {
     equi_keys <- NULL
@@ -14,11 +14,21 @@ preprocess_by <- function(x_names, y_names, by = NULL, check) {
     equi_keys <- by[!fml_lgl]
     # extract lhs
     by[fml_lgl]  <- lapply(by[fml_lgl], `[[`, 2)
-    by[!fml_lgl] <- Map(function(x, y) call(
-      "==",
-      call("$", sym(".x"), sym(x)),
-      call("$", sym(".y"), sym(y))),
-      names(by[!fml_lgl]), by[!fml_lgl])
+    if (na_equal) {
+      # na_matches == "na"
+      by[!fml_lgl] <- Map(
+        function(x, y) substitute(is.na(.x$X) & is.na(.y$Y) | !is.na(.x$X) & !is.na(.y$Y) & .x$X == .y$Y, list(X = sym(x), Y = sym(y))),
+        names(by[!fml_lgl]),
+        by[!fml_lgl]
+      )
+    } else {
+      # na_matches == "never"
+      by[!fml_lgl] <- Map(
+        function(x, y) substitute(!is.na(.x$X) & !is.na(.y$Y) & .x$X == .y$Y, list(X = sym(x), Y = sym(y))),
+        names(by[!fml_lgl]),
+        by[!fml_lgl]
+      )
+    }
     # concat
     by <- Reduce(function(x,y) call("&", x, y), by)
     # rebuild formula

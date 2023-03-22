@@ -14,7 +14,8 @@ join_mutate <- function(
   check_grouped(x, y, check)
   #-----------------------------------------------------------------------------
   # transform `by` to list of `x`, `y` and more if fuzzy
-  by <- preprocess_by(tbl_vars(x), tbl_vars(y), by = by, check = check)
+  na_equal <- check_na_matches(na_matches)
+  by <- preprocess_by(tbl_vars(x), tbl_vars(y), by = by, check = check, na_equal = na_equal)
   #-----------------------------------------------------------------------------
   # check keep's values and assess right default if relevant
   keep <- match_keep(keep, by$fuzzy)
@@ -34,7 +35,6 @@ join_mutate <- function(
   check_na_keys(x, y, by, check)
   #-----------------------------------------------------------------------------
   # dplyr original code
-  na_equal <- check_na_matches(na_matches)
   x_in <- as_tibble(x, .name_repair = "minimal")
   y_in <- as_tibble(y, .name_repair = "minimal")
   #-----------------------------------------------------------------------------
