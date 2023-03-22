@@ -5,7 +5,8 @@
 #' Power joins
 #'
 #' @param by As in {dplyr}, but extended so user can supply a formula or a list
-#'  of character and formulas. Formulas are used for fuzzy joins and
+#'  of character and formulas. Formulas are used for fuzzy joins, see dedicated
+#'  section below.
 #' @inheritParams dplyr::left_join
 #' @param check A list created with `check_specs()`
 #' @param conflict A function, formula, the special value amongst `"patch"`,
@@ -16,9 +17,10 @@
 #' @param fill Values used to replace missing values originating in unmatched keys,
 #'   or a named list of such items.
 #' @param keep A boolean for compatibility with {dplyr}, or a value among "left",
-#' "right", "both", "none" or "default". See details.
+#' "right", "both", "none" or "default". See dedicated section below.
+#' @param copy Ignored at the moment because {powerjoin} doesn't support databases
 #'
-#' The vales of the `keep` parameter work as follow :
+#' @section `keep` argument values:
 #'
 #' - `NULL` (default) : merge keys and name them as the left table's keys, and
 #'   keep columns used for fuzzy joins from both tables
@@ -27,6 +29,32 @@
 #' - `both` or `TRUE`: keep key columns from both tables, adding suffix if relevant
 #' - `none` : drop all key columns from the output
 #' - `FALSE` : merge keys and name them as the left table's keys, maps to `none` for fuzzy joins
+#'
+#' @section fuzzy joins:
+#'
+#' To specify fuzzy matching conditions we use formulas in which the we refer to
+#' the columns from the left side data frame using `.x` and the right side data frame
+#' using `.y`, for instance `by = ~ .x$col1 > .y$col2`.
+#'
+#' We can specify several condition and even mix equi condition with fuzzy condition,
+#' for instance `by = c(col1 = "col2", ~ .x$col3 > .y$col4)`
+#'
+#' To fuzzy match strings we can leverage the functions from the {stringr}
+#' package since they are vectorized on all main arguments,
+#' for instance to match observations where `col1` contains `col1` we can attach
+#' {stringr} and do `by =  ~ str_detect(.x$col1, fixed(.y$col2))`.
+#'
+#' Another useful function is `stringdist` from the {stringdist} package to match
+#' strings that are close enough, for instance `by = ~ stringdist::stringdist(.x$a,.y$a) < 2`
+#'
+#' We can also define a new column computed during the fuzzy matching, using the
+#' arrow assignment operator, for instance : `by = ~ .x$col1 > (mysum <- .y$col2 + .y$col3)`
+#'
+#' When the `by` condition evaluates to `NA` the observation is dismissed. This makes
+#' `by = c(a = "b")` slightly different from `by = ~ .x$a == .y$b` when `na_matches`
+#' is `"na"` (the default). To be able to match `NA` with `NA` in fuzzy matching condition
+#' we can use the `%==%` operator (bone operator), defined in this package.
+#'
 #' @return A data frame
 #' @export
 #' @examples
