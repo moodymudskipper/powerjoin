@@ -144,11 +144,12 @@ keep columns used for fuzzy joins from both tables</p></li>
 
 
 <dt>na_matches</dt>
-<dd><p>Should <code>NA</code> and <code>NaN</code> values match one another?</p>
-<p>The default, <code>"na"</code>, treats two <code>NA</code> or <code>NaN</code> values as equal, like
-<code>%in%</code>, <code><a href="https://rdrr.io/r/base/match.html" class="external-link">match()</a></code>, <code><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge()</a></code>.</p>
-<p>Use <code>"never"</code> to always treat two <code>NA</code> or <code>NaN</code> values as different, like
-joins for database sources, similarly to <code>merge(incomparables = FALSE)</code>.</p></dd>
+<dd><p>Should two <code>NA</code> or two <code>NaN</code> values match?</p><ul><li><p><code>"na"</code>, the default, treats two <code>NA</code> or two <code>NaN</code> values as equal, like
+<code>%in%</code>, <code><a href="https://rdrr.io/r/base/match.html" class="external-link">match()</a></code>, and <code><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge()</a></code>.</p></li>
+<li><p><code>"never"</code> treats two <code>NA</code> or two <code>NaN</code> values as different, and will
+never match them together or to any other values. This is similar to joins
+for database sources and to <code>base::merge(incomparables = NA)</code>.</p></li>
+</ul></dd>
 
 
 <dt>check</dt>
