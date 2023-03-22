@@ -84,6 +84,7 @@ join_rows_fuzzy <- function(x, y, by, multi_match_fun, type = "left") {
     }
     m <- m[[1]]
   }
+  m[is.na(m)] <- FALSE
 
   if (sum(m) == 0) {
     # there are no matches
