@@ -6,7 +6,8 @@ join_mutate <- function(
   # powerjoin args
   check = check_specs(),
   conflict = NULL,
-  fill = NULL) {
+  fill = NULL,
+  env) {
   check <- complete_specs(check)
   #-----------------------------------------------------------------------------
   # checks on raw data
@@ -15,7 +16,7 @@ join_mutate <- function(
   #-----------------------------------------------------------------------------
   # transform `by` to list of `x`, `y` and more if fuzzy
   na_equal <- check_na_matches(na_matches)
-  by <- preprocess_by(tbl_vars(x), tbl_vars(y), by = by, check = check, na_equal = na_equal)
+  by <- preprocess_by(tbl_vars(x), tbl_vars(y), by = by, check = check, na_equal = na_equal, env = env)
   #-----------------------------------------------------------------------------
   # check keep's values and assess right default if relevant
   keep <- match_keep(keep, by$fuzzy)

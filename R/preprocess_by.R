@@ -1,8 +1,8 @@
-preprocess_by <- function(x_names, y_names, by = NULL, check, na_equal) {
+preprocess_by <- function(x_names, y_names, by = NULL, check, na_equal, env) {
   fml_lgl <- sapply(by, is_formula)
   if(is_formula(by)) {
     equi_keys <- NULL
-    specs <- fuzzy_specs(by)
+    specs <- fuzzy_specs(by, env)
     by <- specs$multi_by
     by$multi_match_fun <- specs$multi_match_fun
     by$extra_cols <- specs$extra_cols
@@ -33,7 +33,7 @@ preprocess_by <- function(x_names, y_names, by = NULL, check, na_equal) {
     by <- Reduce(function(x,y) call("&", x, y), by)
     # rebuild formula
     by <- call("~", by)
-    specs <- fuzzy_specs(by)
+    specs <- fuzzy_specs(by, env)
     by <- specs$multi_by
     by$multi_match_fun <- specs$multi_match_fun
     by$fuzzy <- TRUE

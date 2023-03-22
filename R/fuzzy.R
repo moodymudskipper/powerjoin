@@ -1,4 +1,4 @@
-fuzzy_specs <- function(by) {
+fuzzy_specs <- function(by, env) {
 
   by_x <- list()
   by_y <- list()
@@ -15,6 +15,20 @@ fuzzy_specs <- function(by) {
     calling_dollar_on_y <- calling_dollar && identical(call[[2]], quote(`.y`))
     if(calling_dollar_on_y) {
       var <- as.character(call[[3]])
+      by_y[[length(by_y) + 1]] <<- var
+      return(call)
+    }
+
+    calling_bracket2 <- identical(call[[1]], quote(`[[`))
+    calling_bracket2_on_x <- calling_bracket2 && identical(call[[2]], quote(`.x`))
+    if(calling_bracket2_on_x) {
+      var <- eval(call[[3]], env)
+      by_x[[length(by_x) + 1]] <<- var
+      return(call)
+    }
+    calling_bracket2_on_y <- calling_bracket2 && identical(call[[2]], quote(`.y`))
+    if(calling_bracket2_on_y) {
+      var <- eval(call[[3]], env)
       by_y[[length(by_y) + 1]] <<- var
       return(call)
     }

@@ -198,7 +198,8 @@ power_left_join.data.frame <- function(
               by = by, copy = copy, type = "left", suffix = suffix,
               na_matches = na_matches, keep = keep,
               # powerjoin args
-              check = check, conflict = conflict, fill = fill
+              check = check, conflict = conflict, fill = fill,
+              env = parent.frame()
   )
 }
 
@@ -261,7 +262,8 @@ power_right_join.data.frame <- function(
               by = by, copy = copy, type = "right", suffix = suffix,
               na_matches = na_matches, keep = keep,
               # powerjoin args
-              check = check, conflict = conflict, fill = fill
+              check = check, conflict = conflict, fill = fill,
+              env = parent.frame()
   )
 }
 
@@ -324,7 +326,8 @@ power_inner_join.data.frame <- function(
               by = by, copy = copy, type = "inner", suffix = suffix,
               na_matches = na_matches, keep = keep,
               # powerjoin args
-              check = check, conflict =conflict
+              check = check, conflict = conflict,
+              env = parent.frame()
   )
 }
 
@@ -387,7 +390,8 @@ power_full_join.data.frame <- function(
               by = by, copy = copy, type = "full", suffix = suffix,
               na_matches = na_matches, keep = keep,
               # powerjoin args
-              check = check, conflict = conflict, fill = fill
+              check = check, conflict = conflict, fill = fill,
+              env = parent.frame()
   )
 }
 
