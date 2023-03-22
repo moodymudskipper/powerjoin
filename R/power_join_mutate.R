@@ -316,7 +316,7 @@ join_rows <- function(x_key, y_key, type = c("inner", "left", "right", "full"),
   if (type == "left" || type == "full") {
     if (anyNA(matches)) {
       y_loc <- vec_assign(
-        y_loc, vec_equal_na(matches),
+        y_loc, vec_detect_missing(matches),
         list(NA_integer_)
       )
     }

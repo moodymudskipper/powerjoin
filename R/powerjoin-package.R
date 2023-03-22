@@ -6,7 +6,7 @@
 #' @importFrom glue glue glue_collapse
 #' @importFrom tidyr nest pivot_longer pivot_wider
 #' @importFrom purrr map map_lgl map_chr
-#' @importFrom vctrs vec_cast vec_ptype_common vec_slice vec_assign vec_equal_na
+#' @importFrom vctrs vec_cast vec_ptype_common vec_slice vec_assign vec_detect_missing
 #' @importFrom vctrs vec_group_loc vec_in vec_match vec_ptype_full vec_size
 #' @import rlang
 #' @keywords internal
