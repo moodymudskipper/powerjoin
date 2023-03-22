@@ -36,8 +36,8 @@ test_that("column conflict", {
 
 
 test_that("grouped_input", {
-  df1 <- data.frame(id = 1:2, val = 1:2) |> dplyr::group_by(id)
-  df2 <- data.frame(id = 2:3, val = 3:4) |> dplyr::group_by(id)
+  df1 <- dplyr::group_by(data.frame(id = 1:2, val = 1:2), id)
+  df2 <- dplyr::group_by(data.frame(id = 2:3, val = 3:4), id)
 
   expect_error(
     power_inner_join(df1, df2, by = "id", check = check_specs(grouped_input = "abort")),
