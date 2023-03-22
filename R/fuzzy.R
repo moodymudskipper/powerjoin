@@ -120,8 +120,8 @@ join_rows_fuzzy <- function(x, y, by, multi_match_fun, type = "left") {
       left_join(matches, by = "y")
   } else if (type == "full") {
     matches <- matches %>%
-      full_join(tibble::tibble(x = seq_len(number_x_rows)), by = "x") %>%
-      full_join(tibble::tibble(y = seq_len(number_y_rows)), by = "y")
+      full_join(tibble::tibble(x = seq_len(number_x_rows)), by = "x", multiple = "all") %>%
+      full_join(tibble::tibble(y = seq_len(number_y_rows)), by = "y", multiple = "all")
   }
 
   #-----------------------------------------------------------------------------
