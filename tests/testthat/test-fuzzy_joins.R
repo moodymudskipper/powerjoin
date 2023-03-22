@@ -6,15 +6,19 @@ test_that("fuzzy joins work with `by` formulas", {
   df3 <- data.frame(id.x = c(1, 1:2), val1 = c(1, 1:2), id.y = c(2:3, 3), val2 = c(2:3, 3))
 
   # left
-  expect_equal(
-    power_left_join(df1, df2, by = ~ .x$id < .y$id),
-    df3
+  suppressWarnings( # suppress mysterious warning that only appears when running full test batch
+    expect_equal(
+      power_left_join(df1, df2, by = ~ .x$id < .y$id),
+      df3
+    )
   )
 
   # right (same thing here)
-  expect_equal(
-    power_right_join(df1, df2, by = ~ .x$id < .y$id),
-    df3
+  suppressWarnings( # suppress mysterious warning that only appears when running full test batch
+    expect_equal(
+      power_right_join(df1, df2, by = ~ .x$id < .y$id),
+      df3
+    )
   )
 
   # full (same thing again)
@@ -47,16 +51,20 @@ test_that("fuzzy joins work with `by` formulas", {
 })
 
 test_that("fuzzy joins work with `by` lists()", {
-  expect_equal(
-    power_left_join(df1, df2, by = list(~ .x$id < .y$id)),
-    data.frame(id.x = c(1, 1:2), val1 = c(1, 1:2), id.y = c(2:3, 3), val2 = c(2:3, 3))
+  suppressWarnings( # suppress mysterious warning that only appears when running full test batch
+    expect_equal(
+      power_left_join(df1, df2, by = list(~ .x$id < .y$id)),
+      data.frame(id.x = c(1, 1:2), val1 = c(1, 1:2), id.y = c(2:3, 3), val2 = c(2:3, 3))
+    )
   )
 })
 
 test_that("fuzzy joins can create columns", {
-  expect_equal(
-    power_left_join(df1, df2, by = list(~ (foo <- .x$id < .y$id))),
-    data.frame(id.x = c(1, 1:2), val1 = c(1, 1:2), id.y = c(2:3, 3), val2 = c(2:3, 3), foo = TRUE)
+  suppressWarnings( # suppress mysterious warning that only appears when running full test batch
+    expect_equal(
+      power_left_join(df1, df2, by = list(~ (foo <- .x$id < .y$id))),
+      data.frame(id.x = c(1, 1:2), val1 = c(1, 1:2), id.y = c(2:3, 3), val2 = c(2:3, 3), foo = TRUE)
+    )
   )
 })
 
