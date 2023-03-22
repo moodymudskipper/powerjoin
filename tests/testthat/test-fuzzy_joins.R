@@ -121,3 +121,21 @@ test_that("mixing equi joins and fuzzy joins works", {
     data.frame(foo = c(1, 1, 1, NA, 1))
   )
 })
+
+test_that("NAs are handled properly in fuzzy joins", {
+  expect_equal(
+    power_inner_join(data.frame(a = c(1, NA)), data.frame(b = c(1, NA)), by = c(a = "b")),
+    data.frame(a = c(1, NA))
+  )
+
+  expect_equal(
+    power_inner_join(data.frame(a = c(1, NA)), data.frame(b = c(1, NA)), by = ~ .x$a == .y$b),
+    data.frame(a = 1, b = 1)
+  )
+
+  expect_equal(
+    power_inner_join(data.frame(a = c(1, NA)), data.frame(b = c(1, NA)), by = ~ .x$a %==% .y$b),
+    data.frame(a = c(1, NA), b = c(1, NA))
+  )
+})
+
