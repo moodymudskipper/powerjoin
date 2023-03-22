@@ -114,14 +114,12 @@ more details.</p></dd>
 
 <dt>by</dt>
 <dd><p>As in dplyr, but extended so user can supply a formula or a list
-of character and formulas. Formulas are used for fuzzy joins and</p></dd>
+of character and formulas. Formulas are used for fuzzy joins, see dedicated
+section below.</p></dd>
 
 
 <dt>copy</dt>
-<dd><p>If <code>x</code> and <code>y</code> are not from the same data source,
-and <code>copy</code> is <code>TRUE</code>, then <code>y</code> will be copied into the
-same src as <code>x</code>.  This allows you to join tables across srcs, but
-it is a potentially expensive operation so you must opt into it.</p></dd>
+<dd><p>Ignored at the moment because powerjoin doesn't support databases</p></dd>
 
 
 <dt>suffix</dt>
@@ -132,15 +130,7 @@ Should be a character vector of length 2.</p></dd>
 
 <dt>keep</dt>
 <dd><p>A boolean for compatibility with dplyr, or a value among "left",
-"right", "both", "none" or "default". See details.</p>
-<p>The vales of the <code>keep</code> parameter work as follow :</p><ul><li><p><code>NULL</code> (default) : merge keys and name them as the left table's keys, and
-keep columns used for fuzzy joins from both tables</p></li>
-<li><p><code>left</code> : keep only key columns for left table</p></li>
-<li><p><code>right</code>: keep only key columns for right table</p></li>
-<li><p><code>both</code> or <code>TRUE</code>: keep key columns from both tables, adding suffix if relevant</p></li>
-<li><p><code>none</code> : drop all key columns from the output</p></li>
-<li><p><code>FALSE</code> : merge keys and name them as the left table's keys, maps to <code>none</code> for fuzzy joins</p></li>
-</ul></dd>
+"right", "both", "none" or "default". See dedicated section below.</p></dd>
 
 
 <dt>na_matches</dt>
@@ -174,6 +164,41 @@ or a named list of such items.</p></dd>
     
 
 <p>A data frame</p>
+    </div>
+    <div class="section level2">
+    <h2 id="keep-argument-values"><code>keep</code> argument values<a class="anchor" aria-label="anchor" href="#keep-argument-values"></a></h2>
+    
+
+<ul><li><p><code>NULL</code> (default) : merge keys and name them as the left table's keys, and
+keep columns used for fuzzy joins from both tables</p></li>
+<li><p><code>left</code> : keep only key columns for left table</p></li>
+<li><p><code>right</code>: keep only key columns for right table</p></li>
+<li><p><code>both</code> or <code>TRUE</code>: keep key columns from both tables, adding suffix if relevant</p></li>
+<li><p><code>none</code> : drop all key columns from the output</p></li>
+<li><p><code>FALSE</code> : merge keys and name them as the left table's keys, maps to <code>none</code> for fuzzy joins</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="fuzzy-joins">fuzzy joins<a class="anchor" aria-label="anchor" href="#fuzzy-joins"></a></h2>
+    
+
+
+<p>To specify fuzzy matching conditions we use formulas in which the we refer to
+the columns from the left side data frame using <code>.x</code> and the right side data frame
+using <code>.y</code>, for instance <code>by = ~ .x$col1 &gt; .y$col2</code>.</p>
+<p>We can specify several condition and even mix equi condition with fuzzy condition,
+for instance <code>by = c(col1 = "col2", ~ .x$col3 &gt; .y$col4)</code></p>
+<p>To fuzzy match strings we can leverage the functions from the stringr
+package since they are vectorized on all main arguments,
+for instance to match observations where <code>col1</code> contains <code>col1</code> we can attach
+stringr and do <code>by =  ~ str_detect(.x$col1, fixed(.y$col2))</code>.</p>
+<p>Another useful function is <code>stringdist</code> from the stringdist package to match
+strings that are close enough, for instance <code>by = ~ stringdist::stringdist(.x$a,.y$a) &lt; 2</code></p>
+<p>We can also define a new column computed during the fuzzy matching, using the
+arrow assignment operator, for instance : <code>by = ~ .x$col1 &gt; (mysum &lt;- .y$col2 + .y$col3)</code></p>
+<p>When the <code>by</code> condition evaluates to <code>NA</code> the observation is dismissed. This makes
+<code>by = c(a = "b")</code> slightly different from <code>by = ~ .x$a == .y$b</code> when <code>na_matches</code>
+is <code>"na"</code> (the default). To be able to match <code>NA</code> with <code>NA</code> in fuzzy matching condition
+we can use the <code>%==%</code> operator (bone operator), defined in this package.</p>
     </div>
 
     <div class="section level2">
