@@ -201,8 +201,9 @@ join_cols <- function(
   # original dplyr code
   suffix <- standardise_join_suffix(suffix)
   # x_by and y_by are named vectors of positions
-  x_by <- set_names(match(by$x, x_names), by$x)
-  y_by <- set_names(match(by$y, y_names), by$x)
+  by_equi <- if (by$fuzzy) list(x = names(by$equi_keys), y = unlist(by$equi_keys)) else by
+  x_by <- set_names(match(by_equi$x, x_names), by_equi$x)
+  y_by <- set_names(match(by_equi$y, y_names), by_equi$x)
   x_loc <- seq_along(x_names)
   y_loc <- seq_along(y_names)
   names(x_loc) <- x_names
