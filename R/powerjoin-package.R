@@ -1,4 +1,7 @@
-#' @import dplyr
+#' @importFrom dplyr auto_copy as_tibble group_vars ungroup mutate group_by_at
+#' @importFrom dplyr select_at vars bind_cols arrange full_join dplyr_reconstruct
+#' @importFrom dplyr select transmute coalesce summarize tibble left_join n_distinct
+#' @importFrom dplyr distinct rename
 #' @importFrom tidyselect peek_vars matches
 #' @importFrom utils capture.output getFromNamespace
 #' @importFrom methods allNames
