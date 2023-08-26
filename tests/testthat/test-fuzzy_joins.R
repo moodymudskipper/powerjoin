@@ -73,9 +73,17 @@ test_that("fuzzy joins can create columns", {
 test_that("when creating columns through fuzzy joins, conflicts are handled", {
   # if we create a conflicting col it should be suffixed or handled
   expect_equal(
-    power_left_join(data.frame(a=c("foo", "bar")), data.frame(key = "foo"),
-                    ~ .x$a == (a <- .y$key)),
-    data.frame(a...1 = c("foo", "bar"), key = c("foo", NA), a...3 = c("foo", NA))
+    power_left_join(
+      data.frame(a=c("foo", "bar"), stringsAsFactors = FALSE),
+      data.frame(key = "foo", stringsAsFactors = FALSE),
+      ~ .x$a == (a <- .y$key)
+    ),
+    data.frame(
+      a...1 = c("foo", "bar"),
+      key = c("foo", NA),
+      a...3 = c("foo", NA),
+      stringsAsFactors = FALSE
+    )
   )
 
   expect_error(

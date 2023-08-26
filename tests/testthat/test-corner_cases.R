@@ -25,8 +25,17 @@ test_that("corner cases work", {
 
   # fuzzy join keep both cols and add suffixes
   expect_equal(
-    power_left_join(data.frame(a=c("foo", "bar")), data.frame(key = "foo", a = "FOO"), ~ .x$a == .y$key),
-    data.frame(a.x = c("foo", "bar"), key = c("foo", NA), a.y = c("FOO", NA))
+    power_left_join(
+      data.frame(a=c("foo", "bar"), stringsAsFactors = FALSE),
+      data.frame(key = "foo", a = "FOO", stringsAsFactors = FALSE),
+      ~ .x$a == .y$key
+    ),
+    data.frame(
+      a.x = c("foo", "bar"),
+      key = c("foo", NA),
+      a.y = c("FOO", NA),
+      stringsAsFactors = FALSE
+    )
   )
 
   # we can handle these conflicts
