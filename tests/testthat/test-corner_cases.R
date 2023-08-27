@@ -25,48 +25,31 @@ test_that("corner cases work", {
 
   # fuzzy join keep both cols and add suffixes
   expect_equal(
-    power_left_join(
-      data.frame(a=c("foo", "bar"), stringsAsFactors = FALSE),
-      data.frame(key = "foo", a = "FOO", stringsAsFactors = FALSE),
-      ~ .x$a == .y$key
-    ),
-    data.frame(
-      a.x = c("foo", "bar"),
-      key = c("foo", NA),
-      a.y = c("FOO", NA),
-      stringsAsFactors = FALSE
-    )
+    power_left_join(data.frame(a=c("foo", "bar")), data.frame(key = "foo", a = "FOO"), ~ .x$a == .y$key),
+    data.frame(a.x = c("foo", "bar"), key = c("foo", NA), a.y = c("FOO", NA))
   )
 
   # we can handle these conflicts
   expect_equal(
     power_left_join(
-      data.frame(a=c("foo", "bar"), stringsAsFactors = FALSE),
-      data.frame(key = "foo", a = "FOO", stringsAsFactors = FALSE),
+      data.frame(a=c("foo", "bar")),
+      data.frame(key = "foo", a = "FOO"),
       ~ .x$a == .y$key,
       conflict = coalesce),
-    data.frame(key = c("foo", NA), a = c("foo", "bar"), stringsAsFactors = FALSE)
+    data.frame(key = c("foo", NA), a = c("foo", "bar"))
   )
 
   # the col is not renamed if we don't keep the key col
   expect_equal(
-    power_left_join(
-      data.frame(a=c("foo", "bar"), stringsAsFactors = FALSE),
-      data.frame(key = "foo", a = "FOO", stringsAsFactors = FALSE),
-      ~ .x$a == .y$key,
-      keep = "none"
-    ),
-    data.frame(a = c("FOO", NA), stringsAsFactors = FALSE)
+    power_left_join(data.frame(a=c("foo", "bar")), data.frame(key = "foo", a = "FOO"),
+                    ~ .x$a == .y$key, keep = "none"),
+    data.frame(a = c("FOO", NA))
   )
 
   expect_equal(
-    power_left_join(
-      data.frame(a=c("foo", "bar"), stringsAsFactors = FALSE),
-      data.frame(key = "foo", a = "FOO", stringsAsFactors = FALSE),
-      ~ .x$a == .y$key,
-      keep = "right"
-    ),
-    data.frame(key = c("foo", NA), a = c("FOO", NA), stringsAsFactors = FALSE)
+    power_left_join(data.frame(a=c("foo", "bar")), data.frame(key = "foo", a = "FOO"),
+                    ~ .x$a == .y$key, keep = "right"),
+    data.frame(key = c("foo", NA), a = c("FOO", NA))
   )
 
 
