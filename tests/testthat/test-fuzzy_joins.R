@@ -93,8 +93,12 @@ test_that("when creating columns through fuzzy joins, conflicts are handled", {
   )
 
   expect_message(
-    power_left_join(data.frame(a=c("foo", "bar")), data.frame(key = "foo"),
-                    ~ .x$a == (a <- .y$key), check = check_specs(column_conflict = "inform")),
+    power_left_join(
+      data.frame(a=c("foo", "bar"), stringsAsFactors = FALSE),
+      data.frame(key = "foo", stringsAsFactors = FALSE),
+      ~ .x$a == (a <- .y$key),
+      check = check_specs(column_conflict = "inform")
+    ),
     "Conflicting columns"
   )
 })
