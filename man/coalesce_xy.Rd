@@ -19,7 +19,7 @@ A vector
 }
 \description{
 These are wrappers around \code{dplyr::coalesce}, designed for convenient use in
-the \code{conflict} argument of {powerjoin}'s join functions. \code{coalesce_xy()} is
+the \code{conflict} argument of \pkg{powerjoin}'s join functions. \code{coalesce_xy()} is
 just like \code{dplyr::coalesce} (except it takes only 2 arguments), \code{coalesce_yx()}
 looks first in \code{y} and then in \code{x} if \code{y} is missing.
 }

@@ -64,17 +64,17 @@ power_full_join(
 lazy data frames (e.g. from dbplyr or dtplyr). See \emph{Methods}, below, for
 more details.}
 
-\item{by}{As in {dplyr}, but extended so user can supply a formula or a list
+\item{by}{As in \pkg{dplyr}, but extended so user can supply a formula or a list
 of character and formulas. Formulas are used for fuzzy joins, see dedicated
 section below.}
 
-\item{copy}{Ignored at the moment because {powerjoin} doesn't support databases}
+\item{copy}{Ignored at the moment because \pkg{powerjoin} doesn't support databases}
 
 \item{suffix}{If there are non-joined duplicate variables in \code{x} and
 \code{y}, these suffixes will be added to the output to disambiguate them.
 Should be a character vector of length 2.}
 
-\item{keep}{A boolean for compatibility with {dplyr}, or a value among "left",
+\item{keep}{A boolean for compatibility with \pkg{dplyr}, or a value among "left",
 "right", "both", "none" or "default". See dedicated section below.}
 
 \item{na_matches}{Should two \code{NA} or two \code{NaN} values match?
@@ -126,12 +126,12 @@ using \code{.y}, for instance \code{by = ~ .x$col1 > .y$col2}.
 We can specify several condition and even mix equi condition with fuzzy condition,
 for instance \code{by = c(col1 = "col2", ~ .x$col3 > .y$col4)}
 
-To fuzzy match strings we can leverage the functions from the {stringr}
+To fuzzy match strings we can leverage the functions from the \pkg{stringr}
 package since they are vectorized on all main arguments,
 for instance to match observations where \code{col1} contains \code{col1} we can attach
-{stringr} and do \code{by =  ~ str_detect(.x$col1, fixed(.y$col2))}.
+\pkg{stringr} and do \code{by =  ~ str_detect(.x$col1, fixed(.y$col2))}.
 
-Another useful function is \code{stringdist} from the {stringdist} package to match
+Another useful function is \code{stringdist} from the \pkg{stringdist} package to match
 strings that are close enough, for instance \code{by = ~ stringdist::stringdist(.x$a,.y$a) < 2}
 
 We can also define a new column computed during the fuzzy matching, using the

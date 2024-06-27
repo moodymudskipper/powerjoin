@@ -1,7 +1,7 @@
 #' Coalesce helpers
 #'
 #' These are wrappers around `dplyr::coalesce`, designed for convenient use in
-#' the `conflict` argument of {powerjoin}'s join functions. `coalesce_xy()` is
+#' the `conflict` argument of \pkg{powerjoin}'s join functions. `coalesce_xy()` is
 #' just like `dplyr::coalesce` (except it takes only 2 arguments), `coalesce_yx()`
 #' looks first in `y` and then in `x` if `y` is missing.
 #'

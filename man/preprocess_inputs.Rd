@@ -34,7 +34,7 @@ attribute to be handled by the join functions
 These functions are named after the tidyverse functions \code{select}, \code{summarize},
 \code{nest}, \code{pack}, \code{pivot_wider} and \code{pivot_longer} and are designed to avoid
 repetition of key columns when preprocessing the data for a join. They should
-only be used in the \code{x} and \code{y} arguments of {powerjoin} join functions. No
+only be used in the \code{x} and \code{y} arguments of \pkg{powerjoin} join functions. No
 further transformation should be applied on top of them.
 }
 \details{

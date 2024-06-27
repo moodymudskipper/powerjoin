@@ -4,7 +4,7 @@
 
 #' Power joins
 #'
-#' @param by As in {dplyr}, but extended so user can supply a formula or a list
+#' @param by As in \pkg{dplyr}, but extended so user can supply a formula or a list
 #'  of character and formulas. Formulas are used for fuzzy joins, see dedicated
 #'  section below.
 #' @inheritParams dplyr::left_join
@@ -16,9 +16,9 @@
 #'   need `.x[[1]]` or `.y[[1]]`.
 #' @param fill Values used to replace missing values originating in unmatched keys,
 #'   or a named list of such items.
-#' @param keep A boolean for compatibility with {dplyr}, or a value among "left",
+#' @param keep A boolean for compatibility with \pkg{dplyr}, or a value among "left",
 #' "right", "both", "none" or "default". See dedicated section below.
-#' @param copy Ignored at the moment because {powerjoin} doesn't support databases
+#' @param copy Ignored at the moment because \pkg{powerjoin} doesn't support databases
 #'
 #' @section `keep` argument values:
 #'
@@ -39,12 +39,12 @@
 #' We can specify several condition and even mix equi condition with fuzzy condition,
 #' for instance `by = c(col1 = "col2", ~ .x$col3 > .y$col4)`
 #'
-#' To fuzzy match strings we can leverage the functions from the {stringr}
+#' To fuzzy match strings we can leverage the functions from the \pkg{stringr}
 #' package since they are vectorized on all main arguments,
 #' for instance to match observations where `col1` contains `col1` we can attach
-#' {stringr} and do `by =  ~ str_detect(.x$col1, fixed(.y$col2))`.
+#' \pkg{stringr} and do `by =  ~ str_detect(.x$col1, fixed(.y$col2))`.
 #'
-#' Another useful function is `stringdist` from the {stringdist} package to match
+#' Another useful function is `stringdist` from the \pkg{stringdist} package to match
 #' strings that are close enough, for instance `by = ~ stringdist::stringdist(.x$a,.y$a) < 2`
 #'
 #' We can also define a new column computed during the fuzzy matching, using the
