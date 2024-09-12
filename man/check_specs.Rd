@@ -47,7 +47,7 @@ all key combinations}
 \item{inconsistent_factor_levels}{What to do if the key columns from both sides
 have inconsistent factor levels}
 
-\item{inconsistent_type}{What to do if we joined keys have a different type}
+\item{inconsistent_type}{What to do if the joined keys have a different type}
 
 \item{grouped_input}{What to do if one or both of the tables are grouped}
 

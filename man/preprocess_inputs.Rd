@@ -31,7 +31,7 @@ A data frame identical to the \code{.data} but with a \code{"powerjoin_preproces
 attribute to be handled by the join functions
 }
 \description{
-These functions are named after the tidyverse functions \code{select}, \code{summarize},
+These functions are named after the tidyverse (dplyr and tidyr) functions \code{select}, \code{summarize},
 \code{nest}, \code{pack}, \code{pivot_wider} and \code{pivot_longer} and are designed to avoid
 repetition of key columns when preprocessing the data for a join. They should
 only be used in the \code{x} and \code{y} arguments of \pkg{powerjoin} join functions. No
