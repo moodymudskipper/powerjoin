@@ -11,7 +11,7 @@
 #' @param check A list created with `check_specs()`
 #' @param conflict A function, formula, the special value amongst `"patch"`,
 #'   or a named list of such items. If the LHS of the formula is `rw` the rhs will
-#'   be applied rowwise. Note that the columns will be subsetted with `[` so for
+#'   be applied rowwise. Note that the columns will be subset with `[` so for
 #'   list columns `.x` or `.y` will refer to length 1 lists and you might sometimes
 #'   need `.x[[1]]` or `.y[[1]]`.
 #' @param fill Values used to replace missing values originating in unmatched keys,
@@ -32,11 +32,11 @@
 #'
 #' @section fuzzy joins:
 #'
-#' To specify fuzzy matching conditions we use formulas in which the we refer to
+#' To specify fuzzy matching conditions we use formulas in which we refer to
 #' the columns from the left side data frame using `.x` and the right side data frame
 #' using `.y`, for instance `by = ~ .x$col1 > .y$col2`.
 #'
-#' We can specify several condition and even mix equi condition with fuzzy condition,
+#' We can specify several conditions and even mix equi condition with fuzzy condition,
 #' for instance `by = c(col1 = "col2", ~ .x$col3 > .y$col4)`
 #'
 #' To fuzzy match strings we can leverage the functions from the \pkg{stringr}

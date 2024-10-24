@@ -1,6 +1,6 @@
 #' Preprocess powerjoin inputs
 #'
-#' These functions are named after the tidyverse functions `select`, `summarize`,
+#' These functions are named after the tidyverse (dplyr and tidyr) functions `select`, `summarize`,
 #' `nest`, `pack`, `pivot_wider` and `pivot_longer` and are designed to avoid
 #' repetition of key columns when preprocessing the data for a join. They should
 #' only be used in the `x` and `y` arguments of \pkg{powerjoin} join functions. No
