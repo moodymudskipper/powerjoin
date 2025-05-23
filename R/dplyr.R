@@ -118,6 +118,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # tbl_vars.data.frame (copied from dplyr:::tbl_vars.data.frame)
 # from dplyr 1.0.7
+#' @export
 `tbl_vars.data.frame` <- function(x) {
   names(x)
 }
