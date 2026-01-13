@@ -23,14 +23,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/moodymudskipper/powerjoin/blob/master/DESCRIPTION)
 
-Fabri A (2025). *powerjoin: Extensions of 'dplyr' and 'fuzzyjoin' Join
+Fabri A (2026). *powerjoin: Extensions of 'dplyr' and 'fuzzyjoin' Join
 Functions*. R package version 0.1.0,
 <https://github.com/moodymudskipper/powerjoin>.
 
     @Manual{,
       title = {powerjoin: Extensions of 'dplyr' and 'fuzzyjoin' Join Functions},
       author = {Antoine Fabri},
-      year = {2025},
+      year = {2026},
       note = {R package version 0.1.0},
       url = {https://github.com/moodymudskipper/powerjoin},
     }
