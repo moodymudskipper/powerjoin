@@ -21,6 +21,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Antoine Fabri \email{antoine.fabri@gmail.com}
 
+Authors:
+\itemize{
+  \item Antoine Fabri \email{antoine.fabri@gmail.com}
+}
+
 Other contributors:
 \itemize{
   \item Hadley Wickham \email{hadley@rstudio.com} (\href{https://orcid.org/0000-0003-4757-117X}{ORCID}) (aut/cre of dplyr) [contributor]
