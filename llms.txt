@@ -21,18 +21,21 @@
 Install CRAN version with:
 
 ``` r
+
 install.packages("powerjoin")
 ```
 
 Or development version with:
 
 ``` r
+
 remotes::install_github("moodymudskipper/powerjoin")
 ```
 
 ## Now let’s match penguins
 
 ``` r
+
 library(powerjoin)
 library(tidyverse)
 
@@ -68,6 +71,7 @@ ways to handle specific input properties, its arguments can be :
 We can print these defaults :
 
 ``` r
+
 check_specs()
 #> # powerjoin check specifications
 #> ℹ implicit_keys
@@ -88,6 +92,7 @@ By default it works like {dplyr}, informing in case of implicit keys,
 and no further checks :
 
 ``` r
+
 power_inner_join(
   male_penguins[c("species", "island")],
   female_penguins[c("species", "island")]
@@ -105,6 +110,7 @@ We can silence the implicit key detection and check that we have unique
 keys in the right table
 
 ``` r
+
 check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort")
 #> # powerjoin check specifications
 #> → implicit_keys
@@ -122,6 +128,7 @@ check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort")
 ```
 
 ``` r
+
 power_inner_join(
   male_penguins[c("species", "island")],
   female_penguins[c("species", "island")],
@@ -140,6 +147,7 @@ could setup some development and production specs for our most common
 joins:
 
 ``` r
+
 dev_specs <- check_specs(
   column_conflict = "abort",
   inconsistent_factor_levels = "inform",
@@ -155,6 +163,7 @@ prod_specs <- check_specs(
 This will save some typing :
 
 ``` r
+
 power_inner_join(
   male_penguins,
   female_penguins,
@@ -175,6 +184,7 @@ To resolve conflicts between identically named join columns, set the
 as arguments the 2 conflicting joined columns after the join.
 
 ``` r
+
 df1 <- tibble(id = 1:3, value = c(10, NA, 30))
 df2 <- tibble(id = 2:4, value = c(22, 32, 42))
 
@@ -194,6 +204,7 @@ wrapped around
 [`dplyr::coalesce()`](https://dplyr.tidyverse.org/reference/coalesce.html)).
 
 ``` r
+
 power_left_join(df1, df2, by = "id", conflict = coalesce_xy)
 #> # A tibble: 3 × 2
 #>      id value
@@ -216,6 +227,7 @@ however we can make it work rowwise by using `rw` in the lhs of the
 formula.
 
 ``` r
+
 power_left_join(df1, df2, by = "id", conflict = ~ sum(.x, .y, na.rm = TRUE))
 #> # A tibble: 3 × 2
 #>      id value
@@ -244,6 +256,7 @@ before a join, which is an annoyance and an opportunity for mistakes.
 With {powerjoin} we can do :
 
 ``` r
+
 power_inner_join(
   male_penguins %>% select_keys_and(name),
   female_penguins %>% select_keys_and(female_name = name),
@@ -261,6 +274,7 @@ For semi joins, just omit arguments to
 [`select_keys_and()`](reference/preprocess_inputs.md):
 
 ``` r
+
 power_inner_join(
   male_penguins,
   female_penguins %>% select_keys_and(),
@@ -278,6 +292,7 @@ We could also aggregate on keys before the join, without the need for
 any `group_by()`/`ungroup()` gymnastics :
 
 ``` r
+
 power_left_join(
   male_penguins %>% summarize_by_keys(male_weight = mean(body_mass_g)),
   female_penguins %>% summarize_by_keys(female_weight = mean(body_mass_g)),
@@ -297,6 +312,7 @@ named by the `name` argument, it’s useful to namespace the data and
 avoid conflicts
 
 ``` r
+
 power_left_join(
   male_penguins %>% pack_along_keys(name = "m"),
   female_penguins %>% pack_along_keys(name = "f"),
@@ -331,6 +347,7 @@ we use, `.x` and `.y` to describe the left and right tables. This is
 very flexible but can be costly since a cartesian product is computed.
 
 ``` r
+
 power_inner_join(
     male_penguins %>% select_keys_and(male_name = name),
     female_penguins %>% select_keys_and(female_name = name),
@@ -346,6 +363,7 @@ power_inner_join(
 We might also mix fuzzy joins with regular joins :
 
 ``` r
+
 power_inner_join(
     male_penguins %>% select_keys_and(male_name = name),
     female_penguins %>% select_keys_and(female_name = name),
@@ -363,6 +381,7 @@ comparison, in that case we will use `<-` in the formula (several times
 if needed)\`:
 
 ``` r
+
 power_inner_join(
     male_penguins %>% select_keys_and(male_name = name),
     female_penguins %>% select_keys_and(female_name = name),
@@ -382,6 +401,7 @@ The `fill` argument is used to specify what to fill unmatched values
 with, note that missing values resulting from matches are not replaced.
 
 ``` r
+
 df1 <- tibble(id = 1:3)
 df2 <- tibble(id = 1:2, value2 = c(2, NA), value3 = c(NA, 3))
 
@@ -407,6 +427,7 @@ power_left_join(df1, df2, by = "id", fill = list(value2 = 0))
 The `x` and `y` arguments accept lists of data frames so one can do :
 
 ``` r
+
 df1 <- tibble(id = 1, a = "foo")
 df2 <- tibble(id = 1, b = "bar")
 df3 <- tibble(id = 1, c = "baz")

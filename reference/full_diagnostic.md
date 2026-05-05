@@ -8,7 +8,3 @@ arguments set to `"inform"`, it's useful for a complete join diagnostic.
 ``` r
 full_diagnostic
 ```
-
-## Format
-
-An object of class `powerjoin_check` of length 12.
