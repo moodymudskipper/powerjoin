@@ -29,55 +29,69 @@ export(power_right_join)
 export(select_keys_and)
 export(summarize_by_keys)
 import(rlang)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,across)
-importFrom(dplyr,arrange)
-importFrom(dplyr,as_tibble)
-importFrom(dplyr,auto_copy)
-importFrom(dplyr,bind_cols)
-importFrom(dplyr,coalesce)
-importFrom(dplyr,distinct)
-importFrom(dplyr,dplyr_reconstruct)
-importFrom(dplyr,full_join)
-importFrom(dplyr,group_by_at)
-importFrom(dplyr,group_vars)
-importFrom(dplyr,intersect)
-importFrom(dplyr,left_join)
-importFrom(dplyr,mutate)
-importFrom(dplyr,n_distinct)
-importFrom(dplyr,one_of)
-importFrom(dplyr,rename)
-importFrom(dplyr,select)
-importFrom(dplyr,select_at)
-importFrom(dplyr,setdiff)
-importFrom(dplyr,setequal)
-importFrom(dplyr,summarize)
-importFrom(dplyr,tibble)
-importFrom(dplyr,transmute)
-importFrom(dplyr,ungroup)
-importFrom(dplyr,union)
-importFrom(dplyr,vars)
-importFrom(glue,glue)
-importFrom(glue,glue_collapse)
+importFrom(dplyr,
+  "%>%",
+  across,
+  arrange,
+  as_tibble,
+  auto_copy,
+  bind_cols,
+  coalesce,
+  distinct,
+  dplyr_reconstruct,
+  full_join,
+  group_by_at,
+  group_vars,
+  intersect,
+  left_join,
+  mutate,
+  n_distinct,
+  one_of,
+  rename,
+  select,
+  select_at,
+  setdiff,
+  setequal,
+  summarize,
+  tibble,
+  transmute,
+  ungroup,
+  union,
+  vars
+)
+importFrom(glue,
+  glue,
+  glue_collapse
+)
 importFrom(methods,allNames)
-importFrom(purrr,map)
-importFrom(purrr,map_chr)
-importFrom(purrr,map_lgl)
+importFrom(purrr,
+  map,
+  map_chr,
+  map_lgl
+)
 importFrom(stats,setNames)
-importFrom(tidyr,nest)
-importFrom(tidyr,pivot_longer)
-importFrom(tidyr,pivot_wider)
-importFrom(tidyselect,matches)
-importFrom(tidyselect,peek_vars)
-importFrom(utils,capture.output)
-importFrom(utils,getFromNamespace)
-importFrom(vctrs,vec_assign)
-importFrom(vctrs,vec_cast)
-importFrom(vctrs,vec_detect_missing)
-importFrom(vctrs,vec_group_loc)
-importFrom(vctrs,vec_in)
-importFrom(vctrs,vec_match)
-importFrom(vctrs,vec_ptype_common)
-importFrom(vctrs,vec_ptype_full)
-importFrom(vctrs,vec_size)
-importFrom(vctrs,vec_slice)
+importFrom(tidyr,
+  nest,
+  pivot_longer,
+  pivot_wider
+)
+importFrom(tidyselect,
+  matches,
+  peek_vars
+)
+importFrom(utils,
+  capture.output,
+  getFromNamespace
+)
+importFrom(vctrs,
+  vec_assign,
+  vec_cast,
+  vec_detect_missing,
+  vec_group_loc,
+  vec_in,
+  vec_match,
+  vec_ptype_common,
+  vec_ptype_full,
+  vec_size,
+  vec_slice
+)
