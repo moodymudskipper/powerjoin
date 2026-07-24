@@ -62,7 +62,7 @@ attr(x, "powerjoin_preprocess")
 #> [[1]]
 #> <quosure>
 #> expr: ^Sepal.Width
-#> env:  0x5ef32dd2e8e0
+#> env:  0x58f3d5330438
 #> 
 #> 
 # see `?power_left_join` or README for practical examples
