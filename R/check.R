@@ -316,7 +316,7 @@ check_inconsistent_type <- function(x_in, y_in, by, check) {
 check_unmatched_keys_left <- function(x_in, y_in, by, rows, check) {
   if(check[["unmatched_keys_left"]] != "ignore" && length(rows$x_unmatched)) {
     fun <- getFromNamespace(check[["unmatched_keys_left"]], "rlang")
-    unmatched_combos <- distinct(x_in[rows$x_unmatched, by])
+    unmatched_combos <- distinct(x_in[rows$x_unmatched, by, drop = FALSE])
     msg <- paste0(
       "Keys in the left table have unmatched combinations:\n",
       paste(capture.output(unmatched_combos), collapse = "\n")
@@ -328,7 +328,7 @@ check_unmatched_keys_left <- function(x_in, y_in, by, rows, check) {
 check_unmatched_keys_right <- function(x_in, y_in, by, rows, check) {
   if(check[["unmatched_keys_right"]] != "ignore" && length(rows$y_unmatched)) {
     fun <- getFromNamespace(check[["unmatched_keys_right"]], "rlang")
-    unmatched_combos <- distinct(y_in[rows$y_unmatched, by])
+    unmatched_combos <- distinct(y_in[rows$y_unmatched, by, drop = FALSE])
     msg <- paste0(
       "Keys in the right table have unmatched combinations:\n",
       paste(capture.output(unmatched_combos), collapse = "\n")

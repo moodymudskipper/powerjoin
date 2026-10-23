@@ -76,3 +76,18 @@ test_that("na_keys", {
 })
 
 
+
+test_that("unmatched keys with a single key on data frames (#85)", {
+  df1 <- data.frame(id = 1:3, val1 = 1:3)
+  df2 <- data.frame(id = 2:4, val2 = 2:4)
+
+  expect_message(
+    power_full_join(df1, df2, by = "id", check = check_specs(unmatched_keys_left = "inform")),
+    "Keys in the left table have unmatched combinations"
+  )
+
+  expect_message(
+    power_full_join(df1, df2, by = "id", check = check_specs(unmatched_keys_right = "inform")),
+    "Keys in the right table have unmatched combinations"
+  )
+})

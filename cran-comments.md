@@ -4,5 +4,10 @@
 
 ## comments
 
-The package was archived on CRAN due to new rules on html, we fixed it by
-redocumenting the package using an up to date version of 'roxygen2'
+This release fixes the "Lost braces" Rd NOTE reported on the CRAN check page
+(plain braces around package names were replaced with `\pkg{}`).
+It also includes new features and bug fixes, see NEWS.md.
+
+## Reverse dependencies
+
+There are no reverse dependencies.

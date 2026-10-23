@@ -5,19 +5,19 @@
 
 {powerjoin} extends {dplyr}’s join functions.
 
--   Make your joins safer with the `check` argument and the
-    `check_specs()`function
--   Deal with conflicting column names by combining, coalescing them etc
-    using the `conflict` argument
--   Preprocess input, for instance to select columns to join without
-    having to repeat key columns in the selection
--   Do painless fuzzy joins thanks to a generalized `by` argument
-    accepting formulas
--   Fill unmatched values using the `fill` argument
--   Operate recursive joins by providing lists of data frames to `x` and
-    `y`
--   Keep or drop key columns with more flexibility thanks to an enhanced
-    `keep`argument
+- Make your joins safer with the `check` argument and the
+  `check_specs()`function
+- Deal with conflicting column names by combining, coalescing them etc
+  using the `conflict` argument
+- Preprocess input, for instance to select columns to join without
+  having to repeat key columns in the selection
+- Do painless fuzzy joins thanks to a generalized `by` argument
+  accepting formulas
+- Fill unmatched values using the `fill` argument
+- Operate recursive joins by providing lists of data frames to `x` and
+  `y`
+- Keep or drop key columns with more flexibility thanks to an enhanced
+  `keep`argument
 
 ## Installation
 
@@ -37,7 +37,7 @@ remotes::install_github("moodymudskipper/powerjoin")
 
 ``` r
 library(powerjoin)
-library(tidyverse)
+library(dplyr, warn.conflicts = FALSE)
 
 # toy dataset built from Allison Horst's {palmerpenguins} package and 
 # Hadley Wickham's {babynames}
@@ -63,10 +63,10 @@ The `check` argument receives an object created by the `check_specs()`
 function, which provides ways to handle specific input properties, its
 arguments can be :
 
--   `"ignore"` : stay silent (default except for `implicit_keys`)
--   `"inform"`
--   `"warn"`
--   `"abort"`
+- `"ignore"` : stay silent (default except for `implicit_keys`)
+- `"inform"`
+- `"warn"`
+- `"abort"`
 
 We can print these defaults :
 
@@ -113,7 +113,7 @@ check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort")
 #> → implicit_keys
 #> → column_conflict
 #> → duplicate_keys_left
-#> x duplicate_keys_right
+#> ✖ duplicate_keys_right
 #> → unmatched_keys_left
 #> → unmatched_keys_right
 #> → missing_key_combination_left
@@ -130,7 +130,8 @@ power_inner_join(
   female_penguins[c("species", "island")],
   check = check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort")
 )
-#> Error: Keys in the right table have duplicates:
+#> Error in `check_duplicate_keys_right()` at powerjoin/R/power_join_mutate.R:31:3:
+#> ! Keys in the right table have duplicates:
 #> # A tibble: 1 × 2
 #>   species island
 #>   <chr>   <chr> 
@@ -304,21 +305,22 @@ power_left_join(
   by = c("species", "island")
 )
 #> # A tibble: 4 × 4
-#>   species island    m$name $flipper_length… $body_mass_g f$name $flipper_length…
-#>   <chr>   <chr>     <chr>             <int>        <int> <chr>             <dbl>
-#> 1 Gentoo  Biscoe    Giord…              222         5250 Alonda              211
-#> 2 Gentoo  Biscoe    Giord…              222         5250 Misha…              215
-#> 3 Adelie  Torgersen Lynden              190         3900 <NA>                 NA
-#> 4 Adelie  Dream     Reiner              185         3650 Ola                 190
+#>   species island    m$name  $flipper_length_mm $body_mass_g f$name  
+#>   <chr>   <chr>     <chr>                <int>        <int> <chr>   
+#> 1 Gentoo  Biscoe    Giordan                222         5250 Alonda  
+#> 2 Gentoo  Biscoe    Giordan                222         5250 Mishayla
+#> 3 Adelie  Torgersen Lynden                 190         3900 <NA>    
+#> 4 Adelie  Dream     Reiner                 185         3650 Ola     
+#> # ℹ 2 more variables: f$flipper_length_mm <dbl>, $body_mass_g <int>
 ```
 
 We have more of these, all variants of tidyverse functions :
 
--   `nest_by_keys()` nests given columns, or all by default, if `name`
-    is given a single list column of data frames is created
--   `complete_keys()` expands the key columns, so all combinations are
-    present, filling the rest of the new rows with `NA`s. Absent factor
-    levels are expanded as well.
+- `nest_by_keys()` nests given columns, or all by default, if `name` is
+  given a single list column of data frames is created
+- `complete_keys()` expands the key columns, so all combinations are
+  present, filling the rest of the new rows with `NA`s. Absent factor
+  levels are expanded as well.
 
 <!-- * `pivot_wider_by_keys()` and `pivot_longer_by_keys()` assume the "id" columns are the keys -->
 
@@ -342,7 +344,7 @@ power_inner_join(
 #>   flipper_length_mm.x body_mass_g.x male_name flipper_length_mm.y body_mass_g.y
 #>                 <int>         <int> <chr>                   <dbl>         <int>
 #> 1                 185          3650 Reiner                    190          3600
-#> # … with 1 more variable: female_name <chr>
+#> # ℹ 1 more variable: female_name <chr>
 ```
 
 We might also mix fuzzy joins with regular joins :
