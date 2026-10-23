@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">powerjoin</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,9 +28,30 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/moodymudskipper/powerjoin/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/moodymudskipper/powerjoin/blob/cran-0.2.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="powerjoin-020">powerjoin 0.2.0<a class="anchor" aria-label="anchor" href="#powerjoin-020"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-2-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
+<ul><li>New operators <code>%==%</code> and <code>%in.%</code> (<a href="https://github.com/moodymudskipper/powerjoin/issues/46" class="external-link">#46</a>). <code>%==%</code> works like <code>==</code> but treats <code>NA</code> as a regular value (<code>NA %==% NA</code> is <code>TRUE</code>, <code>NA %==% 1</code> is <code>FALSE</code>), and <code>%in.%</code> is a vectorized <code>%in%</code>. Both are convenient in fuzzy join conditions.</li>
+<li>Fuzzy join conditions support <code>[[</code>, e.g. <code>.x[["col"]]</code> (<a href="https://github.com/moodymudskipper/powerjoin/issues/37" class="external-link">#37</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
+<ul><li>Fuzzy joins mixing equi and non-equi conditions now give correct results (<a href="https://github.com/moodymudskipper/powerjoin/issues/42" class="external-link">#42</a>).</li>
+<li>Fuzzy join conditions that evaluate to <code>NA</code> are now treated as non matches (<a href="https://github.com/moodymudskipper/powerjoin/issues/41" class="external-link">#41</a>).</li>
+<li>
+<code>check_specs(unmatched_keys_left = )</code> and <code>check_specs(unmatched_keys_right = )</code> don’t fail anymore on data frames joined by a single key (<a href="https://github.com/moodymudskipper/powerjoin/issues/85" class="external-link">#85</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="maintenance-0-2-0">Maintenance<a class="anchor" aria-label="anchor" href="#maintenance-0-2-0"></a></h3>
+<ul><li>Rd files use <code>\pkg{}</code> instead of plain braces, fixing the “Lost braces” NOTE.</li>
+<li>Compatibility with recent versions of dplyr and vctrs.</li>
+<li>Typo fixes in the documentation (<a href="https://github.com/luisDVA" class="external-link">@luisDVA</a>, <a href="https://github.com/moodymudskipper/powerjoin/issues/51" class="external-link">#51</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="powerjoin-010">powerjoin 0.1.0<a class="anchor" aria-label="anchor" href="#powerjoin-010"></a></h2><p class="text-muted">CRAN release: 2022-11-03</p>
 <ul><li>The join functions will fail if not provided a <code>check</code> argument built with <code><a href="../reference/check_specs.html">check_specs()</a></code>
@@ -41,7 +62,8 @@
 <li>Obsolete imports were removed</li>
 <li>Rebuilding the documentation solves the issues that got the package kicked from CRAN</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
