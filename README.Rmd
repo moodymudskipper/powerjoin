@@ -45,7 +45,7 @@ remotes::install_github("moodymudskipper/powerjoin")
 
 ```{r}
 library(powerjoin)
-library(tidyverse)
+library(dplyr, warn.conflicts = FALSE)
 
 # toy dataset built from Allison Horst's {palmerpenguins} package and 
 # Hadley Wickham's {babynames}
