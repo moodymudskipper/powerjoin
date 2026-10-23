@@ -134,7 +134,7 @@ power_inner_join(
   female_penguins[c("species", "island")],
   check = check_specs(implicit_keys = "ignore", duplicate_keys_right = "abort")
 )
-#> Error in `check_duplicate_keys_right()`:
+#> Error in `check_duplicate_keys_right()` at powerjoin/R/power_join_mutate.R:31:3:
 #> ! Keys in the right table have duplicates:
 #> # A tibble: 1 × 2
 #>   species island
