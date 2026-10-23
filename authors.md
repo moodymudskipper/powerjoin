@@ -21,7 +21,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/moodymudskipper/powerjoin/blob/cran-0.2.0/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/moodymudskipper/powerjoin/blob/master/DESCRIPTION)
 
 Fabri A (2026). *powerjoin: Extensions of 'dplyr' and 'fuzzyjoin' Join
 Functions*. R package version 0.2.0,
